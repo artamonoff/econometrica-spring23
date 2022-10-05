@@ -1,0 +1,488 @@
+---
+title: "Задачи по Эконометрике"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(ggplot2)
+data(sleep75, wage1,wage2, Labour, Electricity, package = c('wooldridge', 'Ecdat') )
+my.digits <- 2
+```
+
+# Метод наименьших квадратов (теория)
+
+## Задача
+
+Пусть задано $n$ наблюдений (точек на плоскости) $\{x_i,y_i\}_{i=1}^n$. 
+Для линейной функции $y=\beta_0+\beta_1x$
+
+- применив метод наименьших квадратов выведите систему нормальных уравнений для нахождения параметров (оптимальной) прямой, наименее уклоняющейся от заданных наблюдений (точек на плоскости);
+
+- выведете формулы для оценок $\widehat{\beta_0}$ и $\widehat{\beta_1}$ коэффициентов оптимальной прямой;
+
+- покажите, что для оценок коэффициентов верно: 
+\[
+  \widehat{\beta_1}=\frac{s.cov(x,y)}{s.Var(x)} \quad 
+  \widehat{\beta_0}=\bar{y}- \widehat{\beta_1}\cdot \bar{x}
+\]
+
+(Здесь \(s.cov(x,y)\) - выборочная ковариация, \(s.Var()\) - выборочная дисперсия)
+
+## Задача
+
+Пусть задано $n$ наблюдений (точек на плоскости) $\{x_i,y_i\}_{i=1}^n$. 
+Для линейной функции $y=\beta x$
+
+- рименив метод наименьших квадратов выведите систему нормальных уравнений для нахождения параметров (оптимальной) прямой, наименее уклоняющейся от заданных наблюдений (точек на плоскости);
+	
+- выведете формулы для оценки $\widehat{\beta}$ коэффициента оптимальной прямой.
+
+## Задача
+
+Пусть $\hat{\beta}$ есть OLS-оценка коэффициента наклона линейной
+функции $y$ на $x$ без константы, а $\hat{\gamma}$  -- OLS-оценка
+коэффициента наклона в линейной функции $x$ на $y$ без константы.
+Верно ли для этих оценок равенство
+
+\[
+  \hat{\gamma}=\frac{1}{\hat{\beta}}?
+\]
+
+## Задача
+
+Пусть $\widehat{\beta}_1$ есть OLS-оценка коэффициента наклона линейной
+функции $y$ на $x$ с константой, а $\widehat{\gamma}_1$ - OLS-оценка коэффициента наклона линейной
+функции $x$ на $y$ с константой. Верно ли равенство
+\[
+	\widehat{\gamma}_1=\frac{1}{\widehat{\beta}_1}?
+\]
+Ответ поясните.
+
+# Метод наименьших квадратов (практика)
+
+<span style="color: red">**Важно**: во всех задачах логарифм натуральный!</span>
+
+<span style="color: blue">Задания основаны на датасетах **sleep75, Labour**</span>
+
+## Задача (sleep equation)
+
+Рассморим набор данных (описание датасета sleep75 см. в задачнике)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 15
+df <- sleep75[1:n, c('sleep', 'totwrk', 'age')]
+stargazer(df, summary=FALSE, type='text', digit.separator='')
+```
+
+1. Нарисуйте графики наблюдений **sleep vs totwrk** и **sleep vs age**
+
+2. Найдите параметры оптимальной прямой **sleep на totwrk** (с константой). Ответ округлите до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(sleep~totwrk)
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+3. Найдите параметры оптимальной прямой **sleep на totwrk** (без константы). Ответ округлите до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(sleep~0+totwrk)
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+4. Найдите параметры оптимальной прямой **sleep на age** (с константой). Ответ округлите до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(sleep~age)
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+5. Найдите параметры оптимальной прямой **sleep на age** (без константы). Ответ округлите до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(sleep~0+age)
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+## Задача (output equation)
+
+Рассморим набор данных (описание датасета Labour см. в задачнике)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 15
+df <- Labour[1:n,]
+stargazer(df, summary=FALSE, type='text', digit.separator='')
+
+```
+
+1. Нарисуйте графики наблюдений **log(output) vs log(capital)**, **log(output) vs log(labour)** и 
+**log(output) vs log(wage)**
+
+2. Найдите параметры оптимальной прямой **log(output) vs log(capital)** (с константой). Ответ округлите 
+до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(log(output)~log(capital))
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+3. Найдите параметры оптимальной прямой **log(output) vs log(capital)** (без константы). Ответ округлите до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(log(output)~0+log(capital))
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+4. Найдите параметры оптимальной прямой **log(output) vs log(labour)** (с константой). Ответ округлите до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(log(output)~log(labour))
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+5. Найдите параметры оптимальной прямой **log(output) vs log(labour)** (без константы). Ответ округлите до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(log(output)~0+log(labour))
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+6. Найдите параметры оптимальной прямой **log(output) vs log(wage)** (с константой). Ответ округлите до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(log(output)~log(wage))
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+7. Найдите параметры оптимальной прямой **log(output) vs log(wage)** (без константы). Ответ округлите до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(log(output)~0+log(wage))
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+## Задача (quadratic sleep equation)
+
+Рассморим набор данных (описание датасета sleep75 см. в задачнике)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 15
+df <- sleep75[1:n, c('sleep', 'totwrk', 'age')]
+stargazer(df, summary=FALSE, type='text', digit.separator='')
+```
+
+1. Нарисуйте графики наблюдений **sleep vs totwrk** и **sleep vs age**
+
+2. Найдите параметры оптимальной параболы **sleep на totwrk & totwrk^2^**. Ответ округлите до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(sleep~totwrk+I(totwrk^2))
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+3. Найдите параметры оптимальной параболы **sleep на age & age^2^**. Ответ округлите до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(sleep~age+I(age^2))
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+## Задача (multivariate sleep equation)
+
+Рассморим набор данных (описание датасета sleep75 см. в задачнике)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 20
+df <- sleep75[1:n, c('sleep', 'totwrk', 'age')]
+stargazer(df, summary=FALSE, type='text', digit.separator='')
+```
+
+Найдите параметры оптимальной плоскости **sleep на totwrk & age**. Ответ округлите до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(sleep~totwrk+age)
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+## Задача (multivariate output equation)
+
+Рассморим набор данных (описание датасета Labour см. в задачнике)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 20
+df <- Labour[1:n,]
+stargazer(df, summary=FALSE, type='text', digit.separator='')
+
+```
+
+Найдите параметры оптимальной плоскости  **log(output) на log(capital) & log(labour)** (с константой). Ответ округлите 
+до `r my.digits`-х десятичных знаков
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(log(output)~log(capital)+log(labour))
+regr <- lm(formula = my.spec, data = df) 
+round(coef(regr), digits = my.digits)
+```
+
+## Задача (свойства OLS. Sleep equation)
+
+Рассморим набор данных (описание датасета sleep75 см. в задачнике)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 15
+df <- sleep75[1:n, c('sleep', 'totwrk', 'age')]
+stargazer(df, summary=FALSE, type='text', digit.separator='')
+
+```
+
+Найдите параметры оптимальной прямой **sleep на totwrk** и **totwrk на sleep**(с константой). 
+Сравните коэффициенты наклона
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(sleep~totwrk)
+regr <- lm(formula = my.spec, data = df) 
+coef(regr)
+my.spec <- formula(totwrk~sleep)
+regr <- lm(formula = my.spec, data = df) 
+coef(regr)
+```
+
+## Задача (свойства OLS. Cost equation)
+
+Рассморим набор данных (описание датасета Electricity см. в задачнике)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 15
+df <- Electricity[1:n, c('cost', 'q', 'pl', 'pk', 'pf')]
+stargazer(df, summary=FALSE, type='text', digit.separator='')
+
+```
+
+Найдите параметры оптимальной прямой **cost на q** и **q на cost**(без константой). 
+Сравните коэффициенты наклона
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(cost~0+q)
+regr <- lm(formula = my.spec, data = df) 
+coef(regr)
+my.spec <- formula(q~0+cost)
+regr <- lm(formula = my.spec, data = df) 
+coef(regr)
+```
+
+## Задача (свойства OLS. Sleep equation. Scaling)
+
+Рассморим набор данных (описание датасета sleep75 см. в задачнике)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 20
+df <- sleep75[1:n, c('sleep', 'totwrk', 'age')]
+stargazer(df, summary=FALSE, type='text', digit.separator='')
+```
+
+1. Найдите параметры оптимальной прямой **sleep на totwrk** и прямой **sleep/60 на totwrk/60** (с константой)
+Сравните параметры первой и второй прямой
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(sleep~totwrk)
+regr <- lm(formula = my.spec, data = df) 
+coef(regr)
+my.spec <- formula(sleep/60~I(totwrk/60) )
+regr <- lm(formula = my.spec, data = df) 
+coef(regr)
+```
+
+Как можно объяснить выбор второй прямой?
+
+2. Найдите параметры оптимальной прямой **sleep на age** и прямой **sleep/60 на age** (с константой)
+Сравните параметры первой и второй прямой
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(sleep~age)
+regr <- lm(formula = my.spec, data = df) 
+coef(regr)
+my.spec <- formula(sleep/60~age)
+regr <- lm(formula = my.spec, data = df) 
+coef(regr)
+```
+
+Как можно объяснить выбор второй прямой?
+
+
+## Задача (свойства OLS. Sleep equation. Translation)
+
+Рассморим набор данных (описание датасета sleep75 см. в задачнике)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 20
+df <- sleep75[1:n, c('sleep', 'totwrk', 'age')]
+stargazer(df, summary=FALSE, type='text', digit.separator='')
+```
+
+Найдите параметры оптимальной прямой **sleep на totwrk** и прямой **sleep-3000 на totwrk-2400** (с константой)
+Сравните параметры первой и второй прямой
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(sleep~totwrk)
+regr <- lm(formula = my.spec, data = df) 
+coef(regr)
+my.spec <- formula(sleep-3000~I(totwrk-2400) )
+regr <- lm(formula = my.spec, data = df) 
+coef(regr)
+```
+
+## Задача (свойства OLS. Output equation. Translation)
+
+Рассморим набор данных (описание датасета Labour см. в задачнике)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 20
+df <- Labour[1:n,]
+stargazer(df, summary=FALSE, type='text', digit.separator='')
+```
+
+Найдите параметры оптимальной прямой **log(output) на log(capital)** и 
+прямой **log(output)-\(\overline{\log(output)}\) на log(capital)-\(\overline{\log(capital)}\)** (с константой)
+Сравните параметры первой и второй прямой
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.spec <- formula(log(output)~log(capital) )
+regr <- lm(formula = my.spec, data = df) 
+coef(regr)
+mean.log.output <- mean(log(df$output))
+m <- mean(log(df$capital))
+my.spec <- formula(log(output)-mean.log.output~I(log(capital)-m) )
+regr <- lm(formula = my.spec, data = df) 
+coef(regr)
+```
+
+# Графики
+
+<span style="color: blue">Здесь приведеным графики к предыдущим заданиям (прямые с константой и без)</span>
+
+## Задача (sleep equation)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 15
+df <- sleep75[1:n, c('sleep', 'totwrk', 'age')]
+qplot(data=df, x=totwrk, y=sleep)+geom_smooth(method=lm, formula = y~x, se=FALSE)+
+  geom_smooth(method=lm, formula = y~0+x, se=FALSE, col='red')
+qplot(data=df, x=age, y=sleep)+geom_smooth(method=lm, formula = y~x, se=FALSE)+
+  geom_smooth(method=lm, formula = y~0+x, se=FALSE, col='red')
+```
+
+## Задача (output equation)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 15
+df <- Labour[1:n, ]
+qplot(data=df, x=log(capital), y=log(output))+geom_smooth(method=lm, formula = y~x, se=FALSE)+
+  geom_smooth(method=lm, formula = y~0+x, se=FALSE, col='red')
+qplot(data=df, x=log(labour), y=log(output))+geom_smooth(method=lm, formula = y~x, se=FALSE)+
+  geom_smooth(method=lm, formula = y~0+x, se=FALSE, col='red')
+qplot(data=df, x=log(wage), y=log(output))+geom_smooth(method=lm, formula = y~x, se=FALSE)+
+  geom_smooth(method=lm, formula = y~0+x, se=FALSE, col='red')
+```
+
+
+## Задача (quadratic sleep equation)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+n <- 15
+df <- sleep75[1:n, c('sleep', 'totwrk', 'age')]
+qplot(data=df, x=totwrk, y=sleep)+geom_smooth(method=lm, formula = y~x, se=FALSE)+
+  geom_smooth(method=lm, formula = y~x+I(x^2), se=FALSE, col='red')
+qplot(data=df, x=age, y=sleep)+geom_smooth(method=lm, formula = y~x, se=FALSE)+
+  geom_smooth(method=lm, formula = y~x+I(x^2), se=FALSE, col='red')
+```
+
+## Гистограммы (output equation)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+# n <- 15
+df <- Labour #[1:n, ]
+qplot(data=df, x=capital)
+qplot(data=df, x=log(capital) )
+qplot(data=df, x=output)
+qplot(data=df, x=log(output) )
+qplot(data=df, x=labour)
+qplot(data=df, x=log(labour) )
+qplot(data=df, x=wage)
+qplot(data=df, x=log(wage) )
+```
+
+## Гистограммы (cost equation)
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+# n <- 15
+df <- Electricity #[1:n, ]
+qplot(data=df, x=cost)
+qplot(data=df, x=log(cost) )
+qplot(data=df, x=q)
+qplot(data=df, x=log(q) )
+# qplot(data=df, x=labour)
+# qplot(data=df, x=log(labour) )
+# qplot(data=df, x=wage)
+# qplot(data=df, x=log(wage) )
+```

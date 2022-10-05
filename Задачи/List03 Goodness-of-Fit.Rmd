@@ -1,0 +1,437 @@
+---
+title: 'Задачи по Эконометрике: Качество подгонки'
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+    number_sections: yes
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+data(sleep75, wage1,wage2, Labour, package = c('wooldridge', 'Ecdat') )
+```
+
+# Суммы квадратов, остатки, предсказанные значения, \(R^2\)
+
+## Предсказанные и остатки
+
+### Задача
+
+Для набора данных `sleep75` рассмотрим регрессию **sleep на totwrk, age, male и log(hrwage)**.
+Ниже приведены коэффициенты подогнанной модели
+
+```{r, echo=FALSE, comment=''}
+regr <- lm(formula = sleep~totwrk+age+male+log(hrwage), data=sleep75)
+my.digits <- 2
+round( coef(regr), digits = my.digits )
+```
+
+В таблице ниже приведены первые шесть наблюдений
+
+```{r, echo=FALSE, comment=''}
+n <- 6
+df <- sleep75[1:n, c('sleep', 'totwrk', 'age', 'male', 'hrwage')]
+stargazer(df, summary = FALSE, type='text', digit.separator = '', rownames=FALSE, digits = my.digits)
+```
+
+Для каждого наблюдения вычислите предсказанное значение и остатки. 
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+my.coef <- round( coef(regr),digits = my.digits )
+my.df <- data.frame(sleep=rep(1, times=n), totwrk=df$totwrk, age=df$age, male=df$male,
+                    lhrwage=log(df$hrwage) )
+my.fitted <- NULL 
+for(i in 1:n) my.fitted <- c(my.fitted, round(sum(my.df[i,]*my.coef), digits = my.digits) )
+print('Предсказанные')
+my.fitted
+print('Остатки')
+df$sleep-my.fitted
+```
+
+### Задача
+
+Для набора данных `Labour` рассмотрим регрессию **log(output) на log(capital) и log(labour)**
+Ниже приведены коэффициенты подогнанной модели
+
+```{r, echo=FALSE, comment=''}
+regr <- lm(formula = log(output)~log(capital)+log(labour), data=Labour)
+my.digits <- 2
+round( coef(regr), digits = my.digits )
+
+```
+
+В таблице ниже приведены первые пять наблюдений
+
+```{r, echo=FALSE, comment=''}
+n <- 5
+df <- Labour[1:n, c('output', 'capital', 'labour')]
+stargazer(df, summary = FALSE, type='text', digit.separator = '', rownames=FALSE, digits = my.digits)
+```
+
+Для каждого наблюдения вычислите предсказанное значение и остатки. 
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+my.coef <- round( coef(regr),digits = my.digits )
+my.df <- data.frame(output=rep(1, times=n), lcapital=log(df$capital), llabour=log(df$labour) )
+my.fitted <- NULL 
+for(i in 1:n) my.fitted <- c(my.fitted, round(sum(my.df[i,]*my.coef), digits = my.digits) )
+print('Предсказанные')
+my.fitted
+print('Остатки')
+round( log(df$output)-my.fitted, digits = my.digits )
+```
+
+## Суммы квадратов и R^2^
+
+### Задача
+
+```{r, echo=FALSE, comment=''}
+TSS <- 100.35; ESS <- 47.56
+my.digits <- 2
+```
+
+В результате подгонки регрессии \(y=\beta_0+\beta_1x_1+\beta_2x_2+u\) были вычислены:
+общая сумма квадратов `r TSS` и объяснённая сумма квадратов `r ESS`. 
+
+Вычислите остаточную сумму квадратов и \(R^2\). 
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+print( paste0('RSS=', round(TSS-ESS, digits = my.digits) ) )
+print( paste0('R^2=', round(ESS/TSS, digits = my.digits) ) )
+```
+ 
+### Задача
+
+```{r, echo=FALSE, comment=''}
+TSS <- 240.82; RSS <- 93.52; my.digits <- 2
+```
+
+В результате подгонки регрессии \(y=\beta_0+\beta_1x_1+\beta_2x_2+\beta_3x_3+u\) были вычислены:
+общая сумма квадратов `r TSS` и остаточная сумма квадратов `r RSS`. 
+
+Вычислите объяснённую сумму квадратов и \(R^2\). 
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+print( paste0('ESS=', round(TSS-RSS, digits = my.digits) ) )
+print( paste0('R^2=', round(1-RSS/TSS, digits = my.digits) ) )
+```
+
+### Задача
+
+```{r, echo=FALSE, comment=''}
+ESS <- 418.38; RSS <- 782.83; my.digits <- 2
+```
+
+В результате подгонки регрессии \(y=\beta_0+\beta_1x_1+\beta_2x_2+\beta_3x_3+u\) были вычислены:
+объяснённая сумма квадратов `r ESS` и остаточная сумма квадратов `r RSS` 
+
+Вычислите общую сумму квадратов и \(R^2\). **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+print( paste0('TSS=', round(ESS+RSS, digits = my.digits) ) )
+print( paste0('R^2=', round(ESS/(ESS+RSS), digits = my.digits) ) )
+```
+
+### Задача
+
+В результате подгонки регрессии \(y=\beta_0+\beta_1x_1+\beta_2x_2+u\) по 10 
+наблюдениям были получены остатки
+
+```{r, echo=FALSE, comment=''}
+res <- c(-0.24, 0.41, 1.22, -0.93, -0.37, -1.33, 0.16, -0.27, 0.06)
+res <- c(res, -sum(res))
+print(res)
+```
+
+Вычислите RSS и _стандартную ошибку регрессии_. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+my.digits <- 2
+print( paste0('RSS=', round( sum(res^2), digits = my.digits) ) )
+print( paste0('s=', round(sqrt(sum(res^2)/(10-2-1)), digits = my.digits) ) )
+```
+
+### Задача
+
+Для набора данных `sleep75` рассмотрим регрессию **sleep/60 на totwrk и age**
+
+Модель оценивается по первым 10 наблюдениям. В таблице приведены исходные данные и 
+подогнанные (предсказанные) значения (y.hat) по оценённой модели
+
+```{r, echo=FALSE, comment=''}
+n <- 10
+df <- sleep75[1:n, c('sleep', 'totwrk', 'age')]
+regr <- lm(formula = sleep/60~totwrk+age, data=df)
+df <- regr$model
+df$y.hat <- fitted(regr)
+my.digits <- 2
+stargazer(df, summary = FALSE, type='text', digit.separator = '', rownames=FALSE, digits = my.digits)
+```
+
+Вычислите общую, объяснённую и остаточную суммы квадратов. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+(для вычисления используйте определения сумм квадратов)
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+y <- round(df$`sleep/60`, digits = my.digits)
+y.mean <- mean(y)
+y.hat <- round(fitted(regr), digits = my.digits)
+TSS <- sum( (y-y.mean)^2 )
+RSS <- sum( (y-y.hat)^2 )
+ESS <- sum( (y.hat-y.mean)^2 )
+print( paste0('TSS=', round( TSS, digits = my.digits) ) )
+print( paste0('ESS=', round( ESS, digits = my.digits) ) )
+print( paste0('RSS=', round( RSS, digits = my.digits) ) )
+```
+
+### Задача
+
+Для набора данных `Labour` рассмотрим регрессию **log(output) на log(capital) и log(labour)**
+
+Модель оценивается по первым 10 наблюдениям. В таблице приведены исходные данные и 
+подогнанные (предсказанные) значения (y.hat) по оценённой модели
+
+```{r, echo=FALSE, comment=''}
+n <- 10
+df <- Labour[1:n, c('output', 'capital', 'labour')]
+regr <- lm(formula = log(output)~log(capital)+log(labour), data=df)
+df <- regr$model
+df$y.hat <- fitted(regr)
+my.digits <- 2
+stargazer(df, summary = FALSE, type='text', digit.separator = '', rownames=FALSE, digits = my.digits)
+```
+
+Вычислите общую, объяснённую и остаточную суммы квадратов. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+(для вычисления используйте определения сумм квадратов)
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+y <- round(df$`log(output)`, digits = my.digits)
+y.mean <- mean(y)
+y.hat <- round(fitted(regr), digits = my.digits)
+TSS <- sum( (y-y.mean)^2 )
+RSS <- sum( (y-y.hat)^2 )
+ESS <- sum( (y.hat-y.mean)^2 )
+print( paste0('TSS=', round( TSS, digits = my.digits) ) )
+print( paste0('ESS=', round( ESS, digits = my.digits) ) )
+print( paste0('RSS=', round( RSS, digits = my.digits) ) )
+```
+
+### Задача
+
+Для набора данных `wage2` рассмотрим несколько регрессий
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+wage.eq.1 <- lm(formula = log(wage)~age+IQ+south+urban+married, data=wage2)
+wage.eq.2 <- update(wage.eq.1, formula. = ~.-IQ)
+wage.eq.3 <- update(wage.eq.1, formula. = ~.-married)
+wage.eq.4 <- update(wage.eq.1, formula. = ~.-age-IQ)
+wage.eq.5 <- update(wage.eq.1, formula. = ~.-south-urban+married)
+stargazer(wage.eq.1, wage.eq.2, wage.eq.3, wage.eq.4, wage.eq.5, 
+          type='text', df=FALSE, digit.separator='', intercept.bottom=FALSE,
+          dep.var.caption = 'Зависимая переменная')
+```
+
+Вычислите RSS для первой регрессии. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+s.sq <- deviance(wage.eq.1)/df.residual(wage.eq.1)
+s <- round(sqrt(s.sq), digits = my.digits)
+round(s^2*df.residual(wage.eq.1), digits = my.digits)
+```
+
+### Задача
+
+Для набора данных `wage2` рассмотрим несколько регрессий
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+wage.eq.1 <- lm(formula = log(wage)~age+IQ+south+urban+married, data=wage2)
+wage.eq.2 <- update(wage.eq.1, formula. = ~.-IQ)
+wage.eq.3 <- update(wage.eq.1, formula. = ~.-married)
+wage.eq.4 <- update(wage.eq.1, formula. = ~.-age-IQ)
+wage.eq.5 <- update(wage.eq.1, formula. = ~.-south-urban+married)
+stargazer(wage.eq.1, wage.eq.2, wage.eq.3, wage.eq.4, wage.eq.5, 
+          type='text', df=FALSE, digit.separator='', intercept.bottom=FALSE,
+          dep.var.caption = 'Зависимая переменная')
+```
+
+Вычислите TSS для третьей регрессии. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+s.sq <- deviance(wage.eq.3)/df.residual(wage.eq.3)
+s <- round(sqrt(s.sq), digits = my.digits)
+r.sq <- round(summary(wage.eq.3)$r.squared, digits = my.digits)
+RSS <- s^2*df.residual(wage.eq.3)
+round(RSS/(1-r.sq), digits=my.digits)
+```
+
+### Задача
+
+Для набора данных `wage2` рассмотрим несколько регрессий
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+wage.eq.1 <- lm(formula = log(wage)~age+IQ+south+urban+married, data=wage2)
+wage.eq.2 <- update(wage.eq.1, formula. = ~.-IQ)
+wage.eq.3 <- update(wage.eq.1, formula. = ~.-married)
+wage.eq.4 <- update(wage.eq.1, formula. = ~.-age-IQ)
+wage.eq.5 <- update(wage.eq.1, formula. = ~.-south-urban+married)
+stargazer(wage.eq.1, wage.eq.2, wage.eq.3, wage.eq.4, wage.eq.5, 
+          type='text', df=FALSE, digit.separator='', intercept.bottom=FALSE,
+          dep.var.caption = 'Зависимая переменная')
+```
+
+Вычислите ESS для пятой регрессии. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+s.sq <- deviance(wage.eq.5)/df.residual(wage.eq.5)
+s <- round(sqrt(s.sq), digits = my.digits)
+r.sq <- round(summary(wage.eq.5)$r.squared, digits = my.digits)
+RSS <- s^2*df.residual(wage.eq.5)
+TSS <- RSS/(1-r.sq)
+round(TSS-RSS, digits=my.digits)
+```
+
+# \(R^2_{adj}\)
+
+## Задача
+
+Для набора данных `wage1` рассмотрим регрессию
+**log(wage) на exper, exper^2, female, smsa, south**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, comment='', warning=FALSE}
+wage1.eq <- lm(formula=log(wage)~exper+I(exper^2)+female+smsa+south,data=wage1)
+stargazer(wage1.eq, type='text', dep.var.caption = 'Зависимая переменная', df=FALSE,
+          keep.stat = c('n', 'rsq', 'ser'))
+```
+
+Вычислите \(R^2_{adj}\). **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digitas <- 3
+r.sq <- round(summary(wage1.eq)$r.squared, digits = my.digits)
+r.sq.adj <- 1-(1-r.sq)*(nobs(wage1.eq)-1)/df.residual(wage1.eq)
+round(r.sq.adj, digits = my.digits)
+```
+
+## Задача
+
+Для набора данных `wage2` рассмотрим регрессию
+__log(wage) на age, IQ, urban, married, south, IQ*south__
+
+Результаты оценивания:
+
+```{r, echo=FALSE, comment='', warning=FALSE}
+wage2.eq <- lm(formula=log(wage)~age+IQ+urban+married+south+I(IQ*south),data=wage2)
+stargazer(wage2.eq, type='text', dep.var.caption = 'Зависимая переменная', df=FALSE,
+          keep.stat = c('n', 'rsq', 'ser'))
+```
+
+Вычислите \(R^2_{adj}\). **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digitas <- 3
+r.sq <- round(summary(wage2.eq)$r.squared, digits = my.digits)
+r.sq.adj <- 1-(1-r.sq)*(nobs(wage2.eq)-1)/df.residual(wage2.eq)
+round(r.sq.adj, digits = my.digits)
+```
+
+## Задача
+
+Для набора данных `sleep75` рассмотрим регрессию **sleep/60 на totwrk и age**
+
+Модель оценивается по первым 10 наблюдениям. В таблице приведены исходные данные и 
+подогнанные (предсказанные) значения (y.hat) по оценённой модели
+
+```{r, echo=FALSE, comment=''}
+n <- 10
+df <- sleep75[1:n, c('sleep', 'totwrk', 'age')]
+regr <- lm(formula = sleep/60~totwrk+age, data=df)
+df <- regr$model
+df$y.hat <- fitted(regr)
+my.digits <- 2
+stargazer(df, summary = FALSE, type='text', digit.separator = '', rownames=FALSE, digits = my.digits)
+```
+
+Вычислите \(R^2\) и \(R^2_{adj}\).**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+y <- round(df$`sleep/60`, digits = my.digits)
+y.mean <- mean(y)
+y.hat <- round(fitted(regr), digits = my.digits)
+TSS <- sum( (y-y.mean)^2 )
+RSS <- sum( (y-y.hat)^2 )
+ESS <- sum( (y.hat-y.mean)^2 )
+my.digits <- 2; n <- 10; k <- 2
+print( paste0('R^2=', round( ESS/TSS, digits = my.digits) ) )
+print( paste0('R^2_adj=', round( 1-(RSS*(n-1))/(TSS*(n-k-1)), digits = my.digits) ) )
+```
+
+## Задача
+
+Для набора данных `Labour` рассмотрим регрессию **log(output) на log(capital) и log(labour)**
+
+Модель оценивается по первым 10 наблюдениям. В таблице приведены исходные данные и 
+подогнанные (предсказанные) значения (y.hat) по оценённой модели
+
+```{r, echo=FALSE, comment=''}
+n <- 10
+df <- Labour[1:n, c('output', 'capital', 'labour')]
+regr <- lm(formula = log(output)~log(capital)+log(labour), data=df)
+df <- regr$model
+df$y.hat <- fitted(regr)
+my.digits <- 2
+stargazer(df, summary = FALSE, type='text', digit.separator = '', rownames=FALSE, digits = my.digits)
+```
+
+Вычислите \(R^2\) и \(R^2_{adj}\).**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+y <- round(df$`log(output)`, digits = my.digits)
+y.mean <- mean(y)
+y.hat <- round(fitted(regr), digits = my.digits)
+TSS <- sum( (y-y.mean)^2 )
+RSS <- sum( (y-y.hat)^2 )
+ESS <- sum( (y.hat-y.mean)^2 )
+my.digits <- 2; n <- 10; k <- 2
+print( paste0('R^2=', round( ESS/TSS, digits = my.digits) ) )
+print( paste0('R^2_adj=', round( 1-(RSS*(n-1))/(TSS*(n-k-1)), digits = my.digits) ) )
+```

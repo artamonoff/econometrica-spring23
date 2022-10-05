@@ -1,0 +1,193 @@
+---
+title: "Задачи по Эконометрике: интерпретация коэффициентов"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+      collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+# Sleep equation
+
+## Модель 1
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, male** 
+Объясняющие: totwrk & male, контрольных нет
+
+1. Запишите спецификацию модели
+
+2. Результаты подгонки
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 2
+data(sleep75, package = 'wooldridge')
+regr <- lm(formula=sleep~totwrk+male, data=sleep75)
+round(coef(regr), digits = my.digits)
+```
+
+Дайте интерпретацию оценкам коэффициентов при объясняющих переменных
+
+## Модель 2
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, male, smsa, age, south, yngkid, marr, union** 
+Объясняющие: totwrk & male, остальные - контрольные
+
+1. Запишите спецификацию модели
+
+2. Результаты подгонки
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 2
+data(sleep75, package = 'wooldridge')
+regr <- lm(formula=sleep~totwrk+male+smsa+age+south+yngkid+marr+union, data=sleep75)
+round(coef(regr), digits = my.digits)
+```
+
+Дайте интерпретацию оценкам коэффициентов при объясняющих переменных
+
+## Модель 3
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на log(hrwage), smsa, totwrk, male, marr, age, south, yngkid** 
+Объясняющие: log(hrwage) & smsa, остальные - контрольные
+
+1. Запишите спецификацию модели
+
+2. Результаты подгонки
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 2
+data(sleep75, package = 'wooldridge')
+regr <- lm(formula=sleep~log(hrwage)+smsa+totwrk+male+marr+age+south+yngkid, data=sleep75)
+round(coef(regr), digits = my.digits)
+```
+
+Дайте интерпретацию оценкам коэффициентов при объясняющих переменных
+
+*Замечание*: в исходнои датасете `r nrow(sleep75)` наблюдений,  регрессия была оценена на `r nobs(regr)` наблюдениям.
+Как это можно объяснить?
+
+# Wage equation
+
+## Модель 1
+
+Для набора данных `wage2` рассмотрим линейную регрессию
+**log(wage) на age, IQ** 
+Объясняющие: age & IQ, контрольных нет
+
+1. Запишите спецификацию модели
+
+2. Результаты подгонки
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+data(wage2, package = 'wooldridge')
+regr <- lm(formula=log(wage)~age+IQ, data=wage2)
+round(coef(regr), digits = my.digits)
+```
+
+Дайте интерпретацию оценкам коэффициентов при объясняющих переменных
+
+## Модель 2
+
+Для набора данных `wage2` рассмотрим линейную регрессию
+**log(wage) на age, IQ, south, urban, married, KWW** 
+Объясняющие: age & IQ, остальные - контрольные
+
+1. Запишите спецификацию модели
+
+2. Результаты подгонки
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+data(wage2, package = 'wooldridge')
+regr <- lm(formula=log(wage)~age+IQ+south+urban+married+KWW, data=wage2)
+round(coef(regr), digits = my.digits)
+```
+
+Дайте интерпретацию оценкам коэффициентов при объясняющих переменных
+
+# Output equation 
+
+## Модель 1
+
+Для набора данных `Labour` рассмотрим линейную регрессию
+**log(output) на log(capital), log(labour)** 
+Объясняющие: log(capital) & log(labour), контрольных нет
+
+1. Запишите спецификацию модели
+
+2. Результаты подгонки
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+data(Labour, package = 'Ecdat')
+regr <- lm(formula=log(output)~log(capital)+log(labour), data=Labour)
+round(coef(regr), digits = my.digits)
+```
+
+Дайте интерпретацию оценкам коэффициентов при объясняющих переменных
+
+## Модель 2
+
+Для набора данных `Labour` рассмотрим линейную регрессию
+**log(output) на log(capital), log(labour), log(wage)** 
+Объясняющие: log(capital) & log(labour), остальные - контрольные
+
+1. Запишите спецификацию модели
+
+2. Результаты подгонки
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+data(Labour, package = 'Ecdat')
+regr <- lm(formula=log(output)~log(capital)+log(labour)+log(wage), data=Labour)
+round(coef(regr), digits = my.digits)
+```
+
+Дайте интерпретацию оценкам коэффициентов при объясняющих переменных
+
+# Cost equation 
+
+## Модель 1
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q)** 
+Объясняющие: log(q) контрольных нет
+
+1. Запишите спецификацию модели
+
+2. Результаты подгонки
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+data(Electricity, package = 'Ecdat')
+regr <- lm(formula=log(cost)~log(q), data=Electricity)
+round(coef(regr), digits = my.digits)
+```
+
+Дайте интерпретацию оценкам коэффициентов при объясняющих переменных
+
+## Модель 2
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q), log(pl), log(pf), log(pk)** 
+Объясняющие: log(q), остальные - контрольные
+
+1. Запишите спецификацию модели
+
+2. Результаты подгонки
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+data(Electricity, package = 'Ecdat')
+regr <- lm(formula=log(cost)~log(q)+log(pl)+log(pf)+log(pk), data=Electricity)
+round(coef(regr), digits = my.digits)
+```
+
+Дайте интерпретацию оценкам коэффициентов при объясняющих переменных
