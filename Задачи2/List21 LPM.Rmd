@@ -1,0 +1,554 @@
+---
+title: "Задачи по Эконометрике-2: LPM-модель"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(sandwich)
+data(loanapp, package = 'wooldridge')
+mroz_Greene <- read.csv('http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv')
+```
+
+# t-тест
+
+## approve equation #1
+
+Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+рассморим регрессию **approve на mortno, unem, dep, male, married, yjob, self**
+
+Спецификация: 
+\[
+  approve=\beta_0+\beta_1mortno+\beta_2unem+\beta_3dep+\beta_4male+\beta_5married+\beta_6yjob+\beta_7self+u
+\]
+
+Альтернативная спецификация:
+\[ 
+  P(approve=1)=\beta_0+\beta_1mortno+\beta_2unem+\beta_3dep+\beta_4male+\beta_5married+\beta_6yjob+\beta_7self
+\]
+
+Результаты оценивания (неробастные s.e.):
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 3
+sign.level <- 0.10
+regr <- lm(formula=approve~mortno+unem+dep+male+married+yjob+self, data=loanapp)
+t.test <- round(coeftest(regr), digits = my.digits.output)
+t.test[,1:2]
+```
+
+Результаты оценивания (робастные s.e.):
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+t.test <- round(coeftest(regr, vcov=vcovHC), digits = my.digits.output)
+t.test[,1:2]
+```
+
+Вычислите t-статистику для каждого коэффициента. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round(t.test[,1]/t.test[,2], digits = my.digits)
+```
+
+## approve equation #2
+
+Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+рассморим регрессию **approve на appinc, appinc^2, mortno, unem, dep, male, married, yjob, self**
+
+Результаты t-теста для коэффициентов (неробастные s.e.)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 3
+sign.level <- 0.05
+regr <- lm(formula=approve~appinc+I(appinc^2)+mortno+unem+dep+male+married+yjob+self, data=loanapp)
+t.test <- coeftest(regr)
+t.test
+```
+
+Результаты t-теста для коэффициентов (робастные s.e.)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+t.test <- coeftest(regr, vcov=vcovHC)
+t.test
+```
+
+Модель была подогнана по `r nobs(regr)` наблюдениям. 
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>
+
+Вычислите критическое значения для t-теста. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round( qt(p=1-sign.level/2, df=df.residual(regr)), digits = my.digits )
+```
+
+Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 1:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+
+## labour force equation #1
+
+Для датасета [mroz_Greene](http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv)
+рассморим регрессию **LFP на WA, WA^2, WE, KL6, K618, CIT, UN, log(FAMINC)**
+
+Спецификация: 
+\[
+  LFP=\beta_0+\beta_1WA+\beta_2WA^2+\beta_3WE+\beta_4KL6+\beta_5K618+\beta_5CIT+\beta_7UN+\beta_8\log(FAMINC)+u
+\]
+
+Альтернативная спецификация:
+\[
+  P(LFP=1)=\beta_0+\beta_1WA+\beta_2WA^2+\beta_3WE+\beta_4KL6+\beta_5K618+\beta_5CIT+\beta_7UN+\beta_8\log(FAMINC)
+\]
+
+Результаты оценивания (неробастные s.e.):
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.10
+regr <- lm(formula=LFP~WA+I(WA^2)+WE+KL6+K618+CIT+UN+log(FAMINC), data=mroz_Greene)
+t.test <- round(coeftest(regr), digits = my.digits.output)
+t.test[,1:2]
+```
+
+Результаты оценивания (робастные s.e.):
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+t.test <- round(coeftest(regr, vcov=vcovHC), digits = my.digits.output)
+t.test[,1:2]
+```
+
+Вычислите t-статистику для каждого коэффициента. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round(t.test[,1]/t.test[,2], digits = my.digits)
+```
+
+## labour force equation #2
+
+Для датасета [mroz_Greene](http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv)
+рассморим регрессию **LFP на WA, WA^2, WE, KL6, K618, CIT, UN, log(FAMINC)**
+
+Результаты t-теста для коэффициентов (неробастные s.e.)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 3
+sign.level <- 0.05
+regr <- lm(formula=LFP~WA+I(WA^2)+WE+KL6+K618+CIT+UN+log(FAMINC), data=mroz_Greene)
+t.test <- coeftest(regr)
+t.test
+```
+
+Результаты t-теста для коэффициентов (робастные s.e.)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+t.test <- coeftest(regr, vcov=vcovHC)
+t.test
+```
+
+Модель была подогнана по `r nobs(regr)` наблюдениям. 
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>
+
+Вычислите критическое значения для t-теста. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round( qt(p=1-sign.level/2, df=df.residual(regr)), digits = my.digits )
+```
+
+Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 1:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+## Замечание: почему log(FAMINC)
+
+Нарисуем гистограмму FAMINC с наложенной кривой нормального распределения
+
+```{r,echo=FALSE}
+FAMINC <- mroz_Greene$FAMINC
+hist(FAMINC, breaks = 'FD', probability = TRUE)
+curve(dnorm(x, mean(FAMINC), sd(FAMINC)), add = TRUE, col='red')
+```
+
+Нарисуем гистограмму log(FAMINC) с наложенной кривой нормального распределения
+
+```{r,echo=FALSE}
+hist(log(FAMINC), breaks = 'FD', probability = TRUE)
+curve(dnorm(x, mean(log(FAMINC)), sd(log(FAMINC)) ), add = TRUE, col='red')
+```
+
+# F-тест: значимость регрессии
+
+## approve equation #1
+
+Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+рассморим регрессию **approve на unem, male, yjob, self**
+
+Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 3
+sign.level <- 0.10
+regr <- lm(formula=approve~unem+male+yjob+self, data=loanapp)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Тестируется значимость регрессии, т.е. гипотеза \(H_0:\beta_{unem}=\beta_{male}=\beta_{yjob}=\beta_{self}=0\).
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Вычислите критическое значение для гипотезы. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r,echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1=regr$rank-1, df2=df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Результаты неробастного F-теста
+
+```{r, echo=FALSE, comment=''}
+testing.result <- waldtest(regr)
+# testing.result
+stargazer(testing.result[2,3:4], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Результаты робастного F-теста
+
+```{r, echo=FALSE, comment=''}
+testing.result <- waldtest(regr, vcov=vcovHC)
+# testing.result
+stargazer(testing.result[2,3:4], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Какой можно сделать вывод?
+
+```{r, echo=FALSE, comment=''}
+if(testing.result[2,4]<sign.level) print('Регрессия значима') else print('Регрессия незначима')
+```
+
+
+## approve equation #2
+
+Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+рассморим регрессию **approve на appinc, appinc^2, mortno, dep**
+
+Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 5
+sign.level <- 0.05
+regr <- lm(formula=approve~appinc+I(appinc^2)+mortno+dep, data=loanapp)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Тестируется значимость регрессии, т.е. гипотеза \(H_0:\beta_{appinc}=\beta_{appinc^2}=\beta_{mortno}=\beta_{dep}=0\).
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Вычислите критическое значение для гипотезы. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r,echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1=regr$rank-1, df2=df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Результаты неробастного F-теста
+
+```{r, echo=FALSE, comment=''}
+testing.result <- waldtest(regr)
+# testing.result
+stargazer(testing.result[2,3:4], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Результаты робастного F-теста
+
+```{r, echo=FALSE, comment=''}
+testing.result <- waldtest(regr, vcov=vcovHC)
+# testing.result
+stargazer(testing.result[2,3:4], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Какой можно сделать вывод?
+
+```{r, echo=FALSE, comment=''}
+if(testing.result[2,4]<sign.level) print('Регрессия значима') else print('Регрессия незначима')
+```
+
+## approve equation #3
+
+Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+рассморим регрессию **approve на dep, male, married**
+
+Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 3
+sign.level <- 0.01
+regr <- lm(formula=approve~dep+male+married, data=loanapp)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Тестируется значимость регрессии, т.е. гипотеза \(H_0:\beta_{dep}=\beta_{male}=\beta_{married}=0\).
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Вычислите критическое значение для гипотезы. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r,echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1=regr$rank-1, df2=df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Результаты неробастного F-теста
+
+```{r, echo=FALSE, comment=''}
+testing.result <- waldtest(regr)
+# testing.result
+stargazer(testing.result[2,3:4], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Результаты робастного F-теста
+
+```{r, echo=FALSE, comment=''}
+testing.result <- waldtest(regr, vcov=vcovHC)
+# testing.result
+stargazer(testing.result[2,3:4], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Какой можно сделать вывод?
+
+```{r, echo=FALSE, comment=''}
+if(testing.result[2,4]<sign.level) print('Регрессия значима') else print('Регрессия незначима')
+```
+
+# F-тест: совместная значимость
+
+## approve equation #1
+
+Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+рассморим регрессию **approve на appinc, appinc^2, mortno, unem, dep, male, married, yjob, self**
+
+Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 5
+regr <- lm(formula=approve~appinc+I(appinc^2)+mortno+unem+dep+male+married+yjob+self, data=loanapp)
+regr.1 <- update(regr, formula. = ~.-appinc-I(appinc^2))
+regr.2 <- update(regr, formula. = ~.-unem-dep-married)
+stargazer(regr, regr.1, regr.2, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+### Гипотеза 1
+
+```{r, echo=FALSE, comment=''}
+sign.level <- 0.05
+```
+
+Потестируем значимость влияния дохода, т.е. \(H_0:\beta_{appinc}=\beta_{appinc^2}=0\).
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Результаты неробастного F-теста
+
+```{r, echo=FALSE, comment=''}
+Hypothesis <- c('appinc=0', 'I(appinc^2)=0')
+testing.result <- linearHypothesis(regr, Hypothesis )
+# testing.result
+stargazer( testing.result[2, 5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Результаты робастного F-теста
+
+```{r, echo=FALSE, comment=''}
+testing.result <- linearHypothesis(regr, Hypothesis, vcov.=vcovHC )
+# testing.result
+stargazer( testing.result[2, 3:4], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Вычислите критическое значение для гипотезы. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r,echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1=testing.result[2, 2], df2=df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какой можно сделать вывод?
+
+```{r, echo=FALSE, comment=''}
+if(testing.result[2,4]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+### Гипотеза 2
+
+```{r, echo=FALSE, comment=''}
+sign.level <- 0.01
+```
+
+Потестируем гипотезу \(H_0:\beta_{unem}=\beta_{dep}=\beta_{married}=0\).
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Результаты неробастного F-теста
+
+```{r, echo=FALSE, comment=''}
+Hypothesis <- c('unem=0', 'dep=0', 'married=0')
+testing.result <- linearHypothesis(regr,  Hypothesis)
+# testing.result
+stargazer( testing.result[2, 5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Результаты робастного F-теста
+
+```{r, echo=FALSE, comment=''}
+testing.result <- linearHypothesis(regr, Hypothesis, vcov.=vcovHC )
+# testing.result
+stargazer( testing.result[2, 3:4], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Вычислите критическое значение для гипотезы. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r,echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1=testing.result[2, 2], df2=df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какой можно сделать вывод?
+
+```{r, echo=FALSE, comment=''}
+if(testing.result[2,4]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+# Прогноз
+
+## labour force equation
+
+Для датасета [mroz_Greene](http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv)
+рассморим регрессию **LFP на WA, WA^2, CIT, UN, log(FAMINC)**
+
+Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 3
+sign.level <- 0.05
+regr <- lm(formula=LFP~WA+I(WA^2)+CIT+UN+log(FAMINC), data=mroz_Greene)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Рассморим трёх людей с характеристиками
+
+```{r, echo=FALSE, comment=''}
+new.df <- data.frame(WA=c(34, 36, 42), CIT=c(1, 0, 0), 
+                     UN=c(3, 5, 7.5), FAMINC=c(35000, 48500, 67800) )
+stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
+```
+
+Вычислите прогноз для каждого человека.  **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+my.coef <- round(coef(regr), digits = my.digits.output)
+new.df.to.predict <- data.frame(new.df$WA, (new.df$WA)^2, new.df$CIT, new.df$UN, 
+                                log(new.df$FAMINC) )
+my.predict <- NULL
+for(i in 1:nrow(new.df.to.predict)) {
+  x <- c(1, as.numeric(new.df.to.predict[i,]))
+  my.predict <- c(my.predict, sum(my.coef*x))
+}
+rm(x)
+# names(my.predict) <- 1:nrow(new.df)
+# round(my.predict, digits = my.digits )
+stargazer(round(data.frame(Прогноз=my.predict), digits = my.digits ), 
+          type='text', summary=FALSE, digit.separator = '', digits=my.digits)
+```
+
+Какая интерпретация?
+
+# Вопросы адекватности
+
+## approve equation
+
+Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+рассморим регрессию **approve на appinc, appinc^2, mortno, unem, dep, male, married, yjob, self**
+
+Построим графики фактических наблюдений м прогнозов
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regr <- lm(formula=approve~appinc+I(appinc^2)+mortno+unem+dep+male+married+yjob+self, data=loanapp)
+appinc <- regr$model[,'appinc']
+dep <- regr$model[,'dep']
+yjob <- regr$model[,'yjob']
+plot(formula=approve~appinc, data=loanapp, col='blue', pch=20)
+lines(y=fitted(regr), x=appinc, col='red', pch=20, type='p')
+
+plot(formula=approve~dep, data=loanapp, col='blue', pch=20)
+lines(y=fitted(regr), x=dep, col='red', pch=20, type='p')
+
+plot(formula=approve~yjob, data=loanapp, col='blue', pch=20)
+lines(y=fitted(regr), x=yjob, col='red', pch=20, type='p')
+rm(appinc, dep)
+```
+
+## labour force equation
+
+Для датасета [mroz_Greene](http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv)
+рассморим регрессию **LFP на WA, WA^2, WE, KL6, K618, CIT, UN, log(FAMINC)**
+
+Построим графики фактических наблюдений м прогнозов
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regr <- lm(formula=LFP~WA+I(WA^2)+WE+KL6+K618+CIT+UN+log(FAMINC), data=mroz_Greene)
+WA <- regr$model[,'WA']
+lFAMINC <- regr$model[,'log(FAMINC)'] 
+UN <- regr$model[,'UN'] 
+
+plot(formula=LFP~WA, data=mroz_Greene, col='blue', pch=20, ylim=c(-0.1, 1.1))
+lines(y=fitted(regr), x=WA, col='red', pch=20, type='p')
+
+plot(formula=LFP~log(FAMINC), data=mroz_Greene, col='blue', pch=20, ylim=c(-0.1, 1.1))
+lines(y=fitted(regr), x=lFAMINC, col='red', pch=20, type='p')
+
+plot(formula=LFP~UN, data=mroz_Greene, col='blue', pch=20, ylim=c(-0.1, 1.1))
+lines(y=fitted(regr), x=UN, col='red', pch=20, type='p')
+rm(WA, lFAMINC, UN)
+```
