@@ -2,7 +2,7 @@
 title: 'Задачи по Эконометрике: Качество подгонки'
 author: "Н.В. Артамонов (МГИМО МИД России)"
 output:
-  pdf_document:
+  word_document:
     toc: yes
   html_document:
     toc: yes
@@ -10,6 +10,8 @@ output:
       collapsed: no
     number_sections: yes
     df_print: paged
+  pdf_document:
+    toc: yes
 ---
 
 ```{r, message=FALSE, echo=FALSE}

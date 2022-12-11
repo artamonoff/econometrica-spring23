@@ -1,0 +1,374 @@
+---
+title: "Задачи по Эконометрике: Бинарные переменные"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(ggplot2)
+library(corrplot)
+data(sleep75,wage1, wage2, Labour, Electricity, Diamond, diamonds, package = c('wooldridge', 'Ecdat', 'ggplot2') )
+sleep75$gender <- factor(sleep75$male, labels = c('female', 'male') )
+wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
+```
+
+# Структурные сдвиги
+
+## Графики
+
+Для набора данных `sleep75` рассмотрим линейную регрессию 
+**sleep на totwrk** и подгоним отдельно для
+south=0, отдельно для south=1 и по полному датасету
+
+```{r, echo=FALSE}
+ggplot(data=sleep75, aes(x=totwrk, y=sleep))+geom_point()+geom_smooth(formula=y~x, method=lm, se=FALSE)+
+  geom_smooth(formula=y~x, method=lm, se=FALSE, aes(col=as.factor(south)) )
+```
+
+Для набора данных `sleep75` рассмотрим линейную регрессию 
+**sleep на age, age^2** и подгоним отдельно для
+south=0, отдельно для south=1 и по полному датасету
+
+```{r, echo=FALSE}
+ggplot(data=sleep75, aes(x=age, y=sleep))+geom_point()+geom_smooth(formula=y~x+I(x^2), method=lm, se=FALSE)+
+  geom_smooth(formula=y~x+I(x^2), method=lm, se=FALSE, aes(col=as.factor(south)) )
+```
+
+## sleep equation #1
+
+Для набора данных `sleep75` рассмотрим линейную регрессию **sleep на totwrk, age, smsa**: 
+исходную и со структурными сдвигами относительно гендерной переменной.
+
+Результаты оценивания
+
+```{r, echo=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- lm(sleep~totwrk+age+smsa, sleep75)
+regr.str.breaks <- update(regr, formula. = ~.+male+totwrk:male+age:male+smsa:male  )
+# regr.restr <- update(regr.str.breaks, formula. = ~.-age-age:male  )
+stargazer(regr, regr.str.breaks, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Для второй регрессии дайте интерпретацию выводам о значимости коэффициентов.
+
+Тестируется значимость структурных сдвигов. Вычислите тестовую статистику, необходимое критическое значение.
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+J <- df.residual(regr)-df.residual(regr.str.breaks)
+R.sq <- round(summary(regr.str.breaks)$r.squared, digits = my.digits.output)
+R.sq.restr <- round(summary(regr)$r.squared, digits = my.digits.output)
+F.stat <- (R.sq-R.sq.restr)/(1-R.sq)*df.residual(regr.str.breaks)/J
+paste0('F.stat=', round(F.stat, digits = my.digits))
+F.cr <- qf(p=1-sign.level, df1 = J, df2 = df.residual(regr.str.breaks))
+paste0('F.cr=', round(F.cr, digits = my.digits))
+```
+
+Значимы ли структурные сдивиги:
+
+```{r, echo=FALSE, comment=''}
+if(F.stat>F.cr) print('Значимы') else print('Незначимы')
+```
+
+Как можно объяснить значимость возраста в первой регресии и незначимость коэффициентов при возрастных регрессрах во второй?
+
+## sleep equation #2
+
+Для набора данных `sleep75` рассмотрим линейную регрессию **sleep на totwrk, age, smsa**: 
+исходную и со структурными сдвигами относительно географической переменной.
+
+Результаты оценивания
+
+```{r, echo=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.10
+regr <- lm(sleep~totwrk+age+smsa, sleep75)
+regr.str.breaks <- update(regr, formula. = ~.+south+totwrk:south+age:south+smsa:south  )
+stargazer(regr, regr.str.breaks, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Для второй регрессии дайте интерпретацию выводам о значимости коэффициентов и значимым коэффицеинтам.
+
+Тестируется значимость структурных сдвигов. Вычислите тестовую статистику, необходимое критическое значение.
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+J <- df.residual(regr)-df.residual(regr.str.breaks)
+R.sq <- round(summary(regr.str.breaks)$r.squared, digits = my.digits.output)
+R.sq.restr <- round(summary(regr)$r.squared, digits = my.digits.output)
+F.stat <- (R.sq-R.sq.restr)/(1-R.sq)*df.residual(regr.str.breaks)/J
+paste0('F.stat=', round(F.stat, digits = my.digits))
+F.cr <- qf(p=1-sign.level, df1 = J, df2 = df.residual(regr.str.breaks))
+paste0('F.cr=', round(F.cr, digits = my.digits))
+```
+
+Значимы ли структурные сдивиги:
+
+```{r, echo=FALSE, comment=''}
+if(F.stat>F.cr) print('Значимы') else print('Незначимы')
+```
+
+<!-- Как можно объясянить значимость возраста в первой регресии и незначимость коэффициентов при возрастных регрессрах во второй? -->
+
+## wage equation #1
+
+Для набора данных `wage2` рассмотрим линейную регрессию **log(wage) на age, IQ, urban, married**: 
+исходную и со структурными сдвигами относительно географической переменной.
+
+Результаты оценивания
+
+```{r, echo=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- lm(log(wage)~age+IQ+urban+married, wage2)
+regr.str.breaks <- update(regr, formula. = ~.+south+age:south+IQ:south+urban:south+married:south  )
+stargazer(regr, regr.str.breaks, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Для второй регрессии дайте интерпретацию выводам о значимости коэффициентов и значимым коэффицеинтам.
+
+Тестируется значимость структурных сдвигов. Вычислите тестовую статистику, необходимое критическое значение.
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+J <- df.residual(regr)-df.residual(regr.str.breaks)
+R.sq <- round(summary(regr.str.breaks)$r.squared, digits = my.digits.output)
+R.sq.restr <- round(summary(regr)$r.squared, digits = my.digits.output)
+F.stat <- (R.sq-R.sq.restr)/(1-R.sq)*df.residual(regr.str.breaks)/J
+paste0('F.stat=', round(F.stat, digits = my.digits))
+F.cr <- qf(p=1-sign.level, df1 = J, df2 = df.residual(regr.str.breaks))
+paste0('F.cr=', round(F.cr, digits = my.digits))
+```
+
+Значимы ли структурные сдивиги:
+
+```{r, echo=FALSE, comment=''}
+if(F.stat>F.cr) print('Значимы') else print('Незначимы')
+```
+
+## wage equation #2
+
+Для набора данных `wage2` рассмотрим линейную регрессию **log(wage) на age, IQ, south, married**: 
+исходную и со структурными сдвигами относительно места жительства.
+
+Результаты оценивания
+
+```{r, echo=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.10
+regr <- lm(log(wage)~age+IQ+south, wage2)
+regr.str.breaks <- update(regr, formula. = ~.+urban+age:urban+IQ:urban+south:urban  )
+stargazer(regr, regr.str.breaks, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Для второй регрессии дайте интерпретацию выводам о значимости коэффициентов и значимым коэффицеинтам.
+
+Тестируется значимость структурных сдвигов. Вычислите тестовую статистику, необходимое критическое значение.
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+J <- df.residual(regr)-df.residual(regr.str.breaks)
+R.sq <- round(summary(regr.str.breaks)$r.squared, digits = my.digits.output)
+R.sq.restr <- round(summary(regr)$r.squared, digits = my.digits.output)
+F.stat <- (R.sq-R.sq.restr)/(1-R.sq)*df.residual(regr.str.breaks)/J
+paste0('F.stat=', round(F.stat, digits = my.digits))
+F.cr <- qf(p=1-sign.level, df1 = J, df2 = df.residual(regr.str.breaks))
+paste0('F.cr=', round(F.cr, digits = my.digits))
+```
+
+Значимы ли структурные сдивиги:
+
+```{r, echo=FALSE, comment=''}
+if(F.stat>F.cr) print('Значимы') else print('Незначимы')
+```
+
+# Небинарные качественые признаки
+
+## diamond equation #1
+
+Для набора данных `Diamond` рассмотрим несколько линейных регрессий. Результаты оценивания
+
+```{r, echo=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.01
+regr <- lm(log(price)~carat+I(carat^2)+colour+certification, Diamond)
+regr.1 <- update(regr, formula. = ~.-colour  )
+regr.2 <- update(regr, formula. = ~.-certification )
+# regr.3 <- update(regr, formula. = ~.-certification-colour )
+stargazer(regr, regr.1, regr.2, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Дайте интерпретацию (значимым) коэффициентам первой регресии.
+
+Тестируется значимость влияния цвета, т.е. гипотеза 
+\(H_0:\beta_{colourE}=\beta_{colourF}=\beta_{colourG}=\beta_{colourH}=\beta_{colourI}=0\).
+
+Вычислите тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+r.sq <- round(summary(regr)$r.squared, digits = my.digits.output)
+r.sq.restr <- round(summary(regr.1)$r.squared, digits = my.digits.output)
+J <- df.residual(regr.1)-df.residual(regr)
+F.stat <- (r.sq-r.sq.restr)/(1-r.sq)*df.residual(regr)/J
+round(F.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = J, df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Вывод
+
+```{r, echo=FALSE, comment='' }
+if(F.stat>F.cr) print('Влияние значимо') else print('Влияние незначимо')
+```
+
+Тестируется значимость влияния сертификации, т.е. гипотеза 
+\(H_0:\beta_{certificationHRD}=\beta_{certificationIGI}=0\).
+
+Вычислите тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+r.sq <- round(summary(regr)$r.squared, digits = my.digits.output)
+r.sq.restr <- round(summary(regr.2)$r.squared, digits = my.digits.output)
+J <- df.residual(regr.2)-df.residual(regr)
+F.stat <- (r.sq-r.sq.restr)/(1-r.sq)*df.residual(regr)/J
+round(F.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = J, df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Вывод
+
+```{r, echo=FALSE, comment='' }
+if(F.stat>F.cr) print('Влияние значимо') else print('Влияние незначимо')
+```
+
+## diamond equation #2
+
+Для набора данных `diamonds` рассмотрим несколько линейных регрессий. Результаты оценивания
+
+```{r, echo=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+# Изменим контрасты (т.к. факторы упорядочены)
+diamonds$cut=C(diamonds$cut, contr="contr.treatment")
+diamonds$color=C(diamonds$color, contr="contr.treatment")
+diamonds$clarity=C(diamonds$clarity, contr="contr.treatment")
+# оценим модели
+regr <- lm(log(price)~carat+I(carat^2)+color+cut+x+y+z, diamonds)
+regr.1 <- update(regr, formula. = ~.-color  )
+regr.2 <- update(regr, formula. = ~.-cut )
+# regr.3 <- update(regr, formula. = ~.-certification-colour )
+stargazer(regr, regr.1, regr.2, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Дайте интерпретацию (значимым) коэффициентам первой регресии.
+
+Тестируется значимость влияния цвета, т.е. гипотеза 
+\(H_0:\beta_{colourE}=\beta_{colourF}=\beta_{colourG}=\beta_{colourH}=\beta_{colourI}=\beta_{colourJ}=0\).
+
+Вычислите тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+r.sq <- round(summary(regr)$r.squared, digits = my.digits.output)
+r.sq.restr <- round(summary(regr.1)$r.squared, digits = my.digits.output)
+J <- df.residual(regr.1)-df.residual(regr)
+F.stat <- (r.sq-r.sq.restr)/(1-r.sq)*df.residual(regr)/J
+round(F.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = J, df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Вывод
+
+```{r, echo=FALSE, comment='' }
+if(F.stat>F.cr) print('Влияние значимо') else print('Влияние незначимо')
+```
+
+Тестируется значимость влияния качества огранки, т.е. гипотеза 
+\(H_0:\beta_{сutGOOD}=\beta_{cutVery Good}=\beta_{cutPremium}=\beta_{cutIdeal}=0\).
+
+Вычислите тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+r.sq <- round(summary(regr)$r.squared, digits = my.digits.output)
+r.sq.restr <- round(summary(regr.2)$r.squared, digits = my.digits.output)
+J <- df.residual(regr.2)-df.residual(regr)
+F.stat <- (r.sq-r.sq.restr)/(1-r.sq)*df.residual(regr)/J
+round(F.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = J, df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Вывод
+
+```{r, echo=FALSE, comment='' }
+if(F.stat>F.cr) print('Влияние значимо') else print('Влияние незначимо')
+```

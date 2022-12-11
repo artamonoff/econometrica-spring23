@@ -1,0 +1,272 @@
+---
+title: "Задачи по Эконометрике: Прогнозирование"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(ggplot2)
+data(sleep75,wage1, wage2, Labour, Electricity, package = c('wooldridge', 'Ecdat') )
+sleep75$gender <- factor(sleep75$male, labels = c('female', 'male') )
+wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
+```
+
+# sleep equation #1
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, age, south, male, smsa, yngkid, marr**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=sleep~totwrk+age+south+male+smsa+yngkid+marr, data=sleep75)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Рассморим трёх людей с характеристиками
+
+```{r, echo=FALSE, comment=''}
+new.df <- data.frame(totwrk=c(2150, 1950, 2240), age=c(37, 28, 26), 
+                     south=c(0, 1, 0), male=c(1,1, 0), smsa=c(1,0,1),
+                     yngkid=c(0,1,0), marr=c(1,0,0) )
+stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
+```
+
+Вычислите прогноз для каждого человека.  **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+my.coef <- round(coef(regr), digits = my.digits.output)
+my.predict <- NULL
+for(i in 1:nrow(new.df)) {
+  x <- c(1, as.numeric(new.df[i,]))
+  my.predict <- c(my.predict, sum(my.coef*x))
+}
+rm(x)
+# names(my.predict) <- 1:nrow(new.df)
+# round(my.predict, digits = my.digits )
+stargazer(round(data.frame(Прогноз=my.predict), digits = my.digits ), 
+          type='text', summary=FALSE, digit.separator = '', digits=my.digits)
+```
+
+# sleep equation #2
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, age, age^2^, south, male**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=sleep~totwrk+age+I(age^2)+south+male, data=sleep75)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Рассморим трёх людей с характеристиками
+
+```{r, echo=FALSE, comment=''}
+new.df <- data.frame(totwrk=c(2160, 1720, 2390), age=c(32, 24, 44), 
+                     south=c(1, 0, 0), male=c(0,1, 1) )
+stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
+```
+
+Вычислите прогноз для каждого человека.  **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+my.coef <- round(coef(regr), digits = my.digits.output)
+new.df.to.predict <- data.frame(new.df$totwrk, new.df$age, new.df$age^2, 
+                                new.df$south, new.df$male)
+my.predict <- NULL
+for(i in 1:nrow(new.df.to.predict)) {
+  x <- c(1, as.numeric(new.df.to.predict[i,]))
+  my.predict <- c(my.predict, sum(my.coef*x))
+}
+rm(x)
+# names(my.predict) <- 1:nrow(new.df)
+# round(my.predict, digits = my.digits )
+stargazer(round(data.frame(Прогноз=my.predict), digits = my.digits ), 
+          type='text', summary=FALSE, digit.separator = '', digits=my.digits)
+```
+
+# wage equation #1
+
+Для набора данных `wage2` рассмотрим линейную регрессию
+**log(wage) на age, IQ, south, married, urban**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=log(wage)~age+IQ+south+married+urban, data=wage2)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Рассморим трёх людей с характеристиками
+
+```{r, echo=FALSE, comment=''}
+new.df <- data.frame(age=c(36, 29, 25), IQ=c(105, 123, 112),
+                     south=c(1, 0, 1), married=c(1,1,0), urban=c(1,0,1) )
+stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
+```
+
+Вычислите прогноз **зарплаты** для каждого человека.  **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+my.coef <- round(coef(regr), digits = my.digits.output)
+my.predict <- NULL
+for(i in 1:nrow(new.df)) {
+  x <- c(1, as.numeric(new.df[i,]))
+  my.predict <- c(my.predict, sum(my.coef*x))
+}
+rm(x)
+# names(my.predict) <- 1:nrow(new.df)
+# round(my.predict, digits = my.digits )
+stargazer(round( data.frame( Прогноз=exp(my.predict) ), digits = my.digits ), 
+          type='text', summary=FALSE, digit.separator = '', digits=my.digits)
+```
+
+# wage equation #2
+
+Для набора данных `wage1` рассмотрим линейную регрессию
+**log(wage) на exper, exper^2^, female, married, smsa**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=log(wage)~exper+I(exper^2)+female+married+smsa, data=wage1)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Рассморим трёх людей с характеристиками
+
+```{r, echo=FALSE, comment=''}
+new.df <- data.frame(exper=c(5, 26, 38), female=c(1, 0, 1),
+                     married=c(1, 0, 1), smsa=c(1,1,0) )
+stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
+```
+
+Вычислите прогноз **зарплаты** для каждого человека.  **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+my.coef <- round(coef(regr), digits = my.digits.output)
+new.df.to.predict <- data.frame(new.df$exper, new.df$exper^2, new.df$female, 
+                                new.df$married, new.df$smsa)
+my.predict <- NULL
+for(i in 1:nrow(new.df.to.predict)) {
+  x <- c(1, as.numeric(new.df.to.predict[i,]))
+  my.predict <- c(my.predict, sum(my.coef*x))
+}
+rm(x)
+# names(my.predict) <- 1:nrow(new.df)
+# round(my.predict, digits = my.digits )
+stargazer(round( data.frame( Прогноз=exp(my.predict) ), digits = my.digits ), 
+          type='text', summary=FALSE, digit.separator = '', digits=my.digits)
+```
+
+# output equation #1
+
+Для набора данных `Labour` рассмотрим линейную регрессию
+**log(output) на log(capital), log(labour)**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=log(output)~log(capital)+log(labour), data=Labour)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Рассморим три фирмы с характеристиками
+
+```{r, echo=FALSE, comment=''}
+new.df <- data.frame(capital=c(2.97, 10.45, 3.85), labour=c(85, 60, 105) )
+stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
+```
+
+Вычислите прогноз **выпуска** для каждой фирмы.  **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+my.coef <- round(coef(regr), digits = my.digits.output)
+new.df.to.predict <- data.frame(log(new.df$capital), log(new.df$labour) )
+my.predict <- NULL
+for(i in 1:nrow(new.df.to.predict)) {
+  x <- c(1, as.numeric(new.df.to.predict[i,]))
+  my.predict <- c(my.predict, sum(my.coef*x))
+}
+rm(x)
+# names(my.predict) <- 1:nrow(new.df)
+# round(my.predict, digits = my.digits )
+stargazer(round( data.frame( Прогноз=exp(my.predict) ), digits = my.digits ), 
+          type='text', summary=FALSE, digit.separator = '', digits=my.digits)
+```
+
+# output equation #2
+
+Для набора данных `Labour` рассмотрим линейную регрессию
+**log(output) на log(capital), log(labour), log^2^(capital), log^2^(labour)**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=log(output)~log(capital)+log(labour)+I(log(capital)^2)+I(log(labour)^2), data=Labour)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Рассморим три фирмы с характеристиками
+
+```{r, echo=FALSE, comment=''}
+new.df <- data.frame(capital=c(22.14, 7.32, 0.67), labour=c(407, 197, 31) )
+stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
+```
+
+Вычислите прогноз **выпуска** для каждой фирмы.  **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+my.coef <- round(coef(regr), digits = my.digits.output)
+new.df.to.predict <- data.frame(log(new.df$capital), log(new.df$labour), log(new.df$capital)^2, log(new.df$labour)^2 )
+my.predict <- NULL
+for(i in 1:nrow(new.df.to.predict)) {
+  x <- c(1, as.numeric(new.df.to.predict[i,]))
+  my.predict <- c(my.predict, sum(my.coef*x))
+}
+rm(x)
+# names(my.predict) <- 1:nrow(new.df)
+# round(my.predict, digits = my.digits )
+stargazer(round( data.frame( Прогноз=exp(my.predict) ), digits = my.digits ), 
+          type='text', summary=FALSE, digit.separator = '', digits=my.digits)
+```

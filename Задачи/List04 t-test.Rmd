@@ -1,0 +1,466 @@
+---
+title: "Задачи по Эконометрике: t-тест"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+data(sleep75, package = 'wooldridge')
+data(wage1, package = 'wooldridge')
+data(wage2, package = 'wooldridge')
+data(Labour, package = 'Ecdat')
+data(Electricity, package='Ecdat')
+```
+
+# t-тест: \(H_0:\beta=0\)
+
+## Задача (sleep equation #1)
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, age, south, male, smsa, yngkid, marr, union**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+regr <- lm(formula=sleep~totwrk+age+south+male+smsa+yngkid+marr+union, data=sleep75)
+t.test <- round(coeftest(regr), digits = my.digits)
+t.test[,1:2]
+```
+
+Вычислите t-статистику для каждого коэффициента. **Ответ округлите до трёх десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round(t.test[,1]/t.test[,2], digits = my.digits)
+```
+
+## Задача (sleep equation #2)
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, age, south, male, smsa, yngkid, marr, union, log(hrwage)**
+
+Результаты t-тест для коэффициентов
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+# my.digits <- 3
+sign.level <- 0.1
+regr <- lm(formula=sleep~totwrk+age+south+male+smsa+yngkid+marr+union+log(hrwage), data=sleep75)
+t.test <- coeftest(regr)
+t.test
+```
+
+Модель была подогнана по `r nobs(regr)` наблюдениям. 
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>
+
+Вычислите критическое значения для t-теста. **Ответ округлите до трёх десятичных знаков.**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round( qt(p=1-sign.level/2, df=df.residual(regr)), digits = 3 )
+```
+
+Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 1:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+## Задача (wage equation #1)
+
+Для набора данных `wage2` рассмотрим линейную регрессию
+**log(wage) на age, IQ, married, south, urban**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+regr <- lm(formula=log(wage)~age+IQ+married+south+urban, data=wage2)
+t.test <- round(coeftest(regr), digits = my.digits)
+t.test[,1:2]
+```
+
+Вычислите t-статистику для каждого коэффициента. **Ответ округлите до трёх десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round(t.test[,1]/t.test[,2], digits = my.digits)
+```
+
+## Задача (wage equation #1)
+
+Для набора данных `wage2` рассмотрим линейную регрессию
+**log(wage) на age, IQ, married, south, urban**
+
+Результаты t-тест для коэффициентов
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+# my.digits <- 3
+sign.level <- 0.01
+regr <- lm(formula=log(wage)~age+IQ+married+south+urban, data=wage2)
+t.test <- coeftest(regr)
+t.test
+```
+
+Модель была подогнана по `r nobs(regr)` наблюдениям. 
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>
+
+Вычислите критическое значения для t-теста. **Ответ округлите до трёх десятичных знаков.**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round( qt(p=1-sign.level/2, df=df.residual(regr)), digits = 3 )
+```
+
+Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 1:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+## Задача (wage equation #2)
+
+Для набора данных `wage1` рассмотрим линейную регрессию
+**log(wage) на exper, exper^2, female, married, smsa**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+regr <- lm(formula=log(wage)~exper+I(exper^2)+female+married+smsa, data=wage1)
+t.test <- round(coeftest(regr), digits = my.digits)
+t.test[,1:2]
+```
+
+Вычислите t-статистику для каждого коэффициента. **Ответ округлите до трёх десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round(t.test[,1]/t.test[,2], digits = my.digits)
+```
+
+## Задача (wage equation #2)
+
+Для набора данных `wage1` рассмотрим линейную регрессию
+**log(wage) на exper, exper^2, female, married, smsa**
+
+Результаты t-тест для коэффициентов
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+# my.digits <- 3
+sign.level <- 0.05
+regr <- lm(formula=log(wage)~exper+I(exper^2)+female+married+smsa, data=wage1)
+t.test <- coeftest(regr)
+t.test
+```
+
+Модель была подогнана по `r nobs(regr)` наблюдениям. 
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>
+
+Вычислите критическое значения для t-теста. **Ответ округлите до трёх десятичных знаков.**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round( qt(p=1-sign.level/2, df=df.residual(regr)), digits = 3 )
+```
+
+Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 1:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+## Задача (cost equation #1)
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q), log(pl), log(pk), log(pf)**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+regr <- lm(formula=log(cost)~log(q)+log(pl)+log(pk)+log(pf), data=Electricity)
+t.test <- round(coeftest(regr), digits = my.digits)
+t.test[,1:2]
+```
+
+Вычислите t-статистику для каждого коэффициента. **Ответ округлите до трёх десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round(t.test[,1]/t.test[,2], digits = my.digits)
+```
+
+## Задача (cost equation #2)
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q), log(pl), log(pk), log(pf)**
+
+Результаты t-тест для коэффициентов
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+# my.digits <- 3
+sign.level <- 0.01
+regr <- lm(formula=log(cost)~log(q)+log(pl)+log(pk)+log(pf), data=Electricity)
+t.test <- coeftest(regr)
+t.test
+```
+
+Модель была подогнана по `r nobs(regr)` наблюдениям. 
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>
+
+Вычислите критическое значения для t-теста. **Ответ округлите до трёх десятичных знаков.**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round( qt(p=1-sign.level/2, df=df.residual(regr)), digits = 3 )
+```
+
+Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 1:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+# t-тест: \(H_0:\beta=\theta\)
+
+## Задача (output equation 1)
+
+Для набора данных `Labour` рассмотрим регрессию **log(output) на log(capital) и log(labour)**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, comment=''}
+my.digits.output <- 3
+sign.level <- 0.01
+regr <- lm(formula=log(output)~log(capital)+log(labour), data=Labour)
+stargazer(regr, type='text', digits = my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Тестируется гипотеза \(H_0:\beta_{capital}=0.5\). 
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Вычислите тестовую статистику и критическое значение.
+**Ответ округлите до двух десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+t.test <- round(coeftest(regr), digits = my.digits.output)
+my.digits <- 2
+t.stat <- round( (t.test['log(capital)',1]-0.5)/t.test['log(capital)',2], digits = my.digits)
+t.cr <- round( qt(p=1-sign.level/2, df=df.residual(regr)), digits = my.digits)
+print(paste0('t-stat=', t.stat) )
+print(paste0('t-cr=', t.cr) )
+```
+
+Значимо ли коэффицент отличается от числа? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(abs(t.stat)>t.cr) print('Значимо') else print('Незначимо')
+```
+
+## Задача (output equation 2)
+
+Для набора данных `Labour` рассмотрим регрессию **log(output) на log(capital) и log(labour)**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, comment=''}
+my.digits.output <- 3
+sign.level <- 0.10
+regr <- lm(formula=log(output)~log(capital)+log(labour), data=Labour)
+stargazer(regr, type='text', digits = my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Тестируется гипотеза \(H_0:\beta_{labour}=0.7\). 
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Вычислите тестовую статистику и критическое значение.
+**Ответ округлите до двух десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+t.test <- round(coeftest(regr), digits = my.digits.output)
+my.digits <- 2
+t.stat <- round( (t.test['log(labour)',1]-0.7)/t.test['log(labour)',2], digits = my.digits)
+t.cr <- round( qt(p=1-sign.level/2, df=df.residual(regr)), digits = my.digits)
+print(paste0('t-stat=', t.stat) )
+print(paste0('t-cr=', t.cr) )
+```
+
+Значимо ли коэффицент отличается от числа? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(abs(t.stat)>t.cr) print('Значимо') else print('Незначимо')
+```
+
+
+## Задача (cost equation 1)
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q), log(pl), log(pk), log(pf)**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, comment=''}
+my.digits.output <- 3
+sign.level <- 0.05
+regr <- lm(formula=log(cost)~log(q)+log(pl)+log(pk)+log(pf), data=Electricity)
+stargazer(regr, type='text', digits = my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Тестируется гипотеза \(H_0:\beta_{q}=1\). <span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Вычислите тестовую статистику и критическое значение.
+**Ответ округлите до двух десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+t.test <- round(coeftest(regr), digits = my.digits.output)
+my.digits <- 2
+t.stat <- round( (t.test['log(q)',1]-1)/t.test['log(q)',2], digits = my.digits)
+t.cr <- round( qt(p=1-sign.level/2, df=df.residual(regr)), digits = my.digits)
+print(paste0('t-stat=', t.stat) )
+print(paste0('t-cr=', t.cr) )
+```
+
+Значимо ли коэффицент отличается от числа? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(abs(t.stat)>t.cr) print('Значимо') else print('Незначимо')
+```
+
+## Задача (cost equation 2)
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q), log(pl), log(pk), log(pf)**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, comment=''}
+my.digits.output <- 3
+sign.level <- 0.10
+regr <- lm(formula=log(cost)~log(q)+log(pl)+log(pk)+log(pf), data=Electricity)
+stargazer(regr, type='text', digits = my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Тестируется гипотеза \(H_0:\beta_{pf}=1\). <span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Вычислите тестовую статистику и критическое значение.
+**Ответ округлите до двух десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+t.test <- round(coeftest(regr), digits = my.digits.output)
+my.digits <- 2
+t.stat <- round( (t.test['log(pf)',1]-1)/t.test['log(pf)',2], digits = my.digits)
+t.cr <- round( qt(p=1-sign.level/2, df=df.residual(regr)), digits = my.digits)
+print(paste0('t-stat=', t.stat) )
+print(paste0('t-cr=', t.cr) )
+```
+
+Значимо ли коэффицент отличается от числа? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(abs(t.stat)>t.cr) print('Значимо') else print('Незначимо')
+```
+
+## Задача (sleep equation 1)
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, age, south, male, smsa, yngkid, marr, union**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.01
+theta <- 90
+regr <- lm(formula=sleep~totwrk+age+south+male+smsa+yngkid+marr+union, data=sleep75)
+stargazer(regr, type='text', digits = my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Тестируется гипотеза \(H_0:\beta_{male}=\) `r theta`. <span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Вычислите тестовую статистику и критическое значение.
+**Ответ округлите до `r my.digits` десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+t.test <- round(coeftest(regr), digits = my.digits.output)
+t.stat <- round( (t.test['male',1]-theta)/t.test['male',2], digits = my.digits)
+t.cr <- round( qt(p=1-sign.level/2, df=df.residual(regr)), digits = my.digits)
+print(paste0('t-stat=', t.stat) )
+print(paste0('t-cr=', t.cr) )
+```
+
+Значимо ли коэффицент отличается от числа? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(abs(t.stat)>t.cr) print('Значимо') else print('Незначимо')
+```
+
+## Задача (sleep equation 2)
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, age, south, male, smsa, yngkid, marr, union**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.01
+theta <- 100
+regr <- lm(formula=sleep~totwrk+age+south+male+smsa+yngkid+marr+union, data=sleep75)
+stargazer(regr, type='text', digits = my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Тестируется гипотеза \(H_0:\beta_{south}=\) `r theta`. <span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Вычислите тестовую статистику и критическое значение.
+**Ответ округлите до `r my.digits` десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+t.test <- round(coeftest(regr), digits = my.digits.output)
+t.stat <- round( (t.test['south',1]-theta)/t.test['south',2], digits = my.digits)
+t.cr <- round( qt(p=1-sign.level/2, df=df.residual(regr)), digits = my.digits)
+print(paste0('t-stat=', t.stat) )
+print(paste0('t-cr=', t.cr) )
+```
+
+Значимо ли коэффицент отличается от числа? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(abs(t.stat)>t.cr) print('Значимо') else print('Незначимо')
+```

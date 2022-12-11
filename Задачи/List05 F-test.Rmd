@@ -1,0 +1,924 @@
+---
+title: "Задачи по Эконометрике: F-тест"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(ggplot2)
+data(sleep75,wage1, wage2, Labour, Electricity, package = c('wooldridge', 'Ecdat') )
+# data(wage1, package = 'wooldridge')
+# data(wage2, package = 'wooldridge')
+# data(Labour, package = 'Ecdat')
+# data(Electricity, package='Ecdat')
+sleep75$gender <- factor(sleep75$male, labels = c('female', 'male') )
+wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
+```
+
+# F-тест: значимость регрессии
+
+## sleep equation #1
+
+Для набора данных `sleep75` рассмотрим несколько регрессий
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- list()
+regr[[1]] <- lm(formula=sleep~totwrk+age+I(age^2)+south+male+smsa+yngkid+marr+union, data=sleep75)
+regr[[2]] <- update(regr[[1]], formula. = ~.-marr-union)
+regr[[3]] <- update(regr[[1]], formula. = ~.-smsa-yngkid-marr-union)
+regr[[4]] <- update(regr[[1]], formula. = ~.-totwrk-age-I(age^2)-south-male)
+stargazer(regr, type='text', df=FALSE, 
+          digit.separator='', digits=my.digits.output, keep.stat = c('n', 'rsq', 'adj.rsq'), 
+          dep.var.caption = 'Зависимая переменная')
+```
+
+Тестируется значимость каждой регрессии. <span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Вычислите соотвествующию тестовые статистики. 
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+F.stat <- NULL
+for(i in 1:length(regr)) {
+  r.sq <- round(summary(regr[[i]])$r.squared, digits = my.digits.output) 
+  my.F <- r.sq/(1-r.sq)*df.residual(regr[[i]])/(regr[[i]]$rank-1)
+  F.stat <- c(F.stat, round(my.F, digits = my.digits))
+}
+rm(r.sq, my.F)
+df.F <- data.frame(Регрессия=1:length(regr), F.stat=F.stat)
+stargazer(df.F, summary = FALSE, type='text', rownames=FALSE, digits = my.digits)
+```
+
+Вычислите критическое значение для каждой регрессии. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+F.cr <- NULL
+for(i in 1:length(regr)) {
+  my.F.cr <- qf(p=1-sign.level, df1=regr[[i]]$rank-1, df2=df.residual(regr[[i]]))
+  F.cr <- c(F.cr, round(my.F.cr, digits = my.digits))
+}
+rm(my.F.cr)
+df.F.cr <- data.frame(Регрессия=1:length(regr), F.cr=F.cr)
+stargazer(df.F.cr, summary = FALSE, type='text', rownames=FALSE, digits = my.digits)
+```
+
+Какая из регрессий значима?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+significance <- NULL
+for(i in 1:length(regr)) {
+  if( F.stat[i]>F.cr[i]) significance <- c(significance, 'Значима')
+  else significance <- c(significance, 'Незначима')
+}
+df.sign <- data.frame(Регрессия=1:length(regr), Значимость=significance)
+stargazer(df.sign, summary = FALSE, type='text', rownames=FALSE)
+```
+
+## cost equation #1
+
+Для набора данных `Electricity` рассмотрим несколько регрессий
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.01
+regr <- list()
+regr[[1]] <- lm(formula=log(cost)~log(q)+log(pl)+log(pk)+log(pf), data=Electricity)
+regr[[2]] <- update(regr[[1]], formula. = ~.-log(pl)-log(pk)-log(pf))
+regr[[3]] <- update(regr[[1]], formula. = ~.-log(pl))
+regr[[4]] <- update(regr[[1]], formula. = ~.-log(q))
+regr[[5]] <- update(regr[[1]], formula. = ~.-log(q)-log(pk)-log(pf))
+stargazer(regr, type='text', df=FALSE, 
+          digit.separator='', digits=my.digits.output, keep.stat = c('n', 'rsq', 'adj.rsq'), 
+          dep.var.caption = 'Зависимая переменная')
+```
+
+Тестируется значимость каждой регрессии. <span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Вычислите соотвествующию тестовые статистики. 
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+F.stat <- NULL
+for(i in 1:length(regr)) {
+  r.sq <- round(summary(regr[[i]])$r.squared, digits = my.digits.output) 
+  my.F <- r.sq/(1-r.sq)*df.residual(regr[[i]])/(regr[[i]]$rank-1)
+  F.stat <- c(F.stat, round(my.F, digits = my.digits))
+}
+rm(r.sq, my.F)
+df.F <- data.frame(Регрессия=1:length(regr), F.stat=F.stat)
+stargazer(df.F, summary = FALSE, type='text', rownames=FALSE, digits = my.digits, digit.separator='' )
+```
+
+Вычислите критическое значение для каждой регрессии. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+F.cr <- NULL
+for(i in 1:length(regr)) {
+  my.F.cr <- qf(p=1-sign.level, df1=regr[[i]]$rank-1, df2=df.residual(regr[[i]]))
+  F.cr <- c(F.cr, round(my.F.cr, digits = my.digits))
+}
+rm(my.F.cr)
+df.F.cr <- data.frame(Регрессия=1:length(regr), F.cr=F.cr)
+stargazer(df.F.cr, summary = FALSE, type='text', rownames=FALSE, digits = my.digits)
+```
+
+Какая из регрессий значима?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+significance <- NULL
+for(i in 1:length(regr)) {
+  if( F.stat[i]>F.cr[i]) significance <- c(significance, 'Значима')
+  else significance <- c(significance, 'Незначима')
+}
+df.sign <- data.frame(Регрессия=1:length(regr), Значимость=significance)
+stargazer(df.sign, summary = FALSE, type='text', rownames=FALSE)
+```
+
+## sleep equation #2
+
+Для набора данных `sleep75` рассмотрим несколько регрессий
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+sign.level <- 0.01
+regr <- list()
+regr[[1]] <- lm(formula=sleep~totwrk+age+I(age^2)+smsa+yngkid+marr+union, data=sleep75)
+regr[[2]] <- update(regr[[1]], formula. = ~.-totwrk)
+regr[[3]] <- update(regr[[1]], formula. = ~.-totwrk-smsa-yngkid-marr-union)
+regr[[4]] <- update(regr[[1]], formula. = ~.-totwrk-age-I(age^2))
+stargazer(regr, type='text', df=FALSE, 
+          digit.separator='', digits=my.digits.output, # keep.stat = c('n', 'rsq', 'adj.rsq'), 
+          dep.var.caption = 'Зависимая переменная')
+```
+
+Тестируется значимость каждой регрессии. <span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Какая из регрессий значима?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+significance <- NULL
+for(i in 1:length(regr)) {
+  F.stat <- summary(regr[[i]])$fstatistic[[1]]
+  P.val <- 1-pf(F.stat, df1=regr[[i]]$rank-1, df2=df.residual(regr[[i]]))
+  if( P.val<sign.level) significance <- c(significance, 'Значима')
+  else significance <- c(significance, 'Незначима')
+}
+df.sign <- data.frame(Регрессия=1:length(regr), Значимость=significance)
+stargazer(df.sign, summary = FALSE, type='text', rownames=FALSE)
+```
+
+## cost equation #2
+
+Для набора данных `Electricity` рассмотрим несколько регрессий
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+sign.level <- 0.01
+regr <- list()
+regr[[1]] <- lm(formula=log(cost)~log(q)+I(log(q)^2)+log(pl)+log(pk)+log(pf), data=Electricity)
+regr[[2]] <- update(regr[[1]], formula. = ~.-log(pl)-log(pk)-log(pf))
+regr[[3]] <- update(regr[[1]], formula. = ~.-I(log(q)^2))
+regr[[4]] <- update(regr[[1]], formula. = ~.-log(q)-I(log(q)^2) )
+regr[[5]] <- update(regr[[1]], formula. = ~.-log(q)-I(log(q)^2)-log(pk)-log(pf))
+stargazer(regr, type='text', df=FALSE, 
+          digit.separator='', digits=my.digits.output, # keep.stat = c('n', 'rsq', 'adj.rsq'), 
+          dep.var.caption = 'Зависимая переменная')
+```
+
+Тестируется значимость каждой регрессии. <span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Какая из регрессий значима?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+significance <- NULL
+for(i in 1:length(regr)) {
+  F.stat <- summary(regr[[i]])$fstatistic[[1]]
+  P.val <- 1-pf(F.stat, df1=regr[[i]]$rank-1, df2=df.residual(regr[[i]]))
+  if( P.val<sign.level) significance <- c(significance, 'Значима')
+  else significance <- c(significance, 'Незначима')
+}
+df.sign <- data.frame(Регрессия=1:length(regr), Значимость=significance)
+stargazer(df.sign, summary = FALSE, type='text', rownames=FALSE)
+```
+
+# F-тест: совместная значимость
+
+## sleep equation #1
+
+Для датасета `sleep75` рассмотрим регрессию **sleep на totwrk, age, male, south, smsa, yngkid, marr, union**
+
+Результаты подгонки (коэффициенты)
+
+```{r,comment='', echo=FALSE}
+my.digits <- 3
+sign.level <- 0.05
+regr <- lm(formula=sleep~totwrk+age+male+south+smsa+yngkid+marr+union, data=sleep75)
+t.test <- coeftest(regr)
+t.test
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 2:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+Потестируем совместную значимость `smsa, yngkid, marr, union`, т.е. гипотезу
+\(H_0:\beta_{smsa}=\beta_{yngkid}=\beta_{marr}=\beta_{union}=0\)
+
+Регрессия с ограниченияим: **sleep на totwrk, age, male, south**
+
+Исходная регрессия и регрессия с ограничениями в одной таблице
+
+```{r, warning=FALSE, comment='', echo=FALSE}
+my.digits.output <- 3
+regr.restr <- update(regr, formula=~.-smsa-yngkid-marr-union)
+J <- df.residual(regr.restr)-df.residual(regr)
+stargazer(regr, regr.restr, type='text', df=FALSE, dep.var.caption = 'Зависимая переменная',
+          digits = my.digits.output, digit.separator = '')
+```
+
+Вычислите тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+R.sq <- round(summary(regr)$r.squared, digits = my.digits.output)
+R.sq.restr <- round(summary(regr.restr)$r.squared, digits = my.digits.output)
+F.stat <- (R.sq-R.sq.restr)/(1-R.sq)*df.residual(regr)/J
+round(F.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = J, df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Значимо ли совместное влияние? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(F.stat>F.cr) print('Значимо') else print('Незначимо')
+```
+
+## sleep equation #2
+
+Для датасета `sleep75` рассмотрим регрессию **sleep на totwrk, age, age^2, male, south**
+
+Результаты подгонки (коэффициенты)
+
+```{r,comment='', echo=FALSE}
+my.digits <- 3
+sign.level <- 0.01
+regr <- lm(formula=sleep~totwrk+age+I(age^2)+male+south, data=sleep75)
+t.test <- coeftest(regr)
+t.test
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 2:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+Потестируем значимость влияния возраста, т.е. гипотезу $H_0:\beta_{age}=\beta_{age^2}=0$
+
+Регрессия с ограничениям: **sleep на totwrk, male, south**
+
+Исходная регрессия и регрессия с ограничениями в одной таблице
+
+```{r, warning=FALSE, comment='', echo=FALSE}
+my.digits.output <- 3
+regr.restr <- update(regr, formula=~.-age-I(age^2))
+J <- df.residual(regr.restr)-df.residual(regr)
+stargazer(regr, regr.restr, type='text', df=FALSE, dep.var.caption = 'Зависимая переменная',
+          digits = my.digits.output, digit.separator = '')
+```
+
+Вычислите тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+R.sq <- round(summary(regr)$r.squared, digits = my.digits.output)
+R.sq.restr <- round(summary(regr.restr)$r.squared, digits = my.digits.output)
+F.stat <- (R.sq-R.sq.restr)/(1-R.sq)*df.residual(regr)/J
+round(F.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = J, df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Значимо ли совместное влияние? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(F.stat>F.cr) print('Значимо') else print('Незначимо')
+```
+
+## sleep equation #3
+
+Для датасета `sleep75` рассмотрим регрессию 
+**sleep на totwrk, age, age^2, male, south, male\(\star\)totwrk**
+
+Результаты подгонки (коэффициенты)
+
+```{r,comment='', echo=FALSE}
+my.digits <- 3
+sign.level <- 0.01
+regr <- lm(formula=sleep~totwrk+age+I(age^2)+male+south+male:totwrk, data=sleep75)
+t.test <- coeftest(regr)
+t.test
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 2:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+Потестируем значимость влияния гендерной переменной, т.е. гипотезу $H_0:\beta_{male}=\beta_{male*totwrk}=0$
+
+Регрессия с ограничениям: __sleep на totwrk, age, age^2, south__
+
+Исходная регрессия и регрессия с ограничениями в одной таблице
+
+```{r, warning=FALSE, comment='', echo=FALSE}
+my.digits.output <- 3
+regr.restr <- update(regr, formula=~.-male-male:totwrk)
+J <- df.residual(regr.restr)-df.residual(regr)
+stargazer(regr, regr.restr, type='text', df=FALSE, dep.var.caption = 'Зависимая переменная',
+          digits = my.digits.output, digit.separator = '')
+```
+
+Вычислите тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+R.sq <- round(summary(regr)$r.squared, digits = my.digits.output)
+R.sq.restr <- round(summary(regr.restr)$r.squared, digits = my.digits.output)
+F.stat <- (R.sq-R.sq.restr)/(1-R.sq)*df.residual(regr)/J
+round(F.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = J, df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Значимо ли совместное влияние? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(F.stat>F.cr) print('Значимо') else print('Незначимо')
+```
+
+## wage equation #1
+
+Для датасета `wage2` рассмотрим регрессию **log(wage) на age, age^2, IQ, south, urban, married**
+
+Результаты подгонки (коэффициенты)
+
+```{r,comment='', echo=FALSE}
+my.digits <- 3
+sign.level <- 0.01
+regr <- lm(formula=log(wage)~age+I(age^2)+IQ+south+urban+married, data=wage2)
+t.test <- coeftest(regr)
+t.test
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 2:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+Потестируем значимость влияния возраста, т.е. гипотезу $H_0:\beta_{age}=\beta_{age^2}=0$
+
+Регрессия с ограничениям: **log(wage) на IQ, south, urban, married**
+
+Исходная регрессия и регрессия с ограничениями в одной таблице
+
+```{r, warning=FALSE, comment='', echo=FALSE}
+my.digits.output <- 3
+regr.restr <- update(regr, formula=~.-age-I(age^2))
+J <- df.residual(regr.restr)-df.residual(regr)
+stargazer(regr, regr.restr, type='text', df=FALSE, dep.var.caption = 'Зависимая переменная',
+          digits = my.digits.output, digit.separator = '')
+```
+
+Вычислите тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+```{r, echo=FALSE, comment=''}
+R.sq <- round(summary(regr)$r.squared, digits = my.digits.output)
+R.sq.restr <- round(summary(regr.restr)$r.squared, digits = my.digits.output)
+F.stat <- (R.sq-R.sq.restr)/(1-R.sq)*df.residual(regr)/J
+round(F.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = J, df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Значимо ли совместное влияние? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(F.stat>F.cr) print('Значимо') else print('Незначимо')
+```
+
+# F-тест: структурные ограничения
+
+## cost equation
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q), log^2(q), log(pl), log(pk), log(pf)**
+
+Результаты подгонки:
+
+```{r,comment='', echo=FALSE}
+my.digits <- 3
+sign.level <- 0.01
+my.digits.output <- 3
+regr <- lm(formula=log(cost)~log(q)+I(log(q)^2)+log(pf)+log(pl)+log(pk),data=Electricity)
+t.test <- coeftest(regr)
+# t.test
+stargazer(regr, type='text', df=FALSE, dep.var.caption = 'Зависимая переменная',
+          digits = my.digits.output, digit.separator = '')
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 2:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+### Гипотеза 1
+
+Потестируем гипотезу $H_0: \beta_{pf}+\beta_{pl}+\beta_{pk}=1$ Какая интерпретация?
+
+Результаты тестирования:
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('log(pf)+log(pl)+log(pk)=1'))
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = testing.result[2,3], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какие результаты тестирования? Ответ
+
+```{r,comment='', echo=FALSE}
+if(testing.result[2,6]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+### Гипотеза 2
+
+Потестируем гипотезу \(H_0: \beta_{pl}=\beta_{pk}\) Какая интерпретация?
+
+Результаты тестирования:
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('log(pl)-log(pk)=0') )
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = testing.result[2,3], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какие результаты тестирования? Ответ
+
+```{r,comment='', echo=FALSE}
+if(testing.result[2,6]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+### Гипотеза 3
+
+Потестируем гипотезу \(H_0: \beta_{pf}=\beta_{pl}=\beta_{pk}\) Какая интерпретация?
+
+Результаты тестирования:
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('log(pf)-log(pk)=0', 'log(pl)-log(pk)=0') )
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE, digits = 3)
+```
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = testing.result[2,3], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какие результаты тестирования? Ответ
+
+```{r,comment='', echo=FALSE}
+if(testing.result[2,6]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+## output equation
+
+Для набора данных `Labour` рассмотрим линейную регрессию
+**log(output) на log(capital), log(labour), log(wage)**
+
+Результаты подгонки:
+
+```{r,comment='', echo=FALSE}
+my.digits <- 3
+sign.level <- 0.05
+my.digits.output <- 3
+regr <- lm(formula=log(output)~log(capital)+log(labour)+log(wage),data=Labour)
+t.test <- coeftest(regr)
+# t.test
+stargazer(regr, type='text', df=FALSE, dep.var.caption = 'Зависимая переменная',
+          digits = my.digits.output, digit.separator = '')
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 2:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+### Гипотеза 1
+
+Потестируем гипотезу $H_0: \beta_{capital}+\beta_{labour}+\beta_{wage}=1$ Какая интерпретация?
+
+Результаты тестирования:
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('log(capital)+log(labour)+log(wage)=1'))
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = testing.result[2,3], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какие результаты тестирования? Ответ
+
+```{r,comment='', echo=FALSE}
+if(testing.result[2,6]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+### Гипотеза 2
+
+Потестируем гипотезу \(H_0: \beta_{labour}=\beta_{wage}\) Какая интерпретация?
+
+Результаты тестирования:
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('log(wage)-log(labour)=0') )
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = testing.result[2,3], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какие результаты тестирования? Ответ
+
+```{r,comment='', echo=FALSE}
+if(testing.result[2,6]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+### Гипотеза 3
+
+Потестируем гипотезу \(H_0: \beta_{capital}=\beta_{labour}=\beta_{wage}\) Какая интерпретация?
+
+Результаты тестирования:
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('log(capital)-log(labour)=0', 'log(labour)-log(wage)=0') )
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = testing.result[2,3], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какие результаты тестирования? Ответ
+
+```{r,comment='', echo=FALSE}
+if(testing.result[2,6]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+# F-тест: структурные изменения/сдвиги
+
+## sleep equation #1
+
+Для набора данных `sleep75` рассмотрим линейную регрессию 
+**sleep на totwrk, totwrk^2** и подгоним отдельно для
+М, отдельно для Ж и по полному датасету
+
+```{r, echo=FALSE}
+ggplot(data=sleep75, aes(x=totwrk, y=sleep))+geom_point()+geom_smooth(formula=y~x+I(x^2), method=lm, se=FALSE)+
+  geom_smooth(formula=y~x+I(x^2), method=lm, se=FALSE, aes(col=gender))
+```
+
+Рассмотрим ререссию **sleep на age, age^2** и подгоним отдельно для
+М, отдельно для Ж и по полному датасету
+
+```{r, echo=FALSE}
+ggplot(data=sleep75, aes(x=age, y=sleep))+geom_point()+geom_smooth(formula=y~x+I(x^2), method=lm, se=FALSE)+
+  geom_smooth(formula=y~x+I(x^2), method=lm, se=FALSE, aes(col=gender))
+```
+
+Рассмотрим регрессию **sleep/60 на totwrk, age, age^2, south, smsa, marr**:
+
+- для M: $sleep/60=\beta_0+\beta_1totwrk+\beta_2age+\beta_3age^2+\beta_4south+\beta_5smsa+\beta_6marr+u$
+- для Ж: $sleep/60=\gamma_0+\gamma_1totwrk+\gamma_2age+\gamma_3age^2+\gamma_4south+\gamma_5smsa+\gamma_6marr+v$
+
+Результаты подгонки:
+```{r, echo=FALSE, comment=''}
+my.digits <- 3
+sign.level <- 0.01
+my.digits.output <- 3
+spec <- formula('sleep/60~totwrk+age+I(age^2)+south+smsa+marr')
+regr.1 <- lm(formula=spec, data=sleep75, subset = gender == 'male')
+regr.2 <- lm(formula=spec, data=sleep75, subset = gender == 'female')
+regr <- lm(formula=spec, data=sleep75)
+stargazer(regr.1, regr.2, regr, type='text', column.labels=c('М', 'Ж', 'общая'), digits=my.digits.output,
+          df=FALSE, digit.separator="")
+# print('М')
+# round(coef(regr.1), digits = my.digits.output)
+# print('Ж')
+# round(coef(regr.2), digits = my.digits.output)
+# print('Общая')
+# round(coef(regr), digits = my.digits.output)
+```
+
+Тест Чоу на однородность выборок $H_0:\beta_j=\gamma_j (j=0,\ldots,6)$. 
+<span style="color: blue"> Объём выборки `r nobs(regr)`, уровень значимости `r 100*sign.level`%</span>.
+
+Остаточные суммы квадратов:
+
+```{r, echo=FALSE, comment=''}
+RSS <- c(deviance(regr.1), deviance(regr.2), deviance(regr) )
+names(RSS) <- c('только М', 'только Ж', 'Общая')
+stargazer(RSS, summary=FALSE, type='text', digits = my.digits.output, digit.separator = '')
+```
+
+Вычислите тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+```{r, echo=FALSE, comment=''}
+RSS.overall <- round(deviance(regr), digits = my.digits.output)
+RSS.I <- round(deviance(regr.1), digits = my.digits.output)
+RSS.II <- round(deviance(regr.2), digits = my.digits.output)
+F.stat <- (RSS.overall-RSS.I-RSS.II)/(RSS.I+RSS.II)*(nobs(regr)-2*regr$rank)/regr$rank
+round(F.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1=regr$rank, df2=nobs(regr)-2*regr$rank)
+round(F.cr, digits = my.digits)
+```
+
+Значимы ли структурные изменения? Ответ:
+
+```{r, echo=FALSE, comment=''}
+if(F.stat > F.cr) print('Значимы') else print('Незначимы')
+```
+
+
+## sleep equation #2
+
+Для набора данных `sleep75` рассмотрим регрессию **sleep/60 на totwrk, age, age^2, male, smsa**.
+Регрессия была оценена на полному набору данных, только по жителям юга и только по жителям севера.
+Результаты приведены в таблице
+
+```{r, echo=FALSE, comment=''}
+my.digits <- 3
+sign.level <- 0.05
+my.digits.output <- 3
+spec <- formula('sleep/60~totwrk+age+I(age^2)+male+smsa')
+regr.1 <- lm(formula=spec, data=sleep75, subset = south == 1)
+regr.2 <- lm(formula=spec, data=sleep75, subset = south == 0)
+regr <- lm(formula=spec, data=sleep75)
+RSS <- round( c(deviance(regr), deviance(regr.1), deviance(regr.2)), digits = my.digits.output )
+my.RSS <- c( 'RSS', RSS )
+stargazer(regr, regr.1, regr.2, type='text', column.labels=c('общая', 'юг', 'север'), digits=my.digits.output,
+          add.lines=list(my.RSS), df=FALSE, digit.separator="", intercept.bottom = FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Вычислите тестовую статистику теста Чоу на структурные сдвиги относительно географической переменной.
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+F.stat <- (RSS[1]-RSS[2]-RSS[3])/(RSS[2]+RSS[3])*(nobs(regr)-2*regr$rank)/regr$rank
+round(F.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1=regr$rank, df2=nobs(regr)-2*regr$rank)
+round(F.cr, digits = my.digits)
+```
+
+Значимы ли структурные изменения? Ответ:
+
+```{r, echo=FALSE, comment=''}
+if(F.stat > F.cr) print('Значимы') else print('Незначимы')
+```
+
+## wage equation #1
+
+Для набора данных `wage1` рассмотрим линейную регрессию 
+**log(wage) на exper и exper^2** и подгоним отдельно для
+М, отдельно для Ж и по полному датасету
+
+```{r, echo=FALSE}
+ggplot(data=wage1, aes(x=exper, y=log(wage)))+geom_point()+geom_smooth(formula=y~x+I(x^2), method=lm, se=FALSE)+
+  geom_smooth(formula=y~x+I(x^2), method=lm, se=FALSE, aes(col=gender))
+```
+
+Рассмотрим регрессию **log(wage) на exper, exper^2, married, smsa**:
+
+- для M: $\log(wage)=\beta_0+\beta_1exper+\beta_2exper^2+\beta_3married+\beta_4smsa+u$
+- для Ж: $\log(wage)=\gamma_0+\gamma_1exper+\gamma_2exper^2+\gamma_3married+\gamma_4smsa+v$
+
+Результаты подгонки:
+```{r, echo=FALSE, comment=''}
+my.digits <- 3
+sign.level <- 0.05
+my.digits.output <- 3
+spec <- formula('log(wage)~exper+I(exper^2)+married+smsa')
+regr.1 <- lm(formula=spec, data=wage1, subset = gender == 'male')
+regr.2 <- lm(formula=spec, data=wage1, subset = gender == 'female')
+regr <- lm(formula=spec, data=wage1)
+stargazer(regr.1, regr.2, regr, type='text', column.labels=c('М', 'Ж', 'общая'), digits=my.digits.output,
+          df=FALSE, digit.separator="")
+# print('М')
+# round(coef(regr.1), digits = my.digits.output)
+# print('Ж')
+# round(coef(regr.2), digits = my.digits.output)
+# print('Общая')
+# round(coef(regr), digits = my.digits.output)
+```
+
+Тест Чоу на однородность выборок $H_0:\beta_j=\gamma_j (j=0,1,2,3,4)$. 
+<span style="color: blue"> Объём выборки `r nobs(regr)`, уровень значимости `r 100*sign.level`%</span>.
+
+Остаточные суммы квадратов:
+
+```{r, echo=FALSE, comment=''}
+RSS <- c(deviance(regr.1), deviance(regr.2), deviance(regr) )
+names(RSS) <- c('только М', 'только Ж', 'Общая')
+stargazer(RSS, summary=FALSE, type='text', digits = my.digits.output, digit.separator = '')
+```
+
+Вычислите тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+```{r, echo=FALSE, comment=''}
+RSS.overall <- round(deviance(regr), digits = my.digits.output)
+RSS.I <- round(deviance(regr.1), digits = my.digits.output)
+RSS.II <- round(deviance(regr.2), digits = my.digits.output)
+F.stat <- (RSS.overall-RSS.I-RSS.II)/(RSS.I+RSS.II)*(nobs(regr)-2*regr$rank)/regr$rank
+round(F.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1=regr$rank, df2=nobs(regr)-2*regr$rank)
+round(F.cr, digits = my.digits)
+```
+
+Значимы ли структурные изменения? Ответ:
+
+```{r, echo=FALSE, comment=''}
+if(F.stat > F.cr) print('Значимы') else print('Незначимы')
+```
+
+## wage equation #2
+
+Для набора данных `wage1` рассмотрим линейную регрессию **log(wage) на exper, exper^2, female, smsa**.
+Регрессия была оценена на полному набору данных, только по женатым/замужним и только по неженатым/незамужним.
+Результаты приведены в таблице
+
+```{r, echo=FALSE, comment=''}
+my.digits <- 3
+sign.level <- 0.05
+my.digits.output <- 3
+spec <- formula('log(wage)~exper+I(exper^2)+female+smsa')
+regr.1 <- lm(formula=spec, data=wage1, subset = married == 1)
+regr.2 <- lm(formula=spec, data=wage1, subset = married == 0)
+regr <- lm(formula=spec, data=wage1)
+RSS <- round( c(deviance(regr), deviance(regr.1), deviance(regr.2)), digits = my.digits.output )
+my.RSS <- c( 'RSS', RSS )
+stargazer(regr, regr.1, regr.2, type='text', column.labels=c('общая', 'жен', 'нежет'), digits=my.digits.output,
+          add.lines=list(my.RSS), df=FALSE, digit.separator="", intercept.bottom = FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Вычислите тестовую статистику теста Чоу на структурные сдвиги относительно семейного статуса.
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+F.stat <- (RSS[1]-RSS[2]-RSS[3])/(RSS[2]+RSS[3])*(nobs(regr)-2*regr$rank)/regr$rank
+round(F.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1=regr$rank, df2=nobs(regr)-2*regr$rank)
+round(F.cr, digits = my.digits)
+```
+
+Значимы ли структурные изменения? Ответ:
+
+```{r, echo=FALSE, comment=''}
+if(F.stat > F.cr) print('Значимы') else print('Незначимы')
+```

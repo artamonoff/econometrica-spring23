@@ -1,0 +1,612 @@
+---
+title: "Задачи по Эконометрике: Мультиколлинеарность"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(ggplot2)
+library(corrplot)
+library(ggcorrplot)
+data(sleep75,wage1, wage2, Labour, Electricity, package = c('wooldridge', 'Ecdat') )
+sleep75$gender <- factor(sleep75$male, labels = c('female', 'male') )
+wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
+```
+
+# sleep equation #1
+
+## VIFs
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk/100, totwrk^2^/10000, age, smsa, male, south**.
+
+Какие регрессии нужно рассматривать для вычисления показателей VIF для коэффициентов
+**totwrk, totwrk^2, male **? Ответ
+
+- **totwrk/100 на totwrk^2^/10000, age, smsa, male, south**
+- **totwrk^2^/10000 на totwrk/100, age, smsa, male, south **
+- **male на totwrk/100, totwrk^2^/10000, age, smsa, south **
+
+Результаты подгонки:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=sleep~I(totwrk/100)+I(totwrk^2/10000)+age+smsa+male+south, data=sleep75)
+df <- model.frame(regr)[,-1]
+regr.1 <- lm(formula=`I(totwrk/100)`~., data=df)
+regr.2 <- lm(formula=`I(totwrk^2/10000)`~., data=df)
+regr.3 <- lm(formula=`male`~., data=df)
+stargazer(regr.1, regr.2, regr.3, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Вычислите VIF для **totwrk/100, totwrk^2^/10000, male**. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+expl.var <- c('I(totwrk/100)', 'I(totwrk^2/10000)', 'male')
+my.vif <- NULL
+for(vars in expl.var) {
+  my.formula <- formula( paste0('`', vars, '`~.') )
+  vif.regr <- lm(formula=my.formula, data=df)
+  R.sq <-  round(summary(vif.regr)$r.squared, digits = my.digits.output )
+  my.vif <- c(my.vif, round(1/(1-R.sq), digits = my.digits) )
+}
+names(my.vif) <- expl.var
+my.vif
+```
+
+
+## Последствия
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk/100, totwrk^2^/10000, age, smsa, male**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- lm(formula=sleep~I(totwrk/100)+I(totwrk^2/10000)+age+smsa+male, data=sleep75)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие коэффициенты значимы?
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+t.test <- coeftest(regr)
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 2:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+Тестируется значимость влияния занятости, т.е. гипотеза \(H_0:\beta_{totwrk/100}=\beta_{totwrk^2/10000}=0\).
+
+Результаты тестирования:
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('I(totwrk/100)=0', 'I(totwrk^2/10000)=0'))
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = testing.result[2,3], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какие результаты тестирования? Ответ
+
+```{r,comment='', echo=FALSE}
+if(testing.result[2,6]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+**На первый взгляд противоречие.**
+
+Потестируем модель на мультиколлинеарность. Посмотрим на VIF для регрессоров
+
+```{r, echo=FALSE, comment=''}
+vif(regr)
+```
+
+и на корреляции
+
+```{r, echo=FALSE, comment=''}
+round(cor(model.frame(regr)[,-1]), digits = my.digits.output )
+```
+
+Визуализация корреляций
+
+```{r, echo=FALSE, comment=''}
+ggcorrplot(cor(model.frame(regr)[,-1]), method = "square", lab=TRUE)
+```
+
+# sleep equation #2
+
+## VIFs
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, age, age^2^, smsa, male, south**.
+
+Какие регрессии нужно рассматривать для вычисления показателей VIF для коэффициентов
+**age, age^2^, male **? Ответ
+
+- **age на totwrk, age, smsa, male, south**
+- **age^2^ на totwrk, age, smsa, male, south **
+- **male на totwrk, age, age^2^ smsa, south **
+
+Результаты подгонки:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=sleep~totwrk+age+I(age^2)+smsa+male+south, data=sleep75)
+df <- model.frame(regr)[,-1]
+regr.1 <- lm(formula=`age`~., data=df)
+regr.2 <- lm(formula=`I(age^2)`~., data=df)
+regr.3 <- lm(formula=`male`~., data=df)
+stargazer(regr.1, regr.2, regr.3, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Вычислите VIF для **age, age^2^, male**. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+expl.var <- c('age', 'I(age^2)', 'male')
+my.vif <- NULL
+for(vars in expl.var) {
+  my.formula <- formula( paste0('`', vars, '`~.') )
+  vif.regr <- lm(formula=my.formula, data=df)
+  R.sq <-  round(summary(vif.regr)$r.squared, digits = my.digits.output )
+  my.vif <- c(my.vif, round(1/(1-R.sq), digits = my.digits) )
+}
+names(my.vif) <- expl.var
+my.vif
+```
+
+
+## Последствия
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, age, age^2^, smsa, male, union**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.10
+regr <- lm(formula=sleep~totwrk+age+I(age^2)+smsa+male+union, data=sleep75)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие коэффициенты значимы?
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+t.test <- coeftest(regr)
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 2:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+Тестируется значимость влияния занятости, т.е. гипотеза \(H_0:\beta_{age}=\beta_{age^2}=0\).
+
+Результаты тестирования:
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('age=0', 'I(age^2)=0'))
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = testing.result[2,3], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какие результаты тестирования? Ответ
+
+```{r,comment='', echo=FALSE}
+if(testing.result[2,6]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+**На первый взгляд противоречие.**
+
+Потестируем модель на мультиколлинеарность. Посмотрим на VIF для регрессоров
+
+```{r, echo=FALSE, comment=''}
+vif(regr)
+```
+
+и на корреляции
+
+```{r, echo=FALSE, comment=''}
+round(cor(model.frame(regr)[,-1]), digits = my.digits.output <- 3)
+```
+
+Визуализация корреляций
+
+```{r, echo=FALSE, comment=''}
+ggcorrplot(cor(model.frame(regr)[,-1]), lab=TRUE)
+```
+
+# sleep equation #3
+
+## VIFs
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, south, totwrk\(\star\)south, age, male, smsa**.
+
+Какие регрессии нужно рассматривать для вычисления показателей VIF для коэффициентов
+**totwrk, south, male **? Ответ
+
+- **totwrk на south, totwrk\(\star\)south, age, male, smsa**
+- **south на totwrk, totwrk\(\star\)south, age, male, smsa**
+- **totwrk\(\star\)south на totwrk, south, age, male, smsa**
+
+Результаты подгонки:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=sleep~totwrk+south+I(totwrk*south)+age+male+smsa, data=sleep75)
+df <- model.frame(regr)[,-1]
+regr.1 <- lm(formula=`totwrk`~., data=df)
+regr.2 <- lm(formula=`south`~., data=df)
+regr.3 <- lm(formula=`I(totwrk * south)`~., data=df)
+stargazer(regr.1, regr.2, regr.3, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Вычислите VIF для **totwrk, south, totwrk\(\star\)south**. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+expl.var <- c('totwrk', 'south', 'I(totwrk * south)')
+my.vif <- NULL
+for(vars in expl.var) {
+  my.formula <- formula( paste0('`', vars, '`~.') )
+  vif.regr <- lm(formula=my.formula, data=df)
+  R.sq <-  round(summary(vif.regr)$r.squared, digits = my.digits.output )
+  my.vif <- c(my.vif, round(1/(1-R.sq), digits = my.digits) )
+}
+names(my.vif) <- expl.var
+my.vif
+```
+
+
+## Последствия
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, south, totwrk\(\star\)south, age, male, smsa, marr**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- lm(formula=sleep~totwrk+south+I(totwrk*south)+age+male+smsa+marr, data=sleep75)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие коэффициенты значимы?
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+t.test <- coeftest(regr)
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 2:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+Тестируется значимость влияния географической бинарной переменной, т.е. гипотеза \(H_0:\beta_{south}=\beta_{totwrk*south}=0\).
+
+Результаты тестирования:
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('south=0', 'I(totwrk * south)=0'))
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = testing.result[2,3], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какие результаты тестирования? Ответ
+
+```{r,comment='', echo=FALSE}
+if(testing.result[2,6]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+**На первый взгляд противоречие.**
+
+Потестируем модель на мультиколлинеарность. Посмотрим на VIF для регрессоров
+
+```{r, echo=FALSE, comment=''}
+vif(regr)
+```
+
+и на корреляции
+
+```{r, echo=FALSE, comment=''}
+round(cor(model.frame(regr)[,-1]), digits = my.digits.output <- 3)
+```
+
+Визуализация корреляций
+
+```{r, echo=FALSE, comment=''}
+ggcorrplot(cor(model.frame(regr)[,-1]), method = "circle")
+```
+
+# wage equation #1
+
+## VIFs
+
+Для набора данных `wage2` рассмотрим линейную регрессию
+**log(wage) на age, age^2, IQ, married, south, urban**.
+
+Какие регрессии нужно рассматривать для вычисления показателей VIF для коэффициентов
+**age, age^2, urban **? Ответ
+
+- **age на age^2, IQ, married, south, urban**
+- **age^2 на age, IQ, married, south, urban**
+- **urban на age, age^2, IQ, married, south**
+
+Результаты подгонки:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=log(wage)~age+I(age^2)+IQ+married+south+urban, data=wage2)
+df <- model.frame(regr)[,-1]
+regr.1 <- lm(formula=`age`~., data=df)
+regr.2 <- lm(formula=`I(age^2)`~., data=df)
+regr.3 <- lm(formula=`urban`~., data=df)
+stargazer(regr.1, regr.2, regr.3, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Вычислите VIF для **age, age^2, urban**. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+expl.var <- c('age', 'I(age^2)', 'urban')
+my.vif <- NULL
+for(vars in expl.var) {
+  my.formula <- formula( paste0('`', vars, '`~.') )
+  vif.regr <- lm(formula=my.formula, data=df)
+  R.sq <-  round(summary(vif.regr)$r.squared, digits = my.digits.output )
+  my.vif <- c(my.vif, round(1/(1-R.sq), digits = my.digits) )
+}
+names(my.vif) <- expl.var
+my.vif
+```
+
+
+## Последствия
+
+Для набора данных `wgae2` рассмотрим линейную регрессию
+**log(wage) на age, age^2, IQ, married, south, urban**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- lm(formula=log(wage)~age+I(age^2)+IQ+married+south+urban, data=wage2)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие коэффициенты значимы?
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+t.test <- coeftest(regr)
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 2:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+Тестируется значимость влияния занятости, т.е. гипотеза \(H_0:\beta_{age}=\beta_{age^2}=0\).
+
+Результаты тестирования:
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('age=0', 'I(age^2)=0'))
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = testing.result[2,3], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какие результаты тестирования? Ответ
+
+```{r,comment='', echo=FALSE}
+if(testing.result[2,6]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+**На первый взгляд противоречие.**
+
+Потестируем модель на мультиколлинеарность. Посмотрим на VIF для регрессоров
+
+```{r, echo=FALSE, comment=''}
+vif(regr)
+```
+
+и на корреляции
+
+```{r, echo=FALSE, comment=''}
+round(cor(model.frame(regr)[,-1]), digits = my.digits.output <- 3)
+```
+
+Визуализация корреляций
+
+```{r, echo=FALSE, comment=''}
+ggcorrplot(cor(model.frame(regr)[,-1]), method = "circle")
+```
+
+# wage equation #2 (структурные сдвиги)
+
+## VIFs
+
+Для набора данных `wage2` рассмотрим линейную регрессию
+**log(wage) на age, urban, age\(\star\)urban, IQ, IQ\(\star\)urban**.
+
+Какие регрессии нужно рассматривать для вычисления показателей VIF для коэффициентов
+**age, urban, age\(\star\)urban **? Ответ
+
+- **age на urban, age\(\star\)urban, IQ, IQ\(\star\)urban**
+- **urban на age, age\(\star\)urban, IQ, IQ\(\star\)urban**
+- **age\(\star\)urban на age, urban, IQ, IQ\(\star\)urban**
+
+Результаты подгонки:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=log(wage)~age+urban+I(age*urban)+IQ+I(IQ*urban), data=wage2)
+df <- model.frame(regr)[,-1]
+regr.1 <- lm(formula=`age`~., data=df)
+regr.2 <- lm(formula=`urban`~., data=df)
+regr.3 <- lm(formula=`I(age * urban)`~., data=df)
+stargazer(regr.1, regr.2, regr.3, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Вычислите VIF для **age, urban, age\(\star\)urban**. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+expl.var <- c('age', 'urban', 'I(age * urban)')
+my.vif <- NULL
+for(vars in expl.var) {
+  my.formula <- formula( paste0('`', vars, '`~.') )
+  vif.regr <- lm(formula=my.formula, data=df)
+  R.sq <-  round(summary(vif.regr)$r.squared, digits = my.digits.output )
+  my.vif <- c(my.vif, round(1/(1-R.sq), digits = my.digits) )
+}
+names(my.vif) <- expl.var
+my.vif
+```
+
+
+## Последствия
+
+Для набора данных `wgae2` рассмотрим линейную регрессию
+**log(wage) на age, IQ, south, urban, age\(\star\)urban, IQ\(\star\)urban, south\(\star\)urban**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.01
+regr <- lm(formula=log(wage)~age+IQ+south+urban+I(age*urban)+I(IQ*urban)+I(south*urban), data=wage2)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие коэффициенты значимы?
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+t.test <- coeftest(regr)
+regressors <- row.names(t.test)
+sign.regressors <- NULL
+for(i in 2:nrow(t.test) ) {
+  if(t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+Тестируется значимость влияния места жительства, т.е. гипотеза 
+\(H_0:\beta_{urban}=\beta_{age*urban}=\beta_{IQ*urban}=\beta_{south*urban}=0\).
+
+Результаты тестирования:
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('urban=0', 'I(age * urban)=0', 'I(IQ * urban)=0', 'I(south * urban)=0'))
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = testing.result[2,3], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Какие результаты тестирования? Ответ
+
+```{r,comment='', echo=FALSE}
+if(testing.result[2,6]<sign.level) print('Гипотеза отвергается') else print('Гипотеза не отвергается')
+```
+
+**На первый взгляд противоречие.**
+
+Потестируем модель на мультиколлинеарность. Посмотрим на VIF для регрессоров
+
+```{r, echo=FALSE, comment=''}
+vif(regr)
+```
+
+и на корреляции
+
+```{r, echo=FALSE, comment=''}
+round(cor(model.frame(regr)[,-1]), digits = my.digits.output)
+```
+
+Визуализация корреляций
+
+```{r, echo=FALSE, comment=''}
+ggcorrplot(cor(model.frame(regr)[,-1]), method='circle')
+```

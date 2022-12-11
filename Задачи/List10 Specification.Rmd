@@ -1,0 +1,412 @@
+---
+title: "Задачи по Эконометрике: Спецификация"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(ggplot2)
+library(sandwich)
+data(sleep75,wage1, wage2, Labour, Electricity, Diamond, diamonds, package = c('wooldridge', 'Ecdat', 'ggplot2') )
+sleep75$gender <- factor(sleep75$male, labels = c('female', 'male') )
+wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
+```
+
+# Диагностические тесты (RESET-тест)
+
+## sleep equation #1
+
+Для набора данных `sleep75` рассмотрим линейную регрессию 
+**sleep на totwrk, age, male, smsa, south**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+reset.powers <- 2:4
+regr <- lm(formula=sleep~totwrk+age+male+smsa+south, data=sleep75)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Результаты RESET-теста
+(со степенями `r reset.powers`)
+
+```{r,echo=FALSE, comment=''}
+my.reset.test <- resettest(regr, power=reset.powers)
+my.reset.test
+```
+
+Напишите спецификацию регрессии RESET-теста и тестируемую гипотезу
+
+Ответ: **sleep на totwrk, age, male, smsa, south, \(\widehat{sleep}^2, \widehat{sleep}^3, \widehat{sleep}^4\)**
+и гипотеза \(H_0:\beta\left[\widehat{sleep}^2\right]=\beta\left[\widehat{sleep}^3\right]=\beta\left[\widehat{sleep}^4\right]=0\)
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = my.reset.test$parameter[[1]], df2 = my.reset.test$parameter[[2]] )
+round(F.cr, digits = my.digits)
+```
+
+Какие можно сделать выводы?
+
+```{r, echo=FALSE, comment=''}
+if(my.reset.test$p.value<sign.level) { 
+  print('Гипотеза отвергается, регрессия не согласуется с данными') 
+} else print('Гипотеза не отвергается, регрессия согласуется с данными')
+```
+
+Результаты RESET-теста (со степенями `r reset.powers`) с поправкой на гетероскедастичность
+
+```{r,echo=FALSE, comment=''}
+my.reset.test <- resettest(regr, power=reset.powers, vcov = vcovHC)
+my.reset.test
+```
+
+## sleep equation #2
+
+Для набора данных `sleep75` рассмотрим линейную регрессию 
+**sleep на totwrk, south, totwrk\(\star\)south, age, age^2, male, smsa, marr**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+reset.powers <- 2:4
+regr <- lm(formula=sleep~totwrk+south+totwrk:south+age+I(age^2)+male+smsa+marr, data=sleep75)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Результаты RESET-теста
+(со степенями `r reset.powers`)
+
+```{r,echo=FALSE, comment=''}
+my.reset.test <- resettest(regr, power=reset.powers)
+my.reset.test
+```
+
+Напишите спецификацию регрессии RESET-теста и тестируемую гипотезу
+
+Ответ: **sleep на totwrk, south, totwrk\(\star\)south, age, age^2, male, smsa, marr, \(\widehat{sleep}^2, \widehat{sleep}^3, \widehat{sleep}^4\)**
+и гипотеза \(H_0:\beta\left[\widehat{sleep}^2\right]=\beta\left[\widehat{sleep}^3\right]=\beta\left[\widehat{sleep}^4\right]=0\)
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = my.reset.test$parameter[[1]], df2 = my.reset.test$parameter[[2]] )
+round(F.cr, digits = my.digits)
+```
+
+Какие можно сделать выводы?
+
+```{r, echo=FALSE, comment=''}
+if(my.reset.test$p.value<sign.level) { 
+  print('Гипотеза отвергается, регрессия не согласуется с данными') 
+} else print('Гипотеза не отвергается, регрессия согласуется с данными')
+```
+
+Результаты RESET-теста (со степенями `r reset.powers`) с поправкой на гетероскедастичность
+
+```{r,echo=FALSE, comment=''}
+my.reset.test <- resettest(regr, power=reset.powers, vcov = vcovHC)
+my.reset.test
+```
+
+## output equation #1
+
+Для набора данных `Labour` рассмотрим линейную регрессию 
+**output на capital, labour, wage**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+reset.powers <- 2:4
+regr <- lm(formula=output~capital+labour+wage, data=Labour)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Результаты RESET-теста
+(со степенями `r reset.powers`)
+
+```{r,echo=FALSE, comment=''}
+my.reset.test <- resettest(regr, power=reset.powers)
+my.reset.test
+```
+
+Напишите спецификацию регрессии RESET-теста и тестируемую гипотезу
+
+Ответ: **output на capital, labour, wage, \(\widehat{output}^2, \widehat{output}^3, \widehat{output}^4\)**
+и гипотеза \(H_0:\beta\left[\widehat{output}^2\right]=\beta\left[\widehat{output}^3\right]=\beta\left[\widehat{output}^4\right]=0\)
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = my.reset.test$parameter[[1]], df2 = my.reset.test$parameter[[2]] )
+round(F.cr, digits = my.digits)
+```
+
+Какие можно сделать выводы?
+
+```{r, echo=FALSE, comment=''}
+if(my.reset.test$p.value<sign.level) { 
+  print('Гипотеза отвергается, регрессия не согласуется с данными') 
+} else print('Гипотеза не отвергается, регрессия согласуется с данными')
+```
+
+<!-- Результаты RESET-теста (со степенями `r reset.powers`) с поправкой на гетероскедастичность -->
+
+<!-- ```{r,echo=FALSE, comment=''} -->
+<!-- my.reset.test <- resettest(regr, power=reset.powers, vcov = vcovHC) -->
+<!-- my.reset.test -->
+<!-- ``` -->
+
+## output equation #2
+
+Для набора данных `Labour` рассмотрим линейную регрессию 
+**log(output) на log(capital), log(labour), log(wage)**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+reset.powers <- 2:4
+regr <- lm(formula=log(output)~log(capital)+log(labour)+log(wage), data=Labour)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Результаты RESET-теста
+(со степенями `r reset.powers`)
+
+```{r,echo=FALSE, comment=''}
+my.reset.test <- resettest(regr, power=reset.powers)
+my.reset.test
+```
+
+Напишите спецификацию регрессии RESET-теста и тестируемую гипотезу
+
+Ответ: **log(output) на log(capital), log(labour), log(wage), \(\widehat{log(output)}^2, \widehat{log(output)}^3, \widehat{log(output)}^4\)**
+и гипотеза \(H_0:\beta\left[\widehat{log(output)}^2\right]=\beta\left[\widehat{log(output)}^3\right]=\beta\left[\widehat{log(output)}^4\right]=0\)
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = my.reset.test$parameter[[1]], df2 = my.reset.test$parameter[[2]] )
+round(F.cr, digits = my.digits)
+```
+
+Какие можно сделать выводы?
+
+```{r, echo=FALSE, comment=''}
+if(my.reset.test$p.value<sign.level) { 
+  print('Гипотеза отвергается, регрессия не согласуется с данными') 
+} else print('Гипотеза не отвергается, регрессия согласуется с данными')
+```
+
+<!-- Результаты RESET-теста (со степенями `r reset.powers`) с поправкой на гетероскедастичность -->
+
+<!-- ```{r,echo=FALSE, comment=''} -->
+<!-- my.reset.test <- resettest(regr, power=reset.powers, vcov = vcovHC) -->
+<!-- my.reset.test -->
+<!-- ``` -->
+
+## output equation #3
+
+Для набора данных `Labour` рассмотрим линейную регрессию 
+**log(output) на log(capital), labour, labour^2, log(wage)**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+reset.powers <- 2:4
+regr <- lm(formula=log(output)~log(capital)+labour+I(labour^2)+log(wage), data=Labour)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Результаты RESET-теста
+(со степенями `r reset.powers`)
+
+```{r,echo=FALSE, comment=''}
+my.reset.test <- resettest(regr, power=reset.powers)
+my.reset.test
+```
+
+Напишите спецификацию регрессии RESET-теста и тестируемую гипотезу
+
+Ответ: **log(output) на log(capital), labour, labour^2, log(wage), \(\widehat{log(output)}^2, \widehat{log(output)}^3, \widehat{log(output)}^4\)**
+и гипотеза \(H_0:\beta\left[\widehat{log(output)}^2\right]=\beta\left[\widehat{log(output)}^3\right]=\beta\left[\widehat{log(output)}^4\right]=0\)
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = my.reset.test$parameter[[1]], df2 = my.reset.test$parameter[[2]] )
+round(F.cr, digits = my.digits)
+```
+
+Какие можно сделать выводы?
+
+```{r, echo=FALSE, comment=''}
+if(my.reset.test$p.value<sign.level) { 
+  print('Гипотеза отвергается, регрессия не согласуется с данными') 
+} else print('Гипотеза не отвергается, регрессия согласуется с данными')
+```
+
+<!-- Результаты RESET-теста (со степенями `r reset.powers`) с поправкой на гетероскедастичность -->
+
+<!-- ```{r,echo=FALSE, comment=''} -->
+<!-- my.reset.test <- resettest(regr, power=reset.powers, vcov = vcovHC) -->
+<!-- my.reset.test -->
+<!-- ``` -->
+
+# Сравнение моделей
+
+## sleep equations
+
+Для набора данных `sleep75` рассмотрим несколько моделей регрессии.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- list()
+regr[[1]] <- lm(formula=sleep~totwrk+age+male+smsa+south, data=sleep75)
+regr[[2]] <- update(regr[[1]], formula=~.+I(totwrk^2))
+regr[[3]] <- update(regr[[1]], formula=~.+I(age^2))
+regr[[4]] <- update(regr[[1]], formula=~.+marr+union )
+regr[[5]] <- update(regr[[1]], formula=~.+I(totwrk^2)+I(age^2) )
+regr[[6]] <- update(regr[[1]], formula=~.+I(totwrk^2)+I(age^2)+marr+union )
+for(i in 1:length(regr) ) {
+  regr[[i]]$AIC <- AIC(regr[[i]])
+  regr[[i]]$BIC <- BIC(regr[[i]])
+}
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE,
+          keep.stat = c('n', 'rsq', 'adj.rsq', 'aic', 'bic', 'ser'))
+```
+
+Какая модель предпочтительней по информационных критериям и по \(R^2_{adj}\)?
+
+```{r, echo=FALSE, comment=''}
+my.adj.r.sq <- NULL
+my.AIC <- NULL
+my.BIC <- NULL
+for(i in 1:length(regr)) {
+  my.adj.r.sq <- c(my.adj.r.sq, summary(regr[[i]])$adj.r.squared)
+  my.AIC <- c(my.AIC, regr[[i]]$AIC)
+  my.BIC <- c(my.BIC, regr[[i]]$BIC)
+  }
+df <- data.frame(Метод=c('adj.R^2', 'AIC', 'BIC'),
+                      Регрессия=c(which.max(my.adj.r.sq), which.min(my.AIC), which.min(my.BIC)) )
+stargazer(df, type='text', summary = FALSE, rownames = FALSE)
+```
+
+## output equations
+
+Для набора данных `Labour` рассмотрим несколько моделей регрессии.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 4
+my.digits <- 2
+sign.level <- 0.05
+regr <- list()
+regr[[1]] <- lm(formula=log(output)~log(capital)+log(labour)+log(wage), data=Labour)
+regr[[2]] <- update(regr[[1]], formula=~.+I(log(capital)^2)+I(log(labour)^2) )
+regr[[3]] <- update(regr[[1]], formula=~.+I(log(wage)^2) )
+regr[[4]] <- update(regr[[1]], formula=~.+I(log(capital)^2)+I(log(labour)^2)+I(log(wage)^2) )
+regr[[5]] <- update(regr[[1]], formula=~.-log(labour)+labour+I(labour^2) )
+regr[[6]] <- update(regr[[1]], formula=~.-log(labour)+labour+I(labour^2)+I(log(wage)^2) )
+for(i in 1:length(regr) ) {
+  regr[[i]]$AIC <- AIC(regr[[i]])
+  regr[[i]]$BIC <- BIC(regr[[i]])
+}
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE,
+          keep.stat = c('n', 'rsq', 'adj.rsq', 'aic', 'bic', 'ser'))
+```
+
+Какая модель предпочтительней по информационных критериям и по \(R^2_{adj}\)?
+
+```{r, echo=FALSE, comment=''}
+my.adj.r.sq <- NULL
+my.AIC <- NULL
+my.BIC <- NULL
+for(i in 1:length(regr)) {
+  my.adj.r.sq <- c(my.adj.r.sq, summary(regr[[i]])$adj.r.squared)
+  my.AIC <- c(my.AIC, regr[[i]]$AIC)
+  my.BIC <- c(my.BIC, regr[[i]]$BIC)
+  }
+df <- data.frame(Метод=c('adj.R^2', 'AIC', 'BIC'),
+                      Регрессия=c(which.max(my.adj.r.sq), which.min(my.AIC), which.min(my.BIC)) )
+stargazer(df, type='text', summary = FALSE, rownames = FALSE)
+```
+
+## cost equations
+
+Для набора данных `Electricity` рассмотрим несколько моделей регрессии.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- list()
+regr[[1]] <- lm(formula=log(cost)~log(q)+log(pl)+log(pk)+log(pf), data=Electricity)
+regr[[2]] <- update(regr[[1]], formula=~.+I(log(q)^2) )
+regr[[3]] <- update(regr[[1]], formula=~.-log(q)+q)
+regr[[4]] <- update(regr[[1]], formula=~.-log(q)+q+I(q^2) )
+regr[[5]] <- update(regr[[1]], formula=~.+I(log(q)^2)+I(log(pl)^2)+I(log(pk)^2)+I(log(pf)^2) )
+regr[[6]] <- update(regr[[1]], formula=~.-log(q)+q+I(q^2)+I(log(pl)^2)+I(log(pk)^2)+I(log(pf)^2))
+for(i in 1:length(regr) ) {
+  regr[[i]]$AIC <- AIC(regr[[i]])
+  regr[[i]]$BIC <- BIC(regr[[i]])
+}
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE,
+          keep.stat = c('n', 'rsq', 'adj.rsq', 'aic', 'bic', 'ser'))
+```
+
+Какая модель предпочтительней по информационных критериям и по \(R^2_{adj}\)?
+
+```{r, echo=FALSE, comment=''}
+my.adj.r.sq <- NULL
+my.AIC <- NULL
+my.BIC <- NULL
+for(i in 1:length(regr)) {
+  my.adj.r.sq <- c(my.adj.r.sq, summary(regr[[i]])$adj.r.squared)
+  my.AIC <- c(my.AIC, regr[[i]]$AIC)
+  my.BIC <- c(my.BIC, regr[[i]]$BIC)
+  }
+df <- data.frame(Метод=c('adj.R^2', 'AIC', 'BIC'),
+                      Регрессия=c(which.max(my.adj.r.sq), which.min(my.AIC), which.min(my.BIC)) )
+stargazer(df, type='text', summary = FALSE, rownames = FALSE)
+```

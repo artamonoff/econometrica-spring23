@@ -1,0 +1,228 @@
+---
+title: "Задачи по Эконометрике: Доверительные интервалы"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(ggplot2)
+library(jtools)
+library(sjPlot)
+data(sleep75,wage1, wage2, Labour, Electricity, package = c('wooldridge', 'Ecdat') )
+sleep75$gender <- factor(sleep75$male, labels = c('female', 'male') )
+wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
+```
+
+# Построение доверительных интервалов
+
+## sleep equation
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, age, south, male, smsa, yngkid, marr**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+conf.level <- 0.9
+sign.level <- 1-conf.level
+regr <- lm(formula=sleep~totwrk+age+south+male+smsa+yngkid+marr, data=sleep75)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Постройте `r conf.level*100`%-доверительные интервалы для каждого коэффициента. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+t.test <- round(coeftest(regr), digits = my.digits.output)
+t.cr <- qt( p=1-sign.level/2, df=df.residual(regr) )
+my.conf.int <- data.frame(нижняя=round( t.test[,1]-t.cr*t.test[,2], digits = my.digits), 
+                                верхняя=round( t.test[,1]+t.cr*t.test[,2], digits = my.digits) )
+row.names(my.conf.int) <- row.names(t.test)
+stargazer(my.conf.int, summary=FALSE, rownames=TRUE, type = 'text', digit.separator = '', digits = my.digits)
+```
+
+## output equation
+
+Для набора данных `Labour` рассмотрим регрессию **log(output) на log(capital) и log(labour)**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+conf.level <- 0.95
+sign.level <- 1-conf.level
+regr <- lm(formula=log(output)~log(capital)+log(labour), data=Labour)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Постройте `r conf.level*100`%-доверительные интервалы для каждого коэффициента. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+t.test <- round(coeftest(regr), digits = my.digits.output)
+t.cr <- qt( p=1-sign.level/2, df=df.residual(regr) )
+my.conf.int <- data.frame(нижняя=round( t.test[,1]-t.cr*t.test[,2], digits = my.digits), 
+                                верхняя=round( t.test[,1]+t.cr*t.test[,2], digits = my.digits) )
+row.names(my.conf.int) <- row.names(t.test)
+stargazer(my.conf.int, summary=FALSE, rownames=TRUE, type = 'text', digit.separator = '', digits = my.digits)
+```
+
+## cost equation
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q), log^2(q), log(pl), log(pk), log(pf)**
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+conf.level <- 0.99
+sign.level <- 1-conf.level
+regr <- lm(formula=log(cost)~log(q)+I(log(q)^2)+log(pl)+log(pk)+log(pf), data=Electricity)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Постройте `r conf.level*100`%-доверительные интервалы для каждого коэффициента. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+t.test <- round(coeftest(regr), digits = my.digits.output)
+t.cr <- qt( p=1-sign.level/2, df=df.residual(regr) )
+my.conf.int <- data.frame(нижняя=round( t.test[,1]-t.cr*t.test[,2], digits = my.digits), 
+                                верхняя=round( t.test[,1]+t.cr*t.test[,2], digits = my.digits) )
+row.names(my.conf.int) <- row.names(t.test)
+stargazer(my.conf.int, summary=FALSE, rownames=TRUE, type = 'text', digit.separator = '', digits = my.digits)
+```
+
+# Доверительные интервалы и t-тест
+
+## sleep equation
+
+Для набора данных `sleep75` рассмотрим линейную регрессию
+**sleep на totwrk, age, age^2, south, male, smsa, yngkid, marr, union**.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+conf.level <- 0.9
+sign.level <- 1-conf.level
+regr <- lm(formula=sleep~totwrk+age+I(age^2)+south+male+smsa+yngkid+marr+union, data=sleep75)
+```
+
+Ниже приведены `r conf.level*100`%-доверительные интервалы для коэффициентов.
+
+```{r, echo=FALSE, comment='', message=FALSE}
+conf.int <- confint(regr, level = conf.level)
+round(conf.int, digits = my.digits.output)
+```
+
+Какие коэффициенты значимы при уровне значимости `r sign.level*100`%? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+significance <- NULL
+for(i in 1:nrow(conf.int)) {
+  if( conf.int[i,1]<0 & conf.int[i,2]>0 ) significance <- c(significance, 'Незначим')
+  else significance <- c(significance, 'Значим')
+}
+df.sign <- data.frame(Коэффициент=row.names(conf.int), Значимость=significance)
+stargazer(df.sign, summary = FALSE, type='text', rownames=FALSE)
+```
+
+Визуализация доверительных интервалов как есть (в одном масштабе)
+
+```{r, echo=FALSE, comment='', message=FALSE}
+plot_model(regr, ci.lvl=conf.level)
+```
+
+Шкалированные доверительные интервалы
+
+```{r, echo=FALSE, comment='', message=FALSE}
+plot_model(regr, ci.lvl=conf.level, type = "std")
+```
+
+## cost equation
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q), log^2(q), log(pl), log^2(pl), log(pk), log^2(pk), log(pf), log^2(pf)**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+conf.level <- 0.99
+sign.level <- 1-conf.level
+regr <- lm(formula=log(cost)~log(q)+I(log(q)^2)+log(pl)+I(log(pl)^2)+log(pk)+I(log(pk)^2)+log(pf)+I(log(pf)^2), data=Electricity)
+```
+
+Ниже приведены `r conf.level*100`%-доверительные интервалы для коэффициентов.
+
+```{r, echo=FALSE, comment=''}
+conf.int <- confint(regr, level = conf.level)
+round(conf.int, digits = my.digits.output)
+```
+
+Какие коэффициенты значимы при уровне значимости `r sign.level*100`%? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+significance <- NULL
+for(i in 1:nrow(conf.int)) {
+  if( conf.int[i,1]<0 & conf.int[i,2]>0 ) significance <- c(significance, 'Незначим')
+  else significance <- c(significance, 'Значим')
+}
+df.sign <- data.frame(Коэффициент=row.names(conf.int), Значимость=significance)
+stargazer(df.sign, summary = FALSE, type='text', rownames=FALSE)
+```
+
+Визуализация доверительных интервалов как есть (в одном масштабе)
+
+```{r, echo=FALSE, comment='', message=FALSE}
+plot_model(regr, ci.lvl=conf.level)
+```
+
+Шкалированные доверительные интервалы
+
+```{r, echo=FALSE, comment='', message=FALSE}
+plot_model(regr, ci.lvl=conf.level, type = "std")
+```
+
+# Доверителные интервалы и сравнение моделей
+
+Результаты подгонки:
+```{r, echo=FALSE, comment='', message=FALSE}
+my.digits <- 3
+sign.level <- 0.01
+my.digits.output <- 3
+df.1 <- subset(sleep75, subset= south == 0)
+df.2 <- subset(sleep75, subset= south == 1)
+spec <- formula('sleep~totwrk+age+I(age^2)+smsa+marr')
+regr.1 <- lm(formula=spec, data=df.1 )
+regr.2 <- lm(formula=spec, data=df.2 )
+regr <- lm(formula=spec, data=sleep75)
+stargazer(regr.1, regr.2, regr, type='text', column.labels=c('Север', 'Юг', 'общая'),
+          digits=my.digits.output, df=FALSE, digit.separator="")
+# plot_summs(regr.1, regr.2, scale=TRUE)
+plot_models(regr.1, regr.2, regr, std.est="std", m.labels = c('Север', 'Юг', 'Общая'))
+# spec <- formula('sleep/60~totwrk+age+I(age^2)+male+smsa')
+# regr.1 <- lm(formula=spec, data=sleep75, subset = south == 1)
+# regr.2 <- lm(formula=spec, data=sleep75, subset = south == 0)
+# regr <- lm(formula=spec, data=sleep75)
+# plot_models(regr.1, regr.2)
+```
