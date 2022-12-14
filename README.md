@@ -12,3 +12,8 @@
 - [Листок 10](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List10-Specification.html): Спецификация
 
 # Задачи по Эконометрике-2
+
+- [Листок 21](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List21-LPM.html): LPM-модель
+- [Листок 22](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List22-LogitProbit.html): Logit/Probit-модель
+- [Листок 23](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List23-Goodness-O-fFit.html): Степень подгонки
+- [Листок 24](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List24-Prediction.html): Прогнозирвоание
