@@ -1,0 +1,196 @@
+---
+title: "Задачи по Эконометрике-2: Качество подгонки и сравнение моделей"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(sandwich)
+library(jtools)
+library(DescTools)
+data(loanapp, package = 'wooldridge')
+data(SwissLabor, package = 'AER')
+mroz_Greene <- read.csv('http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv')
+```
+
+# Качество подгонки
+
+## labour force equation #1 (probit)
+
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
+рассморим несколько probit-регрессй. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.10
+regr <- NULL
+regr[[1]] <- glm(formula=LFP~WA+I(WA^2)+WE+KL6+K618+CIT+UN+log(FAMINC), data=mroz_Greene,
+                 family = binomial(link='probit') )
+regr[[2]] <- update(regr[[1]], formula. = ~.-WA-I(WA^2) )
+regr[[3]] <- update(regr[[1]], formula. = ~.-CIT-UN-K618 )
+regr[[4]] <- update(regr[[1]], formula. = ~.-CIT-UN-K618-log(FAMINC) )
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+my.logL.null <- round(-regr[[1]]$null.deviance/2, digits = my.digits.output)
+my.logL <- NULL
+my.k <- NULL
+for(i in 1:length(regr)) {
+  my.logL <- c(my.logL, round(-deviance(regr[[i]])/2, digits = my.digits.output) )
+  my.k <- c(my.k, regr[[i]]$rank-1)
+}
+my.logL.null <- round(-regr[[1]]$null.deviance/2, digits = my.digits.output)
+n <- nobs(regr[[1]])
+```
+Логарфим функции правдоподобия для регрессии без объясняющих переменных (только на константу)
+\(\log L_0=\)`r my.logL.null`.
+
+Для каждой регрессии вычислитк следующие показатели качества подгонки модели: \(pseudoR^2\), 
+\(pseudoR^2_adj\), Cox & Snell, Nagelkerke/Cragg & Uhler. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ: 
+
+```{r, echo=FALSE, comment=''}
+goodness.of.fit <- data.frame(Model=1:length(regr),
+                              pseudoR2=1-my.logL/my.logL.null,
+                              pseudoR.2adj=1-(my.logL-my.k)/my.logL.null,
+                              CoxSnell=1-(exp(my.logL.null)/exp(my.logL))^(2/n),
+                              Nagelkerke=(1-(exp(my.logL.null)/exp(my.logL))^(2/n))/(1-exp(my.logL.null)^(2/n))
+                              )
+stargazer(goodness.of.fit, type='text', summary=FALSE, rownames=FALSE, digits = my.digits)
+```
+
+## approve equation #1 (logit)
+
+Для датасета `loanapp`
+рассморим несколько probit-регрессй. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.01
+regr <- NULL
+regr[[1]] <- glm(formula=approve~appinc+I(appinc^2)+mortno+unem+dep+male+married+yjob+self, data=loanapp,
+                 family = binomial(link='probit') )
+regr[[2]] <- update(regr[[1]], formula. = ~.-appinc-I(appinc^2) )
+regr[[3]] <- update(regr[[1]], formula. = ~.-male-yjob-self )
+regr[[4]] <- update(regr[[1]], formula. = ~.-male-yjob-self-unem-married )
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+my.logL.null <- round(-regr[[1]]$null.deviance/2, digits = my.digits.output)
+my.logL <- NULL
+my.k <- NULL
+for(i in 1:length(regr)) {
+  my.logL <- c(my.logL, round(-deviance(regr[[i]])/2, digits = my.digits.output) )
+  my.k <- c(my.k, regr[[i]]$rank-1)
+}
+my.logL.null <- round(-regr[[1]]$null.deviance/2, digits = my.digits.output)
+n <- nobs(regr[[1]])
+```
+
+Логарфим функции правдоподобия для регрессии без объясняющих переменных (только на константу)
+\(\log L_0=\)`r my.logL.null`.
+
+Для каждой регрессии вычислитк следующие показатели качества подгонки модели: \(pseudoR^2\), 
+\(pseudoR^2_adj\), Cox & Snell, Nagelkerke/Cragg & Uhler. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ: 
+
+```{r, echo=FALSE, comment=''}
+goodness.of.fit <- data.frame(Model=1:length(regr),
+                              pseudoR2=1-my.logL/my.logL.null,
+                              pseudoR.2adj=1-(my.logL-my.k)/my.logL.null,
+                              CoxSnell=1-(exp(my.logL.null)/exp(my.logL))^(2/n),
+                              Nagelkerke=(1-(exp(my.logL.null)/exp(my.logL))^(2/n))/(1-exp(my.logL.null)^(2/n))
+                              )
+stargazer(goodness.of.fit, type='text', summary=FALSE, rownames=FALSE, digits = my.digits)
+```
+
+# Сравнение моделей
+
+## labour force equation #1 (probit)
+
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
+рассморим несколько probit-регрессй. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.10
+regr <- NULL
+regr[[1]] <- glm(formula=LFP~WA+I(WA^2)+WE+KL6+K618+CIT+UN+log(FAMINC), data=mroz_Greene,
+                 family = binomial(link='probit') )
+regr[[2]] <- update(regr[[1]], formula. = ~.-WA-I(WA^2) )
+regr[[3]] <- update(regr[[1]], formula. = ~.-CIT-UN-K618 )
+regr[[4]] <- update(regr[[1]], formula. = ~.-CIT-UN-K618-log(FAMINC) )
+for(i in 1:length(regr) ) {
+  # regr[[i]]$AIC <- AIC(regr[[i]])
+  regr[[i]]$BIC <- BIC(regr[[i]])
+}
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Какая модель предпочтительней по информационных критериям?
+
+Ответ: 
+
+```{r, echo=FALSE, comment=''}
+my.AIC <- NULL
+my.BIC <- NULL
+for(i in 1:length(regr)) {
+  my.AIC <- c(my.AIC, regr[[i]]$aic)
+  my.BIC <- c(my.BIC, regr[[i]]$BIC)
+  }
+df <- data.frame(Критерий=c('AIC', 'BIC'),
+                      Регрессия=c(which.min(my.AIC), which.min(my.BIC) ) )
+stargazer(df, type='text', summary = FALSE, rownames = FALSE)
+```
+
+## approve equation #1 (logit)
+
+Для датасета `loanapp`
+рассморим несколько probit-регрессй. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.10
+regr <- NULL
+regr[[1]] <- glm(formula=approve~appinc+I(appinc^2)+mortno+unem+dep+male+married+yjob+self, data=loanapp,
+                 family = binomial(link='probit') )
+regr[[2]] <- update(regr[[1]], formula. = ~.-appinc-I(appinc^2) )
+regr[[3]] <- update(regr[[1]], formula. = ~.-male-yjob-self )
+regr[[4]] <- update(regr[[1]], formula. = ~.-male-yjob-self-unem-married )
+for(i in 1:length(regr) ) {
+  # regr[[i]]$AIC <- AIC(regr[[i]])
+  regr[[i]]$BIC <- BIC(regr[[i]])
+}
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+Какая модель предпочтительней по информационных критериям?
+
+Ответ: 
+
+```{r, echo=FALSE, comment=''}
+my.AIC <- NULL
+my.BIC <- NULL
+for(i in 1:length(regr)) {
+  my.AIC <- c(my.AIC, regr[[i]]$aic)
+  my.BIC <- c(my.BIC, regr[[i]]$BIC)
+  }
+df <- data.frame(Критерий=c('AIC', 'BIC'),
+                      Регрессия=c(which.min(my.AIC), which.min(my.BIC) ) )
+stargazer(df, type='text', summary = FALSE, rownames = FALSE)
+```
