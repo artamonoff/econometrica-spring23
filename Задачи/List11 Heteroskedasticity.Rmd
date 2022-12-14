@@ -1,0 +1,427 @@
+---
+title: "Задачи по Эконометрике: Гетероскедастичность"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(ggplot2)
+library(sandwich)
+data(sleep75,wage1, wage2, Labour, Electricity, Diamond, diamonds, package = c('wooldridge', 'Ecdat', 'ggplot2') )
+sleep75$gender <- factor(sleep75$male, labels = c('female', 'male') )
+wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
+```
+
+# Тесты
+
+## sleep equation
+
+Для набора данных `sleep75` рассмотрим линейную регрессию 
+**sleep на totwrk, age, age^2, male, smsa, south**. Спецификация:
+\(sleep=\beta_0+\beta_1totwrk+\beta_2age+\beta_3age^2+\beta_4male+\beta_5smsa+\beta_6south+u\).
+
+BP-тест рассматривает модель гетероскедастичности
+\(Var(u|X)=f(\gamma_0+\gamma_1totwrk+\gamma_2age+\gamma_3age^2+\gamma_4male+\gamma_5smsa+\gamma_6south)\)
+и тестируется \(H_0:\gamma_1=\cdots=\gamma_6=0\) (ошибка гомоскедастична)
+
+Результаты тестирование
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- lm(formula=sleep~totwrk+age+I(age^2)+male+smsa+south, data=sleep75)
+my.bp.test <- bptest(regr)
+my.bp.test
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=my.bp.test$parameter[[1]] )
+round(chi2.cr, digits = my.digits)
+```
+
+Какой можно сделать вывод?
+
+```{r echo=FALSE, comment=''}
+if(my.bp.test$p.value[[1]]<sign.level) print('Тест укзывает на гетероскедастичность') else print('Тест укзывает на гомоскедастичность')
+```
+
+## wage equation
+
+Для набора данных `wage1` рассмотрим линейную регрессию
+**log(wage) на exper, exper^2, female, married, smsa**.
+
+Результат BP-теста
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- lm(formula=log(wage)~exper+I(exper^2)+female+married+smsa, data=wage1)
+my.bp.test <- bptest(regr)
+my.bp.test
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=my.bp.test$parameter[[1]] )
+round(chi2.cr, digits = my.digits)
+```
+
+Какой можно сделать вывод?
+
+```{r echo=FALSE, comment=''}
+if(my.bp.test$p.value[[1]]<sign.level) print('Тест укзывает на гетероскедастичность') else print('Тест укзывает на гомоскедастичность')
+```
+
+## output equation
+
+Для набора данных `Labour` рассмотрим линейную регрессию
+**log(output) на log(capital), log(labour), log(capital)^2, log(labour)^2**.
+
+Результат BP-теста
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- lm(formula=log(output)~log(capital)+log(labour)+I(log(capital)^2)+I(log(labour)^2), data=Labour)
+my.bp.test <- bptest(regr)
+my.bp.test
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=my.bp.test$parameter[[1]] )
+round(chi2.cr, digits = my.digits)
+```
+
+Какой можно сделать вывод?
+
+```{r echo=FALSE, comment=''}
+if(my.bp.test$p.value[[1]]<sign.level) print('Тест укзывает на гетероскедастичность') else print('Тест укзывает на гомоскедастичность')
+```
+
+## cost equation #1
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q), log^2(q), log(pl), log(pk), log(pf)**.
+
+Результат BP-теста
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- lm(formula=log(cost)~log(q)+I(log(q)^2)+log(pf)+log(pl)+log(pk),data=Electricity)
+my.bp.test <- bptest(regr)
+my.bp.test
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=my.bp.test$parameter[[1]] )
+round(chi2.cr, digits = my.digits)
+```
+
+Какой можно сделать вывод?
+
+```{r echo=FALSE, comment=''}
+if(my.bp.test$p.value[[1]]<sign.level) print('Тест укзывает на гетероскедастичность') else print('Тест укзывает на гомоскедастичность')
+```
+
+## cost equation #2
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q), log^2(q), log(pl), log(pk), log(pf), log^2(pl), log^2(pk), log^2(pf)**.
+
+Результат BP-теста
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- lm(formula=log(cost)~log(q)+I(log(q)^2)+log(pf)+log(pl)+log(pk)+log(pk)+I(log(pf)^2)+I(log(pl)^2)+I(log(pk)^2),
+           data=Electricity)
+my.bp.test <- bptest(regr)
+my.bp.test
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=my.bp.test$parameter[[1]] )
+round(chi2.cr, digits = my.digits)
+```
+
+Какой можно сделать вывод?
+
+```{r echo=FALSE, comment=''}
+if(my.bp.test$p.value[[1]]<sign.level) print('Тест укзывает на гетероскедастичность') else print('Тест укзывает на гомоскедастичность')
+```
+
+#  Робастный t-тест (HC s.e.)
+
+## output equation
+
+Для набора данных `Labour` рассмотрим линейную регрессию
+**log(output) на log(capital), log(labour), log(capital)^2, log(labour)^2**.
+
+Результаты t-теста (неробастный, OLS-s.e.)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- lm(formula=log(output)~log(capital)+log(labour)+I(log(capital)^2)+I(log(labour)^2), data=Labour)
+t.test <- coeftest(regr)
+t.test
+```
+
+Результаты t-теста (робастный, HC-s.e.)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+robust.t.test <- coeftest(regr, vcov. = vcovHC)
+robust.t.test
+```
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Какие коэффициенты значимы?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(robust.t.test)
+sign.regressors <- NULL
+for(i in 1:nrow(robust.t.test) ) {
+  if(robust.t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, 'Значим') else sign.regressors <- c(sign.regressors, 'Незначим')
+}
+# names(sign.regressors) <- rownames(t.test)
+print(data.frame(regressors, sign.regressors))
+```
+
+## cost equation
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q), log(q)^2, log(pl), log(pk), log(pf)**.
+
+Результаты t-теста (неробастный, OLS-s.e.)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.01
+regr <- lm(formula=log(cost)~log(q)+I(log(q)^2)+log(pf)+log(pl)+log(pk),data=Electricity)
+t.test <- coeftest(regr)
+t.test
+```
+
+Результаты t-теста (робастный, HC-s.e.)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+robust.t.test <- coeftest(regr, vcov. = vcovHC)
+robust.t.test
+```
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Какие коэффициенты значимы?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(robust.t.test)
+sign.regressors <- NULL
+for(i in 1:nrow(robust.t.test) ) {
+  if(robust.t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, 'Значим') else sign.regressors <- c(sign.regressors, 'Незначим')
+}
+# names(sign.regressors) <- rownames(t.test)
+print(data.frame(regressors, sign.regressors))
+```
+
+#  Робастный F-тест
+
+## output equation
+
+Для набора данных `Labour` рассмотрим линейную регрессию
+**log(output) на log(capital), log(labour), log(capital)^2, log(labour)^2**.
+
+Результаты t-теста (робастный, HC-s.e.)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.01
+regr <- lm(formula=log(output)~log(capital)+log(labour)+I(log(capital)^2)+I(log(labour)^2), data=Labour)
+robust.t.test <- coeftest(regr, vcov. = vcovHC)
+robust.t.test
+```
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Число налюдений `r nobs(regr)`
+
+Потестируем значимость влияния **labour**, т.е. \(H_0:\beta_{\log(labour)}=\beta_{\log^2(labour)}=0\)
+
+Результаты F-теста (неробастный):
+```{r,comment='', echo=FALSE}
+testing.hypothesis <- c('log(labour)=0', 'I(log(capital)^2)=0')
+F.test <- linearHypothesis(regr, testing.hypothesis )
+# testing.result
+stargazer(F.test[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Результаты F-теста (робастный):
+```{r,comment='', echo=FALSE}
+robust.F.test <- linearHypothesis(regr, testing.hypothesis, white.adjust='hc3')
+# testing.result
+stargazer(robust.F.test[2,3:4], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Какое критическое значение? **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = robust.F.test[2,2], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Значимо ли влияние **labour**?
+
+```{r,comment='', echo=FALSE}
+if(robust.F.test[2,4]<sign.level) print('Значимо') else print('Незначимо')
+```
+
+## cost equation
+
+Для набора данных `Electricity` рассмотрим линейную регрессию
+**log(cost) на log(q), log(q)^2, log(pl), log(pk), log(pf)**.
+
+Результаты t-теста (неробастный, OLS-s.e.)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.05
+regr <- lm(formula=log(cost)~log(q)+I(log(q)^2)+log(pf)+log(pl)+log(pk)+I(log(pf)^2)+I(log(pl)^2)+I(log(pk)^2),
+           data=Electricity)
+# regr <- lm(formula=log(cost)~q+I(q^2)+log(pf)+log(pl)+log(pk),data=Electricity)
+t.test <- coeftest(regr)
+t.test
+```
+
+Результаты t-теста (робастный, HC-s.e.)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+robust.t.test <- coeftest(regr, vcov. = vcovHC)
+robust.t.test
+```
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Число налюдений `r nobs(regr)`
+
+### Гипотеза 1
+Потестируем значимость влияния **pl**, т.е. \(H_0:\beta_{\log(pl)}=\beta_{\log^2(pl)}=0\)
+
+Результаты F-теста (неробастный):
+```{r,comment='', echo=FALSE}
+testing.hypothesis <- c('log(pl)=0', 'I(log(pl)^2)=0')
+# testing.hypothesis <- c('log(pl)=0', 'log(pk)=0')
+F.test <- linearHypothesis(regr,  testing.hypothesis )
+# testing.result
+stargazer(F.test[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Результаты F-теста (робастный):
+```{r,comment='', echo=FALSE}
+robust.F.test <- linearHypothesis(regr, testing.hypothesis, vcov.=vcovHC)
+stargazer(robust.F.test[2,3:4], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Какое критическое значение? **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = robust.F.test[2,2], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Значимо ли влияние?
+
+```{r,comment='', echo=FALSE}
+if(robust.F.test[2,4]<sign.level) print('Значимо') else print('Незначимо')
+```
+
+### Гипотеза 2
+Потестируем значимость влияния **pk**, т.е. \(H_0:\beta_{\log(pk)}=\beta_{\log^2(pk)}=0\)
+
+Результаты F-теста (неробастный):
+```{r,comment='', echo=FALSE}
+testing.hypothesis <- c('log(pk)=0', 'I(log(pk)^2)=0')
+# testing.hypothesis <- c('log(pl)=0', 'log(pk)=0')
+F.test <- linearHypothesis(regr,  testing.hypothesis )
+# testing.result
+stargazer(F.test[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Результаты F-теста (робастный):
+```{r,comment='', echo=FALSE}
+robust.F.test <- linearHypothesis(regr, testing.hypothesis, vcov.=vcovHC)
+stargazer(robust.F.test[2,3:4], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Какое критическое значение? **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = robust.F.test[2,2], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Значимо ли влияние?
+
+```{r,comment='', echo=FALSE}
+if(robust.F.test[2,4]<sign.level) print('Значимо') else print('Незначимо')
+```
+
+### Гипотеза 3
+Потестируем значимость влияния **pf**, т.е. \(H_0:\beta_{\log(pf)}=\beta_{\log^2(pf)}=0\)
+
+Результаты F-теста (неробастный):
+```{r,comment='', echo=FALSE}
+testing.hypothesis <- c('log(pf)=0', 'I(log(pf)^2)=0')
+# testing.hypothesis <- c('log(pl)=0', 'log(pk)=0')
+F.test <- linearHypothesis(regr,  testing.hypothesis )
+# testing.result
+stargazer(F.test[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Результаты F-теста (робастный):
+```{r,comment='', echo=FALSE}
+robust.F.test <- linearHypothesis(regr, testing.hypothesis, vcov.=vcovHC)
+stargazer(robust.F.test[2,3:4], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+Какое критическое значение? **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+F.cr <- qf(p=1-sign.level, df1 = robust.F.test[2,2], df2 = df.residual(regr))
+round(F.cr, digits = my.digits)
+```
+
+Значимо ли влияние?
+
+```{r,comment='', echo=FALSE}
+if(robust.F.test[2,4]<sign.level) print('Значимо') else print('Незначимо')
+```

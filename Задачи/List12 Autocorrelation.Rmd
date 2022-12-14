@@ -1,0 +1,306 @@
+---
+title: "Задачи по Эконометрике: Серийная корреляция"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE,warning=FALSE,results='hide'}
+library(lmtest)
+library(sandwich)
+library(Ecdat)
+library(jtools)
+library(quantmod)
+data(Icecream)
+data("Consumption")
+
+getSymbols(Symbols = c('TB3MS', 'GS10', 'M2SL'), src='FRED', return.class='zoo')
+TB3MS <- zooreg(TB3MS, start = c(1934,1), frequency = 12)
+GS10 <- zooreg(GS10, start = c(1953,4), frequency = 12)
+M2SL <- zooreg(M2SL, start = c(1959,1), frequency = 12)
+
+rate.3m <- window(TB3MS, start = as.yearmon('1995-1'), end = as.yearmon('2019-12'))
+rate.10y <- window(GS10, start = as.yearmon('1995-1'), end = as.yearmon('2019-12'))
+M2 <- window(M2SL, start = as.yearmon('1995-1'), end = as.yearmon('2019-12'))
+Rates <- cbind(rate.3m, rate.10y, M2)
+# первые разности
+d.rate.3m <- window(diff(TB3MS), start = as.yearmon('1995-1'), end = as.yearmon('2019-12'))
+d.rate.10y <- window(diff(GS10), start = as.yearmon('1995-1'), end = as.yearmon('2019-12'))
+dl.M2 <-  window(diff(log(M2SL)), start = as.yearmon('1995-1'), end = as.yearmon('2019-12'))
+d.Rates <- cbind(d.rate.3m, d.rate.10y, dl.M2)
+```
+
+# DW-тест
+
+## Icecream consumption
+
+Рассмотрим набор данных `Icecream`: Недельные данные по потреблению мороженого
+
+- cons (потребление мороженого на одного человека в пинтах)
+- income (средний недельных доход семьи)
+- price (цена мороженого за пинту)
+- temp (средняя температура по Фаренгейту)
+
+и регрессию **cons на income, price, temp**. Результаты подгонки
+
+```{r, echo=FALSE, comment=''}
+sign.level <- 0.05
+regr <- lm(formula=cons~income+price+temp, data=Icecream)
+summ(regr)
+```
+Модель с серийной корреляцией первого порядка
+
+$cons_t=\beta_0+\beta_1income_t+\beta_2price_t+\beta_3temp_t+u_t$ 
+
+$u_t=\rho u_{t-1}+v_t$
+
+DW-тест: теструем $H_0:\rho=0$ vs $H_1:\rho\ne0$.
+
+Результаты теста:
+
+```{r echo=FALSE, comment=''}
+my.dw.test <- dwtest(regr, alternative = "two.side")
+my.dw.test
+```
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие можно сделать выводы?
+
+```{r, echo=FALSE, comment=''}
+if(my.dw.test$p.value<sign.level) print('Гипотеза отвергается, есть серийная корреляция') else print('Гипотеза не отвергается, нет серийной корреляции')
+```
+
+Какие критические значения?
+
+## Consumption equation
+
+Для набора данных `Consumption` рассморим регессию с серийно коррецяией
+первого порядка
+
+Модель с серийной корреляцией первого порядка
+
+$\Delta\log(yd_t)=\beta_0+\beta_1\Delta\log(ce_t)+u_t$ 
+
+$u_t=\rho u_{t-1}+v_t$
+
+Результаты подгонки
+
+```{r, echo=FALSE, comment=''}
+sign.level <- 0.01
+regr <- lm(formula=diff(log(yd))~diff(log(ce)), data=Consumption)
+summ(regr)
+```
+
+DW-тест: теструем $H_0:\rho=0$ vs $H_1:\rho\ne0$.
+
+Результаты теста:
+
+```{r echo=FALSE, comment=''}
+my.dw.test <- dwtest(regr, alternative = "two.side")
+my.dw.test
+```
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие можно сделать выводы?
+
+```{r, echo=FALSE, comment=''}
+if(my.dw.test$p.value<sign.level) print('Гипотеза отвергается, есть серийная корреляция') else print('Гипотеза не отвергается, нет серийной корреляции')
+```
+
+Какие критические значения?
+
+## M2 и ставки
+
+Рассморим данные по M2, краткосрочной и долгосрочной ставке (месячные данные с 1995 по 2019)
+Загрузим данные из БД  [FRED](https://fred.stlouisfed.org)
+
+Построим графики ставок и первых разностей
+
+```{r, echo=FALSE, comment=''}
+plot(Rates, col=rainbow(ncol(Rates)) )
+plot(d.Rates, col=rainbow(ncol(d.Rates)) )
+```
+
+Рассмотрим регрессию $\Delta rate.10y_t=\beta_0+\beta_1\Delta rate.3m_t+\beta_2\Delta\log M2_t+u_t$
+с серийной корреляцией первого порядка $u_t=\rho u_{t-1}+v_t$
+
+Результаты подгонки
+
+```{r, echo=FALSE, comment=''}
+sign.level <- 0.05
+regr <- lm(formula=d.rate.10y~d.rate.3m+dl.M2, data=d.Rates)
+summ(regr)
+```
+
+DW-тест: теструем $H_0:\rho=0$ vs $H_1:\rho\ne0$
+
+Результаты теста:
+
+```{r echo=FALSE, comment=''}
+my.dw.test <- dwtest(regr, alternative = "two.side")
+my.dw.test
+```
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>. Какие можно сделать выводы?
+
+```{r, echo=FALSE, comment=''}
+if(my.dw.test$p.value<sign.level) print('Гипотеза отвергается, есть серийная корреляция') else print('Гипотеза не отвергается, нет серийной корреляции')
+```
+
+Какие критические значения?
+
+# LM/BG-тест
+
+## Consumption equation
+
+Для набора данных `Consumption` рассморим регессию с серийно коррецяией
+третьего порядка
+
+$\Delta\log(yd_t)=\beta_0+\beta_1\Delta\log(ce_t)+u_t$ 
+
+$u_t=\rho_1 u_{t-1}+\rho_2 u_{t-2}+\rho_3u_{t-3}+v_t$
+
+Результаты подгонки
+
+```{r, echo=FALSE, comment=''}
+sign.level <- 0.01
+my.digits <- 2
+regr <- lm(formula=diff(log(yd))~diff(log(ce)), data=Consumption)
+summ(regr)
+```
+
+LM/BG-тест: тестируем $H_0:\rho_1=\rho_2=\rho_3=0$
+
+Результаты теста:
+
+```{r, echo=FALSE, comment=''}
+serial.corr.order <- 3
+my.lm.test <- bgtest(regr, order=serial.corr.order)
+my.lm.test
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=serial.corr.order)
+round(chi2.cr, digits = my.digits )
+```
+
+Какие можно сделать выводы?
+
+```{r, echo=FALSE, comment=''}
+if(my.lm.test$p.value<sign.level) print('Гипотеза отвергается, есть серийная корреляция') else print('Гипотеза не отвергается, нет серийной корреляции')
+```
+
+## M2 и ставки
+
+Рассморим данные по M2, краткосрочной и долгосрочной ставке (месячные данные с 1995 по 2019)
+Загрузим данные из БД  [FRED](https://fred.stlouisfed.org)
+
+Рассмотрим регрессию $\Delta rate.10y_t=\beta_0+\beta_1\Delta rate.3m_t+\beta_2\Delta\log M2_t+u_t$
+с серийной корреляцией второго порядка \(u_t=\rho_1 u_{t-1}+\rho_2 u_{t-2}+v_t\)
+
+Результаты подгонки
+
+```{r, echo=FALSE, comment=''}
+sign.level <- 0.05
+my.digits <- 2
+regr <- lm(formula=d.rate.10y~d.rate.3m+dl.M2, data=d.Rates)
+summ(regr)
+```
+
+LM/BG-тест: тестируем $H_0:\rho_1=\rho_2=0$
+
+Результаты теста:
+
+```{r, echo=FALSE, comment=''}
+serial.corr.order <- 2
+my.lm.test <- bgtest(regr, order=serial.corr.order)
+my.lm.test
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Вычислите необходимое критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=serial.corr.order)
+round(chi2.cr, digits = my.digits )
+```
+
+Какие можно сделать выводы?
+
+```{r, echo=FALSE, comment=''}
+if(my.lm.test$p.value<sign.level) print('Гипотеза отвергается, есть серийная корреляция') else print('Гипотеза не отвергается, нет серийной корреляции')
+```
+
+# Робастный t-тест (HAC s.e.)
+
+## Icecream consumption
+
+Рассмотрим набор данных `Icecream` и регрессию **cons на income, price, temp**.
+
+Результаты подгонки (неробастные OLS-s.e.)
+
+```{r, echo=FALSE, comment=''}
+sign.level <- 0.01
+my.digits.output <- 3
+regr <- lm(formula=cons~income+price+temp, data=Icecream)
+summ(regr, digits = my.digits.output)
+```
+
+Результаты подгонки (робастные HAC-s.e.)
+
+```{r, echo=FALSE, comment=''}
+summ(regr, vcov=vcovHAC, digits = my.digits.output)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Какие коэффициенты значимы?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+robust.t.test <- coeftest(regr, vcov. = vcovHAC)
+regressors <- row.names(robust.t.test)
+sign.regressors <- NULL
+for(i in 1:nrow(robust.t.test) ) {
+  if(robust.t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, 'Значим') else sign.regressors <- c(sign.regressors, 'Незначим')
+}
+# names(sign.regressors) <- rownames(t.test)
+print(data.frame(regressors, sign.regressors))
+```
+
+## M2 и ставки
+
+Рассморим данные по M2, краткосрочной и долгосрочной ставке (месячные данные с 1995 по 2019)
+Загрузим данные из БД  [FRED](https://fred.stlouisfed.org)
+
+Рассмотрим регрессию $\Delta rate.10y_t=\beta_0+\beta_1\Delta rate.3m_t+\beta_2\Delta\log M2_t+u_t$
+
+Результаты подгонки (неробастные OLS-s.e.)
+
+```{r, echo=FALSE, comment=''}
+sign.level <- 0.05
+my.digits.output <- 3
+regr <- lm(formula=d.rate.10y~d.rate.3m+dl.M2, data=d.Rates)
+summ(regr, digits = my.digits.output)
+```
+
+Результаты подгонки (робастные HAC-s.e.)
+
+```{r, echo=FALSE, comment=''}
+summ(regr, vcov=vcovHAC, digits = my.digits.output)
+```
+
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+Какие коэффициенты значимы?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+robust.t.test <- coeftest(regr, vcov. = vcovHAC)
+regressors <- row.names(robust.t.test)
+sign.regressors <- NULL
+for(i in 1:nrow(robust.t.test) ) {
+  if(robust.t.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, 'Значим') else sign.regressors <- c(sign.regressors, 'Незначим')
+}
+# names(sign.regressors) <- rownames(t.test)
+print(data.frame(regressors, sign.regressors))
+```
