@@ -63,20 +63,20 @@ stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
 coefs.LPM <- round(coef(regr.LPM), digits = my.digits.output)
 coefs.logit <- round(coef(regr.logit), digits = my.digits.output)
 coefs.probit <- round(coef(regr.probit), digits = my.digits.output)
-new.df.to.predict <- data.frame(new.df$WA, log(new.df$FAMINC), new.df$WE,
+new.df.to.predict <- data.frame( rep(1, nrow(new.df)), new.df$WA, log(new.df$FAMINC), new.df$WE,
                                 new.df$KL6, new.df$K618, new.df$CIT, new.df$UN)
 my.predict.LPM <- NULL; my.predict.logit <- NULL; my.predict.probit <- NULL
 for(i in 1:nrow(new.df.to.predict)) {
-  x <- c(1, as.numeric(new.df.to.predict[i,]))
+  x <- as.numeric(new.df.to.predict[i,])
   my.predict.LPM <- c(my.predict.LPM, sum(coefs.LPM*x))
   my.predict.logit <- c(my.predict.logit, plogis( sum(coefs.logit*x) ) )
   my.predict.probit <- c(my.predict.probit, pnorm( sum(coefs.probit*x) ) )
 }
 rm(x)
-round( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогноз.probit=my.predict.probit ),
-                 digits = my.digits )
-# stargazer( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогноз.probit=my.predict.probit ),
-#            type='text', summary=FALSE,  digits=my.digits )
+# round( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогноз.probit=my.predict.probit ),
+#                  digits = my.digits )
+df.predict <- data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогноз.probit=my.predict.probit )
+stargazer( df.predict, type='text', summary=FALSE,  digits=my.digits )
 ```
 
 # approve equation
@@ -120,21 +120,18 @@ stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
 coefs.LPM <- round(coef(regr.LPM), digits = my.digits.output)
 coefs.logit <- round(coef(regr.logit), digits = my.digits.output)
 coefs.probit <- round(coef(regr.probit), digits = my.digits.output)
-new.df.to.predict <- data.frame(new.df$appinc/100, new.df$mortno, new.df$unem,
+new.df.to.predict <- data.frame(rep(1, nrow(new.df)), new.df$appinc/100, new.df$mortno, new.df$unem,
                                 new.df$dep, new.df$male)
 my.predict.LPM <- NULL; my.predict.logit <- NULL; my.predict.probit <- NULL
 for(i in 1:nrow(new.df.to.predict)) {
-  x <- c(1, as.numeric(new.df.to.predict[i,]))
+  x <- as.numeric(new.df.to.predict[i,])
   my.predict.LPM <- c(my.predict.LPM, sum(coefs.LPM*x))
   my.predict.logit <- c(my.predict.logit, plogis( sum(coefs.logit*x) ) )
   my.predict.probit <- c(my.predict.probit, pnorm( sum(coefs.probit*x) ) )
 }
 rm(x)
-round( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогнозю.probit=my.predict.probit ),
-                 digits = my.digits )
-# stargazer(round( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогнозю.probit=my.predict.probit ),
-#                  digits = my.digits ), 
-#           type='text', summary=FALSE, digit.separator = '', digits=my.digits)
+df.predict <- data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогноз.probit=my.predict.probit )
+stargazer( df.predict, type='text', summary=FALSE,  digits=my.digits )
 ```
 
 # swiss labour force equation
@@ -178,18 +175,16 @@ stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
 coefs.LPM <- round(coef(regr.LPM), digits = my.digits.output)
 coefs.logit <- round(coef(regr.logit), digits = my.digits.output)
 coefs.probit <- round(coef(regr.probit), digits = my.digits.output)
-new.df.to.predict <- data.frame(new.df$income, new.df$income^2, new.df$age, new.df$age^2,
+new.df.to.predict <- data.frame(rep(1, nrow(new.df)), new.df$income, new.df$income^2, new.df$age, new.df$age^2,
                                 new.df$youngkids, new.df$oldkids)
 my.predict.LPM <- NULL; my.predict.logit <- NULL; my.predict.probit <- NULL
 for(i in 1:nrow(new.df.to.predict)) {
-  x <- c(1, as.numeric(new.df.to.predict[i,]))
+  x <- as.numeric(new.df.to.predict[i,])
   my.predict.LPM <- c(my.predict.LPM, sum(coefs.LPM*x))
   my.predict.logit <- c(my.predict.logit, plogis( sum(coefs.logit*x) ) )
   my.predict.probit <- c(my.predict.probit, pnorm( sum(coefs.probit*x) ) )
 }
 rm(x)
-round( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогнозю.probit=my.predict.probit ),
-                 digits = my.digits )
-# stargazer( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогнозю.probit=my.predict.probit ), 
-#           type='text', summary=FALSE, digit.separator = '', digits=my.digits)
+df.predict <- data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогноз.probit=my.predict.probit )
+stargazer( df.predict, type='text', summary=FALSE,  digits=my.digits )
 ```
