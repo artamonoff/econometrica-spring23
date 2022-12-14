@@ -2792,9 +2792,9 @@ logit/probit-модель</h1>
 <div id="approve-equation-1-probit" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> approve equation #1
 (probit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/loanapp.csv">loanapp</a>
-рассморим probit-регрессию <strong>approve на appinc, mortno, unem, dep,
-male, married, yjob, self</strong></p>
+<p>Для датасета <code>loanapp</code> рассморим probit-регрессию
+<strong>approve на appinc, mortno, unem, dep, male, married, yjob,
+self</strong></p>
 <p>Спецификация: <span class="math inline">\(P(approve=1)=\Phi(\beta_0+\beta_1appinc+\beta_2mortno+\beta_3unem+\beta_4dep+\beta_5male+\beta_6married+\beta_7yjob+\beta_8self)\)</span></p>
 <p>Альтернативная спецификация: <span class="math inline">\(probit(P(approve=1))=\beta_0+\beta_1appinc+\beta_2mortno+\beta_3unem+\beta_4dep+\beta_5male+\beta_6married+\beta_7yjob+\beta_8self\)</span></p>
 <p>Результаты оценивания (коэффициенты):</p>
@@ -2807,9 +2807,9 @@ male, married, yjob, self</strong></p>
 <div id="approve-equation-2-logit" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> approve equation #2
 (logit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/loanapp.csv">loanapp</a>
-рассморим logit-регрессию <strong>approve на appinc, mortno, unem, dep,
-male, married, yjob, self</strong></p>
+<p>Для датасета <code>loanapp</code> рассморим logit-регрессию
+<strong>approve на appinc, mortno, unem, dep, male, married, yjob,
+self</strong></p>
 <p>Спецификация: <span class="math inline">\(P(approve=1)=\Lambda(\beta_0+\beta_1appinc+\beta_2mortno+\beta_3unem+\beta_4dep+\beta_5male+\beta_6married+\beta_7yjob+\beta_8self)\)</span></p>
 <p>Альтернативная спецификация: <span class="math inline">\(logit(P(approve=1))=\beta_0+\beta_1appinc+\beta_2mortno+\beta_3unem+\beta_4dep+\beta_5male+\beta_6married+\beta_7yjob+\beta_8self\)</span></p>
 <p>Здесь <span class="math inline">\(logit(P(approve=1))=\log\frac{P(approve=1)}{1-P(approve=1)}=\log\frac{P(approve=1)}{P(approve=0)}\)</span></p>
@@ -2823,7 +2823,7 @@ male, married, yjob, self</strong></p>
 <div id="labour-force-equation-1-probit" class="section level2" number="2.3">
 <h2><span class="header-section-number">2.3</span> labour force equation
 #1 (probit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv">mroz_Greene</a>
+<p>Для датасета <a href="http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv">mroz_Greene</a>
 рассморим probit-регрессию <strong>LFP на WA, WA^2, WE, KL6, K618, CIT,
 UN, log(FAMINC)</strong></p>
 <p>Спецификация: <span class="math inline">\(P(LFP=1)=\Phi(\beta_0+\beta_1WA+\beta_2WA^2+\beta_3WE+\beta_4KL6+\beta_5K618+\beta_5CIT+\beta_7UN+\beta_8\log(FAMINC))\)</span></p>
@@ -2838,7 +2838,7 @@ UN, log(FAMINC)</strong></p>
 <div id="labour-force-equation-2-logit" class="section level2" number="2.4">
 <h2><span class="header-section-number">2.4</span> labour force equation
 #2 (logit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv">mroz_Greene</a>
+<p>Для датасета <a href="http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv">mroz_Greene</a>
 рассморим logit-регрессию <strong>LFP на WA, WA^2, WE, KL6, K618, CIT,
 UN, log(FAMINC)</strong></p>
 <p>Спецификация: <span class="math inline">\(P(LFP=1)=\Lambda(\beta_0+\beta_1WA+\beta_2WA^2+\beta_3WE+\beta_4KL6+\beta_5K618+\beta_5CIT+\beta_7UN+\beta_8\log(FAMINC))\)</span></p>
@@ -2857,9 +2857,9 @@ UN, log(FAMINC)</strong></p>
 <div id="approve-equation-1-probit-1" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> approve equation #1
 (probit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/loanapp.csv">loanapp</a>
-рассморим probit-регрессию <strong>approve на appinc, mortno, unem, dep,
-male, married, yjob, self</strong></p>
+<p>Для датасета <code>loanapp</code> рассморим probit-регрессию
+<strong>approve на appinc, mortno, unem, dep, male, married, yjob,
+self</strong></p>
 <p>Результаты оценивания</p>
 <pre><code>            Estimate Std. Error
 (Intercept)   1.1418     0.1085
@@ -2888,9 +2888,9 @@ self         -0.1583     0.1073</code></pre>
 <div id="approve-equation-2-logit-1" class="section level2" number="3.2">
 <h2><span class="header-section-number">3.2</span> approve equation #2
 (logit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/loanapp.csv">loanapp</a>
-рассморим logit-регрессию <strong>approve на appinc, mortno, unem, dep,
-male, married, yjob, self</strong></p>
+<p>Для датасета <code>loanapp</code> рассморим logit-регрессию
+<strong>approve на appinc, mortno, unem, dep, male, married, yjob,
+self</strong></p>
 <p>Результаты оценивания</p>
 <pre><code>
 z test of coefficients:
@@ -2917,7 +2917,7 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 <div id="labour-force-equation-1-probit-1" class="section level2" number="3.3">
 <h2><span class="header-section-number">3.3</span> labour force equation
 #1 (probit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv">mroz_Greene</a>
+<p>Для датасета <a href="http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv">mroz_Greene</a>
 рассморим probit-регрессию <strong>LFP на WA, WA^2, WE, KL6, K618, CIT,
 UN, log(FAMINC)</strong></p>
 <p>Результаты оценивания</p>
@@ -2946,7 +2946,7 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 <div id="labour-force-equation-2-logit-1" class="section level2" number="3.4">
 <h2><span class="header-section-number">3.4</span> labour force equation
 #2 (logit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv">mroz_Greene</a>
+<p>Для датасета <a href="http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv">mroz_Greene</a>
 рассморим logit-регрессию <strong>LFP на WA, WA^2, WE, KL6, K618, CIT,
 UN, log(FAMINC)</strong></p>
 <p>Результаты оценивания</p>
@@ -2981,9 +2981,8 @@ log(FAMINC)   0.3331     0.1729</code></pre>
 <div id="approve-equation-1-probit-2" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> approve equation #1
 (probit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/loanapp.csv">loanapp</a>
-рассморим probit-регрессию <strong>approve на appinc, unem, male, yjob,
-self</strong></p>
+<p>Для датасета <code>loanapp</code> рассморим probit-регрессию
+<strong>approve на appinc, unem, male, yjob, self</strong></p>
 <p>Результаты оценивания</p>
 <pre><code>MODEL INFO:
 Observations: 1974 (15 missing obs. deleted)
@@ -3031,9 +3030,9 @@ L_0=\)</span>-738.3755</p>
 <div id="approve-equation-2-logit-2" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> approve equation #2
 (logit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/loanapp.csv">loanapp</a>
-рассморим logit-регрессию <strong>approve на appinc, appinc^2, mortno,
-unem, dep, male, married, yjob, self</strong></p>
+<p>Для датасета <code>loanapp</code> рассморим logit-регрессию
+<strong>approve на appinc, appinc^2, mortno, unem, dep, male, married,
+yjob, self</strong></p>
 <p>Результаты оценивания</p>
 <pre><code>MODEL INFO:
 Observations: 1971 (18 missing obs. deleted)
@@ -3085,7 +3084,7 @@ L_0=\)</span>-737.9793</p>
 <div id="labour-force-equation-1-probit-2" class="section level2" number="4.3">
 <h2><span class="header-section-number">4.3</span> labour force equation
 #1 (probit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv">mroz_Greene</a>
+<p>Для датасета <a href="http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv">mroz_Greene</a>
 рассморим несколько probit-регрессй. Результаты оценивания</p>
 <pre><code>
 ===========================================================
@@ -3169,7 +3168,7 @@ L_0=\)</span>-514.8732.</p>
 <div id="labour-force-equation-2-logit-2" class="section level2" number="4.4">
 <h2><span class="header-section-number">4.4</span> labour force equation
 #2 (logit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv">mroz_Greene</a>
+<p>Для датасета <a href="http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv">mroz_Greene</a>
 рассморим несколько logit-регрессй. Результаты оценивания</p>
 <pre><code>
 ============================================================
@@ -3257,7 +3256,7 @@ L_0=\)</span>-514.8732.</p>
 <div id="labour-force-equation-1-probit-3" class="section level2" number="5.1">
 <h2><span class="header-section-number">5.1</span> labour force equation
 #1 (probit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv">mroz_Greene</a>
+<p>Для датасета <a href="http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv">mroz_Greene</a>
 рассморим несколько probit-регрессй. Результаты оценивания</p>
 <pre><code>
 =============================================================
@@ -3346,8 +3345,8 @@ LR-тесту.</p>
 <div id="approve-equation-1-logit" class="section level2" number="5.2">
 <h2><span class="header-section-number">5.2</span> approve equation #1
 (logit)</h2>
-<p>Для датасета <a href="http://meit.mgimo.ru/sites/default/files/loanapp.csv">loanapp</a>
-рассморим несколько probit-регрессй. Результаты оценивания</p>
+<p>Для датасета <code>loanapp</code> рассморим несколько
+probit-регрессй. Результаты оценивания</p>
 <pre><code>
 ===============================================================
                               Зависимая переменная             

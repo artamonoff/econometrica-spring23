@@ -16,14 +16,14 @@ library(lmtest)
 library(car)
 library(sandwich)
 data(loanapp, package = 'wooldridge')
-mroz_Greene <- read.csv('http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv')
+mroz_Greene <- read.csv('http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv')
 ```
 
 # t-тест
 
 ## approve equation #1
 
-Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+Для датасета `loanapp`
 рассморим регрессию **approve на mortno, unem, dep, male, married, yjob, self**
 
 Спецификация: 
@@ -64,7 +64,7 @@ round(t.test[,1]/t.test[,2], digits = my.digits)
 
 ## approve equation #2
 
-Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+Для датасета `loanapp`
 рассморим регрессию **approve на appinc, appinc^2, mortno, unem, dep, male, married, yjob, self**
 
 Результаты t-теста для коэффициентов (неробастные s.e.)
@@ -108,7 +108,7 @@ print(sign.regressors)
 
 ## labour force equation #1
 
-Для датасета [mroz_Greene](http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv)
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
 рассморим регрессию **LFP на WA, WA^2, WE, KL6, K618, CIT, UN, log(FAMINC)**
 
 Спецификация: 
@@ -149,7 +149,7 @@ round(t.test[,1]/t.test[,2], digits = my.digits)
 
 ## labour force equation #2
 
-Для датасета [mroz_Greene](http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv)
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
 рассморим регрессию **LFP на WA, WA^2, WE, KL6, K618, CIT, UN, log(FAMINC)**
 
 Результаты t-теста для коэффициентов (неробастные s.e.)
@@ -211,7 +211,7 @@ curve(dnorm(x, mean(log(FAMINC)), sd(log(FAMINC)) ), add = TRUE, col='red')
 
 ## approve equation #1
 
-Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+Для датасета `loanapp`
 рассморим регрессию **approve на unem, male, yjob, self**
 
 Результаты оценивания
@@ -261,7 +261,7 @@ if(testing.result[2,4]<sign.level) print('Регрессия значима') el
 
 ## approve equation #2
 
-Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+Для датасета `loanapp`
 рассморим регрессию **approve на appinc, appinc^2, mortno, dep**
 
 Результаты оценивания
@@ -310,7 +310,7 @@ if(testing.result[2,4]<sign.level) print('Регрессия значима') el
 
 ## approve equation #3
 
-Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+Для датасета `loanapp`
 рассморим регрессию **approve на dep, male, married**
 
 Результаты оценивания
@@ -361,7 +361,7 @@ if(testing.result[2,4]<sign.level) print('Регрессия значима') el
 
 ## approve equation #1
 
-Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+Для датасета `loanapp`
 рассморим регрессию **approve на appinc, appinc^2, mortno, unem, dep, male, married, yjob, self**
 
 Результаты оценивания
@@ -460,7 +460,7 @@ if(testing.result[2,4]<sign.level) print('Гипотеза отвергаетс�
 
 ## labour force equation
 
-Для датасета [mroz_Greene](http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv)
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
 рассморим регрессию **LFP на WA, WA^2, CIT, UN, log(FAMINC)**
 
 Результаты оценивания
@@ -508,7 +508,7 @@ stargazer(round(data.frame(Прогноз=my.predict), digits = my.digits ),
 
 ## approve equation
 
-Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+Для датасета `loanapp`
 рассморим регрессию **approve на appinc, appinc^2, mortno, unem, dep, male, married, yjob, self**
 
 Построим графики фактических наблюдений м прогнозов
@@ -531,7 +531,7 @@ rm(appinc, dep)
 
 ## labour force equation
 
-Для датасета [mroz_Greene](http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv)
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
 рассморим регрессию **LFP на WA, WA^2, WE, KL6, K618, CIT, UN, log(FAMINC)**
 
 Построим графики фактических наблюдений м прогнозов

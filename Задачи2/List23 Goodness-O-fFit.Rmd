@@ -19,14 +19,14 @@ library(jtools)
 library(DescTools)
 data(loanapp, package = 'wooldridge')
 data(SwissLabor, package = 'AER')
-mroz_Greene <- read.csv('http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv')
+mroz_Greene <- read.csv('http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv')
 ```
 
 # Качество подгонки
 
 ## labour force equation #1 (probit)
 
-Для датасета [mroz_Greene](http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv)
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
 рассморим несколько probit-регрессй. Результаты оценивания
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
@@ -71,7 +71,7 @@ stargazer(goodness.of.fit, type='text', summary=FALSE, rownames=FALSE, digits = 
 
 ## approve equation #1 (logit)
 
-Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+Для датасета `loanapp`
 рассморим несколько probit-регрессй. Результаты оценивания
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
@@ -119,7 +119,7 @@ stargazer(goodness.of.fit, type='text', summary=FALSE, rownames=FALSE, digits = 
 
 ## labour force equation #1 (probit)
 
-Для датасета [mroz_Greene](http://meit.mgimo.ru/sites/default/files/mroz_Greene.csv)
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
 рассморим несколько probit-регрессй. Результаты оценивания
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
@@ -158,7 +158,7 @@ stargazer(df, type='text', summary = FALSE, rownames = FALSE)
 
 ## approve equation #1 (logit)
 
-Для датасета [loanapp](http://meit.mgimo.ru/sites/default/files/loanapp.csv)
+Для датасета `loanapp`
 рассморим несколько probit-регрессй. Результаты оценивания
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}

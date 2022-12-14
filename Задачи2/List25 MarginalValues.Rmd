@@ -1,5 +1,5 @@
 ---
-title: "Задачи по Эконометрике-2: Прогнозирование для logit/probit-моделей"
+title: "Задачи по Эконометрике-2: Предельные значения"
 author: "Н.В. Артамонов (МГИМО МИД России)"
 output:
   html_document:
@@ -17,10 +17,30 @@ library(car)
 library(sandwich)
 library(jtools)
 library(DescTools)
-data(loanapp, package = 'wooldridge')
-data(SwissLabor, package = 'AER')
+data(loanapp, SwissLabor, Mroz, package=c('wooldridge', 'AER', 'Ecdat'))
+# data(loanapp, package = 'wooldridge')
+# data(SwissLabor, package = 'AER')
 mroz_Greene <- read.csv('http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv')
 ```
+
+# Предельные значения 
+
+## для probit
+
+Рассмотрим probit-модель $P(y=1)=\Phi(x'\beta)$, где
+$x'\beta=\beta_0+\beta_1x_1+\cdots+\beta_kx_k$
+
+Предельные значения $\frac{\partial P(y=1)}{\partial x_j}=\phi(x'\beta)\beta_j$,
+где $\phi(z)=\frac{1}{\sqrt{2\pi}}exp\{-z^2/2\}$
+
+## для logit
+
+Рассмотрим logit-модель $P(y=1)=\Lambda(x'\beta)$, где
+$x'\beta=\beta_0+\beta_1x_1+\cdots+\beta_kx_k$
+
+Предельные значения $\frac{\partial P(y=1)}{\partial x_j}=\lambda(x'\beta)\beta_j$,
+где $\lambda(z)=\frac{exp(z)}{(1+exp(z))^2}$
+
 
 # labour force equation
 
@@ -55,28 +75,29 @@ new.df <- data.frame(WA=c(35, 40, 42), FAMINC=c(12500, 9800, 67800), WE=c(15, 12
 stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
 ```
 
-Постройте прогноз для каждого. **Ответ округлите до `r my.digits`-х десятичных знаков.**
-
-Ответ:
+Вычислите предельное значение по **WA, WE, KL6, K618** для каждой модели. 
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- c('WA', 'WE', 'KL6', 'K618')
 coefs.LPM <- round(coef(regr.LPM), digits = my.digits.output)
 coefs.logit <- round(coef(regr.logit), digits = my.digits.output)
 coefs.probit <- round(coef(regr.probit), digits = my.digits.output)
-new.df.to.predict <- data.frame(new.df$WA, log(new.df$FAMINC), new.df$WE,
+new.df.to.predict <- data.frame(rep(1, nrow(new.df)), new.df$WA, log(new.df$FAMINC), new.df$WE,
                                 new.df$KL6, new.df$K618, new.df$CIT, new.df$UN)
-my.predict.LPM <- NULL; my.predict.logit <- NULL; my.predict.probit <- NULL
-for(i in 1:nrow(new.df.to.predict)) {
-  x <- c(1, as.numeric(new.df.to.predict[i,]))
-  my.predict.LPM <- c(my.predict.LPM, sum(coefs.LPM*x))
-  my.predict.logit <- c(my.predict.logit, plogis( sum(coefs.logit*x) ) )
-  my.predict.probit <- c(my.predict.probit, pnorm( sum(coefs.probit*x) ) )
+for(my.regressor in regressors) {
+  marginal.LPM <- NULL; marginal.logit <- NULL; marginal.probit <- NULL
+  for(i in 1:nrow(new.df.to.predict) ) {
+    x <- as.numeric(new.df.to.predict[i,])
+    marginal.LPM <- c(marginal.LPM, coefs.LPM[my.regressor] )
+    marginal.logit <- c(marginal.logit, dlogis( sum(coefs.logit*x) )*coefs.logit[my.regressor] )
+    marginal.probit <- c(marginal.probit, dnorm( sum(coefs.probit*x) )*coefs.probit[my.regressor] )
+  }
+  print(my.regressor)
+  stargazer( data.frame( LPM=marginal.LPM, logit=marginal.logit, probit=marginal.probit ),
+                 type='text', summary=FALSE, digit.separator = '',  digits=my.digits)
 }
-rm(x)
-round( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогноз.probit=my.predict.probit ),
-                 digits = my.digits )
-# stargazer( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогноз.probit=my.predict.probit ),
-#            type='text', summary=FALSE,  digits=my.digits )
+rm(x, marginal.LPM, marginal.logit, marginal.probit)
 ```
 
 # approve equation
@@ -107,40 +128,39 @@ stargazer(regr.LPM, regr.logit, regr.probit, type='text', digits=my.digits.outpu
 Рассморим несколько человек с характерисками
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
-new.df <- data.frame(appinc=c(120, 48, 82), mortno=c(1, 1, 0), unem=c(1.8, 3.2, 3.9), 
-                     dep=c(0,0,1), male=c(1, 0, 1) )
+new.df <- data.frame(appinc=c(120, 48, 82, 0), mortno=c(1, 1, 0, 0), unem=c(1.8, 3.2, 3.9, 3.2), 
+                     dep=c(0,1,1, 0), male=c(1, 0, 1, 0) )
 stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
 ```
 
-Постройте прогноз для каждого. **Ответ округлите до `r my.digits`-х десятичных знаков.**
-
-Ответ:
+Вычислите предельное значение по **appinc/100, unem, dep** для каждой модели. 
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- c('I(appinc/100)', 'unem', 'dep')
 coefs.LPM <- round(coef(regr.LPM), digits = my.digits.output)
 coefs.logit <- round(coef(regr.logit), digits = my.digits.output)
 coefs.probit <- round(coef(regr.probit), digits = my.digits.output)
-new.df.to.predict <- data.frame(new.df$appinc/100, new.df$mortno, new.df$unem,
-                                new.df$dep, new.df$male)
-my.predict.LPM <- NULL; my.predict.logit <- NULL; my.predict.probit <- NULL
-for(i in 1:nrow(new.df.to.predict)) {
-  x <- c(1, as.numeric(new.df.to.predict[i,]))
-  my.predict.LPM <- c(my.predict.LPM, sum(coefs.LPM*x))
-  my.predict.logit <- c(my.predict.logit, plogis( sum(coefs.logit*x) ) )
-  my.predict.probit <- c(my.predict.probit, pnorm( sum(coefs.probit*x) ) )
+new.df.to.predict <- data.frame(rep(1, nrow(new.df)), new.df$appinc/100, new.df$mortno, new.df$unem, new.df$dep, new.df$male)
+for(my.regressor in regressors) {
+  marginal.LPM <- NULL; marginal.logit <- NULL; marginal.probit <- NULL
+  for(i in 1:nrow(new.df.to.predict) ) {
+    x <- as.numeric(new.df.to.predict[i,])
+    marginal.LPM <- c(marginal.LPM, coefs.LPM[my.regressor] )
+    marginal.logit <- c(marginal.logit, dlogis( sum(coefs.logit*x) )*coefs.logit[my.regressor] )
+    marginal.probit <- c(marginal.probit, dnorm( sum(coefs.probit*x) )*coefs.probit[my.regressor] )
+  }
+  print(my.regressor)
+  stargazer(data.frame( LPM=marginal.LPM, logit=marginal.logit, probit=marginal.probit ),
+            type='text', summary=FALSE, digit.separator = '', digits=my.digits)
 }
-rm(x)
-round( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогнозю.probit=my.predict.probit ),
-                 digits = my.digits )
-# stargazer(round( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогнозю.probit=my.predict.probit ),
-#                  digits = my.digits ), 
-#           type='text', summary=FALSE, digit.separator = '', digits=my.digits)
+rm(x, marginal.LPM, marginal.logit, marginal.probit)
 ```
 
 # swiss labour force equation
 
 Для датасета `SwissLabour`
-рассморим регрессию **participation на income, income^2, age, age^2, youngkids, oldkids**
+рассморим регрессию **participation на income, age, age^2, youngkids, oldkids**
 трёх спецификаций:
 
 - LPM
@@ -152,7 +172,7 @@ round( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.pr
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 my.digits <- 3
 my.digits.output <- 3
-spec <- formula(as.numeric(participation)-1~income+I(income^2)+age+I(age^2)+youngkids+oldkids)
+spec <- formula(as.numeric(participation)-1~income+age+I(age^2)+youngkids+oldkids)
 my.df <- SwissLabor
 regr.LPM <- lm(formula=spec, data=my.df)
 regr.logit <- glm(formula=spec, data=my.df, family=binomial(link='logit'))
@@ -170,26 +190,27 @@ new.df <- data.frame(income=c(11.367, 9.217, 10.686), age=c(2.5, 3.7, 4.2), youn
 stargazer(new.df, summary = FALSE, type = 'text', digit.separator = '')
 ```
 
-Постройте прогноз для каждого. **Ответ округлите до `r my.digits`-х десятичных знаков.**
-
-Ответ:
+Вычислите предельное значение по **income, youngkids, oldkids** для каждой модели. 
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- c('income', 'youngkids', 'oldkids')
 coefs.LPM <- round(coef(regr.LPM), digits = my.digits.output)
 coefs.logit <- round(coef(regr.logit), digits = my.digits.output)
 coefs.probit <- round(coef(regr.probit), digits = my.digits.output)
-new.df.to.predict <- data.frame(new.df$income, new.df$income^2, new.df$age, new.df$age^2,
+new.df.to.predict <- data.frame(rep(1, nrow(new.df)), new.df$income, new.df$age, new.df$age^2,
                                 new.df$youngkids, new.df$oldkids)
-my.predict.LPM <- NULL; my.predict.logit <- NULL; my.predict.probit <- NULL
-for(i in 1:nrow(new.df.to.predict)) {
-  x <- c(1, as.numeric(new.df.to.predict[i,]))
-  my.predict.LPM <- c(my.predict.LPM, sum(coefs.LPM*x))
-  my.predict.logit <- c(my.predict.logit, plogis( sum(coefs.logit*x) ) )
-  my.predict.probit <- c(my.predict.probit, pnorm( sum(coefs.probit*x) ) )
+for(my.regressor in regressors) {
+  marginal.LPM <- NULL; marginal.logit <- NULL; marginal.probit <- NULL
+  for(i in 1:nrow(new.df.to.predict) ) {
+    x <- as.numeric(new.df.to.predict[i,])
+    marginal.LPM <- c(marginal.LPM, coefs.LPM[my.regressor] )
+    marginal.logit <- c(marginal.logit, dlogis( sum(coefs.logit*x) )*coefs.logit[my.regressor] )
+    marginal.probit <- c(marginal.probit, dnorm( sum(coefs.probit*x) )*coefs.probit[my.regressor] )
+  }
+  print(my.regressor)
+  stargazer(data.frame( LPM=marginal.LPM, logit=marginal.logit, probit=marginal.probit ),
+            type='text', summary=FALSE, digit.separator = '', digits=my.digits)
 }
-rm(x)
-round( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогнозю.probit=my.predict.probit ),
-                 digits = my.digits )
-# stargazer( data.frame( Прогноз.LPM=my.predict.LPM, Прогноз.logit=my.predict.logit, Прогнозю.probit=my.predict.probit ), 
-#           type='text', summary=FALSE, digit.separator = '', digits=my.digits)
+rm(x, marginal.LPM, marginal.logit, marginal.probit)
 ```
