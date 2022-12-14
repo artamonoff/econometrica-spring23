@@ -10,6 +10,8 @@
 - [Листок 08](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List08-Multicollinearity.html): Мультиколлинеарность
 - [Листок 09](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List09-Dummies.html): Дамми-переменные
 - [Листок 10](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List10-Specification.html): Спецификация
+- [Листок 11](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List11-Heteroskedasticity.html): Гетероскедастичность
+- [Листок 12](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List12-Autocorrelation.html): Серийная корреляция
 
 # Задачи по Эконометрике-2
 
