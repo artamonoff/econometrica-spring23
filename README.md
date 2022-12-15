@@ -17,5 +17,8 @@
 
 - [Листок 21](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List21-LPM.html): LPM-модель
 - [Листок 22](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List22-LogitProbit.html): Logit/Probit-модель
-- [Листок 23](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List23-Goodness-O-fFit.html): Степень подгонки
+- [Листок 23](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List23-Goodness-Of-Fit.html): Степень подгонки модель
 - [Листок 24](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List24-Prediction.html): Прогнозирвоание
+- [Листок 25](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List25-MarginalValues.html): Предельные значения
+- [Листок 26](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List26-ROC.html): ROC-кривая
+- [Листок 27](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List27-Panels.html): Панельные регрессии
