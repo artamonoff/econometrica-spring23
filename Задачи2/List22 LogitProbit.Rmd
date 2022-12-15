@@ -1,0 +1,864 @@
+---
+title: "Задачи по Эконометрике-2: logit/probit-модель"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(sandwich)
+library(jtools)
+data(loanapp, package = 'wooldridge')
+data(SwissLabor, package = 'AER')
+mroz_Greene <- read.csv('http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv')
+```
+
+# Нормальное и логистическое распределение
+
+Плотность стандартного N(0,1) гауссова распределения \(\phi(t)=\frac{1}{\sqrt{2\pi}}\exp(-t^2/2)\) (\(t\in\mathbb{R}\)).
+Функция стандартного нормального распределения \(\Phi(x)=\int_{-\infty}^x \phi(t)dt\) (\(x\in\mathbb{R}\)).
+
+Функция логистического распределения \(\Lambda(x)=\frac{\exp(x)}{1+\exp(x)}\) (\(x\in\mathbb{R}\)).
+Плотность логистического распределения \(\lambda(x)=\Lambda'(x)=\frac{\exp(x)}{(1+\exp(x))^2}\)
+
+Плотности на одном графике
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+curve(dnorm, from=-6, to=6, col='blue', ylab='phi(x), lambda(x)', main='phi (синяя), lambda (красная)')
+curve(dlogis, from=-6, to=6, col='red', add = TRUE)
+abline(v=0)
+```
+
+Функции распределения на одном графике
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+curve(pnorm, from=-6, to=6, col='blue', ylab='Phi(x), Lambda(x)', main='Phi (синяя), Lambda (красная)')
+curve(plogis, from=-6, to=6, col='red', add = TRUE)
+abline(v=0)
+```
+
+Обратные функции распределение \(logit(p)=\Lambda^{-1}(p)=\log\frac{p}{1-p}\) и
+\(probit(p)=\Phi^{-1}(p)\), \(0<p<1\)
+
+Их графики
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+curve(qnorm, from=0, to=1, col='blue', ylab='probit/logit', main='probit (синяя), logit (красная)', ylim=c(-5,5))
+curve(qlogis, from=0, to=1, col='red', add = TRUE)
+abline(v=0, h=0);abline(v=1)
+```
+
+# Интерпретация коэффициентов
+
+## approve equation #1 (probit)
+
+Для датасета `loanapp`
+рассморим probit-регрессию **approve на appinc, mortno, unem, dep, male, married, yjob, self**
+
+Спецификация: 
+$P(approve=1)=\Phi(\beta_0+\beta_1appinc+\beta_2mortno+\beta_3unem+\beta_4dep+\beta_5male+\beta_6married+\beta_7yjob+\beta_8self)$
+
+
+Альтернативная спецификация:
+$probit(P(approve=1))=\beta_0+\beta_1appinc+\beta_2mortno+\beta_3unem+\beta_4dep+\beta_5male+\beta_6married+\beta_7yjob+\beta_8self$
+
+Результаты оценивания (коэффициенты):
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regr <- glm(formula=approve~appinc+mortno+unem+dep+male+married+yjob+self, data=loanapp, 
+            family = binomial(link='probit') )
+round( coef(regr), digits = 3)
+```
+
+**Какая интерпретация?**
+
+## approve equation #2 (logit)
+
+Для датасета `loanapp`
+рассморим logit-регрессию **approve на appinc, mortno, unem, dep, male, married, yjob, self**
+
+Спецификация: 
+$P(approve=1)=\Lambda(\beta_0+\beta_1appinc+\beta_2mortno+\beta_3unem+\beta_4dep+\beta_5male+\beta_6married+\beta_7yjob+\beta_8self)$
+
+Альтернативная спецификация:
+$logit(P(approve=1))=\beta_0+\beta_1appinc+\beta_2mortno+\beta_3unem+\beta_4dep+\beta_5male+\beta_6married+\beta_7yjob+\beta_8self$
+
+Здесь \(logit(P(approve=1))=\log\frac{P(approve=1)}{1-P(approve=1)}=\log\frac{P(approve=1)}{P(approve=0)}\)
+
+Результаты оценивания (коэффициенты):
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regr <- glm(formula=approve~appinc+mortno+unem+dep+male+married+yjob+self, data=loanapp, 
+            family = binomial(link='logit') )
+round( coef(regr), digits = 3)
+```
+
+**Какая интерпретация?**
+
+## labour force equation #1 (probit)
+
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
+рассморим probit-регрессию **LFP на WA, WA^2, WE, KL6, K618, CIT, UN, log(FAMINC)**
+
+Спецификация: 
+$P(LFP=1)=\Phi(\beta_0+\beta_1WA+\beta_2WA^2+\beta_3WE+\beta_4KL6+\beta_5K618+\beta_5CIT+\beta_7UN+\beta_8\log(FAMINC))$
+
+Альтернативная спецификация:
+$probit(P(LFP=1))=\beta_0+\beta_1WA+\beta_2WA^2+\beta_3WE+\beta_4KL6+\beta_5K618+\beta_5CIT+\beta_7UN+\beta_8\log(FAMINC)$
+
+Результаты оценивания (коэффициенты):
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regr <- glm(formula=LFP~WA+I(WA^2)+WE+KL6+K618+CIT+UN+log(FAMINC), data=mroz_Greene, 
+            family = binomial(link='probit') )
+round( coef(regr), digits = 3)
+```
+
+**Какая интерпретация?**
+
+## labour force equation #2 (logit)
+
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
+рассморим logit-регрессию **LFP на WA, WA^2, WE, KL6, K618, CIT, UN, log(FAMINC)**
+
+Спецификация: 
+$P(LFP=1)=\Lambda(\beta_0+\beta_1WA+\beta_2WA^2+\beta_3WE+\beta_4KL6+\beta_5K618+\beta_5CIT+\beta_7UN+\beta_8\log(FAMINC))$
+
+Альтернативная спецификация:
+$logit(P(LFP=1))=\beta_0+\beta_1WA+\beta_2WA^2+\beta_3WE+\beta_4KL6+\beta_5K618+\beta_5CIT+\beta_7UN+\beta_8\log(FAMINC)$
+
+Здесь \(logit(P(LFP=1))=\log\frac{P(LFP=1)}{1-P(LFP=1)}=\log\frac{P(LFP=1)}{P(LFP=0)}\)
+
+Результаты оценивания (коэффициенты):
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regr <- glm(formula=LFP~WA+I(WA^2)+WE+KL6+K618+CIT+UN+log(FAMINC), data=mroz_Greene, 
+            family = binomial(link='logit') )
+round( coef(regr), digits = 3)
+```
+
+**Какая интерпретация?**
+
+# z-test
+
+## approve equation #1 (probit)
+
+Для датасета `loanapp`
+рассморим probit-регрессию **approve на appinc, mortno, unem, dep, male, married, yjob, self**
+
+Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.10
+regr <- glm(formula=approve~appinc+mortno+unem+dep+male+married+yjob+self, data=loanapp, 
+            family = binomial(link='probit') )
+z.test <- round(coeftest(regr), digits = my.digits.output)
+z.test[,1:2]
+```
+
+Модель была подогнана по `r nobs(regr)` наблюдениям. 
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>
+
+
+Вычислите z-статистику для каждого коэффициента. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round(z.test[,1]/z.test[,2], digits = my.digits)
+```
+
+Вычислите необходимое критическое значение z-теста. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+z.cr <- qnorm(p=1-sign.level/2)
+round(z.cr , digits = my.digits)
+```
+
+Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(z.test)
+sign.regressors <- NULL
+for(i in 1:nrow(z.test) ) {
+  if(z.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+## approve equation #2 (logit)
+
+Для датасета `loanapp`
+рассморим logit-регрессию **approve на appinc, mortno, unem, dep, male, married, yjob, self**
+
+Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.05
+regr <- glm(formula=approve~appinc+mortno+unem+dep+male+married+yjob+self, data=loanapp, 
+            family = binomial(link='logit') )
+z.test <- coeftest(regr)
+z.test
+```
+
+Модель была подогнана по `r nobs(regr)` наблюдениям. 
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>
+
+Вычислите необходимое критическое значение z-теста. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+z.cr <- qnorm(p=1-sign.level/2)
+round(z.cr , digits = my.digits)
+```
+
+Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(z.test)
+sign.regressors <- NULL
+for(i in 1:nrow(z.test) ) {
+  if(z.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+## labour force equation #1 (probit)
+
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
+рассморим probit-регрессию **LFP на WA, WA^2, WE, KL6, K618, CIT, UN, log(FAMINC)**
+
+Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.10
+regr <- glm(formula=LFP~WA+I(WA^2)+WE+KL6+K618+CIT+UN+log(FAMINC), data=mroz_Greene, 
+            family = binomial(link='probit') )
+z.test <- coeftest(regr)
+z.test
+```
+
+Модель была подогнана по `r nobs(regr)` наблюдениям. 
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>
+
+Вычислите необходимое критическое значение z-теста. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+z.cr <- qnorm(p=1-sign.level/2)
+round(z.cr , digits = my.digits)
+```
+
+Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(z.test)
+sign.regressors <- NULL
+for(i in 1:nrow(z.test) ) {
+  if(z.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+## labour force equation #2 (logit)
+
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
+рассморим logit-регрессию **LFP на WA, WA^2, WE, KL6, K618, CIT, UN, log(FAMINC)**
+
+Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.05
+regr <- glm(formula=LFP~WA+I(WA^2)+WE+KL6+K618+CIT+UN+log(FAMINC), data=mroz_Greene, 
+            family = binomial(link='logit') )
+z.test <- round(coeftest(regr), digits = my.digits.output)
+z.test[,1:2]
+```
+
+Модель была подогнана по `r nobs(regr)` наблюдениям. 
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>
+
+
+Вычислите z-статистику для каждого коэффициента. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+round(z.test[,1]/z.test[,2], digits = my.digits)
+```
+
+Вычислите необходимое критическое значение z-теста. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+z.cr <- qnorm(p=1-sign.level/2)
+round(z.cr , digits = my.digits)
+```
+
+Какие коэффициенты значимы? Ответ
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+regressors <- row.names(z.test)
+sign.regressors <- NULL
+for(i in 1:nrow(z.test) ) {
+  if(z.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+# LR-тест: значимость регресии
+
+## approve equation #1 (probit)
+
+Для датасета `loanapp`
+рассморим probit-регрессию **approve на appinc, unem, male, yjob, self**
+
+Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.10
+regr <- glm(formula=approve~appinc+unem+male+yjob+self, data=loanapp, 
+            family = binomial(link='probit') )
+summ(regr, digits = my.digits.output)
+my.logL <- round(-deviance(regr)/2, digits = my.digits.output)
+my.logL.null <- round(-regr$null.deviance/2, digits = my.digits.output)
+```
+
+Модель была подогнана по `r nobs(regr)` наблюдениям. Логарфим функции правдоподобия 
+для модели \(\log L=\)`r my.logL`, для регрессии без объясняющих переменных (только на константу)
+\(\log L_0=\)`r my.logL.null`
+
+Тестируется значимость регресии, т.е. гипотеза
+\(H_0:\beta_{appinc}=\beta_{unem}=\beta_{male}=\beta_{yjob}=\beta_{self}=0\).
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Вычислите тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+LR.stat <- 2*(my.logL-my.logL.null)
+round(LR.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+chi.sq.cr <- qchisq(p=1-sign.level, df=regr$rank-1)
+round(chi.sq.cr, digits = my.digits)
+```
+
+Значима ли регрессия? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(LR.stat>chi.sq.cr) print('Значима') else print('Незначима')
+```
+
+Какие коэффициенты значимы?
+
+```{r, echo=FALSE, comment=''}
+z.test <- coeftest(regr)
+regressors <- row.names(z.test)
+sign.regressors <- NULL
+for(i in 1:nrow(z.test) ) {
+  if(z.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+## approve equation #2 (logit)
+
+Для датасета `loanapp`
+рассморим logit-регрессию **approve на appinc, appinc^2, mortno, unem, dep, male, married, yjob, self**
+
+Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.05
+regr <- glm(formula=approve~appinc+I(appinc^2)+mortno+unem+dep+male+married+yjob+self, data=loanapp, 
+            family = binomial(link='logit') )
+summ(regr, digits = my.digits.output)
+my.logL <- round(-deviance(regr)/2, digits = my.digits.output)
+my.logL.null <- round(-regr$null.deviance/2, digits = my.digits.output)
+```
+
+Модель была подогнана по `r nobs(regr)` наблюдениям. Логарфим функции правдоподобия 
+для модели \(\log L=\)`r my.logL`, для регрессии без объясняющих переменных (только на константу)
+\(\log L_0=\)`r my.logL.null`
+
+Тестируется значимость регресии, т.е. гипотеза
+\(H_0:\beta_{appinc}=\beta_{appinc^2}=\beta_{mortno}=\beta_{unem}=\beta_{dep}=\beta_{male}=\beta_{married}=\beta_{yjob}=\beta_{self}=0\).
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+Вычислите тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment=''}
+LR.stat <- 2*(my.logL-my.logL.null)
+round(LR.stat, digits = my.digits)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+chi.sq.cr <- qchisq(p=1-sign.level, df=regr$rank-1)
+round(chi.sq.cr, digits = my.digits)
+```
+
+Значима ли регрессия? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(LR.stat>chi.sq.cr) print('Значима') else print('Незначима')
+```
+
+Какие коэффициенты значимы?
+
+```{r, echo=FALSE, comment=''}
+z.test <- coeftest(regr)
+regressors <- row.names(z.test)
+sign.regressors <- NULL
+for(i in 1:nrow(z.test) ) {
+  if(z.test[i,4]<sign.level) sign.regressors <- c(sign.regressors, regressors[i])
+}
+print(sign.regressors)
+```
+
+## labour force equation #1 (probit)
+
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
+рассморим несколько probit-регрессй. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.10
+regr <- NULL
+regr[[1]] <- glm(formula=LFP~WA+I(WA^2)+WE+KL6+K618+CIT+UN+log(FAMINC), data=mroz_Greene,
+                 family = binomial(link='probit') )
+regr[[2]] <- update(regr[[1]], formula. = ~.-WE-KL6-K618)
+regr[[3]] <- update(regr[[1]], formula. = ~.-WE-KL6-K618-log(FAMINC))
+regr[[4]] <- update(regr[[1]], formula. = ~.-WE-KL6-K618-log(FAMINC)-WA-I(WA^2))
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+my.logL.null <- round(-regr[[1]]$null.deviance/2, digits = my.digits.output)
+my.logL <- NULL
+for(i in 1:length(regr)) my.logL <- c(my.logL, round(-deviance(regr[[i]])/2, digits = my.digits.output) )
+```
+
+Логарфим функции правдоподобия для регрессии без объясняющих переменных (только на константу)
+\(\log L_0=\)`r my.logL.null`.
+
+Для каждой регресси вычислите LR-статистику для тестирования её значимости.
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+LR.stat <- NULL
+for(i in 1:length(regr)) {
+  LR.stat <- c(LR.stat, 2*(my.logL[[i]]-my.logL.null) )
+}
+df.LR <- data.frame(Регрессия=1:length(regr), LR.stat= LR.stat) # round(LR.stat, digits = my.digits)
+stargazer(df.LR, summary = FALSE, type='text', rownames=FALSE, digits = my.digits)
+```
+
+Для каждой регрессии вычислите необходимое критическое значение
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+chi.sq.cr <- NULL
+for(i in 1:length(regr)) {
+  chi.sq.cr <- c(chi.sq.cr, qchisq(p=1-sign.level, df=regr[[i]]$rank-1) )
+}
+df.chi.sq <- data.frame(Регрессия=1:length(regr), Критическое= chi.sq.cr) # round(LR.stat, digits = my.digits)
+stargazer(df.chi.sq, summary = FALSE, type='text', rownames=FALSE, digits = my.digits)
+```
+
+Какая из регрессий значима?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+significance <- NULL
+for(i in 1:length(regr)) {
+  if( LR.stat[i]>chi.sq.cr[i]) significance <- c(significance, 'Значима')
+  else significance <- c(significance, 'Незначима')
+}
+df.sign <- data.frame(Регрессия=1:length(regr), Значимость=significance)
+stargazer(df.sign, summary = FALSE, type='text', rownames=FALSE)
+```
+
+## labour force equation #2 (logit)
+
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
+рассморим несколько logit-регрессй. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.05
+regr <- NULL
+regr[[1]] <- glm(formula=LFP~WA+I(WA^2)+WE+KL6+K618+CIT+UN+log(FAMINC), data=mroz_Greene,
+                 family = binomial(link='logit') )
+regr[[2]] <- update(regr[[1]], formula. = ~.-WA-I(WA^2) )
+regr[[3]] <- update(regr[[1]], formula. = ~.-WA-I(WA^2)-WE )
+regr[[4]] <- update(regr[[1]], formula. = ~.-WA-I(WA^2)-WE-log(FAMINC)-KL6)
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=TRUE )
+my.logL.null <- round(-regr[[1]]$null.deviance/2, digits = my.digits.output)
+my.logL <- NULL
+for(i in 1:length(regr)) my.logL <- c(my.logL, round(-deviance(regr[[i]])/2, digits = my.digits.output) )
+```
+
+Логарфим функции правдоподобия для регрессии без объясняющих переменных (только на константу)
+\(\log L_0=\)`r my.logL.null`.
+
+Для каждой регресси вычислите LR-статистику для тестирования её значимости.
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+LR.stat <- NULL
+for(i in 1:length(regr)) {
+  LR.stat <- c(LR.stat, 2*(my.logL[[i]]-my.logL.null) )
+}
+df.LR <- data.frame(Регрессия=1:length(regr), LR.stat= LR.stat) # round(LR.stat, digits = my.digits)
+stargazer(df.LR, summary = FALSE, type='text', rownames=FALSE, digits = my.digits)
+```
+
+Для каждой регрессии вычислите необходимое критическое значение
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+**Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ
+
+```{r, echo=FALSE, comment=''}
+chi.sq.cr <- NULL
+for(i in 1:length(regr)) {
+  chi.sq.cr <- c(chi.sq.cr, qchisq(p=1-sign.level, df=regr[[i]]$rank-1) )
+}
+df.chi.sq <- data.frame(Регрессия=1:length(regr), Критическое= chi.sq.cr) # round(LR.stat, digits = my.digits)
+stargazer(df.chi.sq, summary = FALSE, type='text', rownames=FALSE, digits = my.digits)
+```
+
+Какая из регрессий значима?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+significance <- NULL
+for(i in 1:length(regr)) {
+  if( LR.stat[i]>chi.sq.cr[i]) significance <- c(significance, 'Значима')
+  else significance <- c(significance, 'Незначима')
+}
+df.sign <- data.frame(Регрессия=1:length(regr), Значимость=significance)
+stargazer(df.sign, summary = FALSE, type='text', rownames=FALSE )
+```
+
+# LR-тест: совместная значимость
+
+## labour force equation #1 (probit)
+
+Для датасета [mroz_Greene](http://www.stern.nyu.edu/~wgreene/Text/Edition7/TableF5-1.csv)
+рассморим несколько probit-регрессй. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.10
+regr <- NULL
+regr[[1]] <- glm(formula=LFP~WA+I(WA^2)+WE+KL6+K618+CIT+UN+log(FAMINC), data=mroz_Greene,
+                 family = binomial(link='probit') )
+regr[[2]] <- update(regr[[1]], formula. = ~.-WA-I(WA^2) )
+regr[[3]] <- update(regr[[1]], formula. = ~.-CIT-UN-K618 )
+regr[[4]] <- update(regr[[1]], formula. = ~.-CIT-UN-K618-log(FAMINC) )
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+my.logL.null <- round(-regr[[1]]$null.deviance/2, digits = my.digits.output)
+my.logL <- NULL
+for(i in 1:length(regr)) my.logL <- c(my.logL, round(-deviance(regr[[i]])/2, digits = my.digits.output) )
+```
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+### Гипотеза 1
+
+Для первой модели тестируется значимость влияния возраста, т.е. гипотеза
+\(H_0:\beta_{WA}=\beta_{WA^2}=0\) по LR-тесту.
+
+Вычислите соотвествующую тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+ind.full <- 1; ind.restr <- 2
+LR.stat <- 2*(my.logL[ind.full]-my.logL[ind.restr])
+round(LR.stat, digits = my.digits)
+```
+
+Вычислите необходимое кртическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r,echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=df.residual(regr[[ind.restr]])-df.residual(regr[[ind.full]]) )
+round(chi2.cr, digits = my.digits)
+```
+
+Значимо ли влияние возраста? Ответ
+```{r,echo=FALSE, comment=''}
+if(LR.stat>chi2.cr) print('Значимо') else print('Незначимо')
+```
+
+### Гипотеза 2
+
+Для первой модели тестируется совместная значимость влияния **K618, CIT, UN**, т.е. гипотеза
+\(H_0:\beta_{K618}=\beta_{CIT}=\beta_{UN}=0\) по LR-тесту.
+
+Вычислите соотвествующую тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+ind.full <- 1; ind.restr <- 3
+LR.stat <- 2*(my.logL[ind.full]-my.logL[ind.restr])
+round(LR.stat, digits = my.digits)
+```
+
+Вычислите необходимое кртическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r,echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=df.residual(regr[[ind.restr]])-df.residual(regr[[ind.full]]) )
+round(chi2.cr, digits = my.digits)
+```
+
+Значимо ли влияние переменных? Ответ
+```{r,echo=FALSE, comment=''}
+if(LR.stat>chi2.cr) print('Значимо') else print('Незначимо')
+```
+
+### Гипотеза 3
+
+Для первой модели тестируется совместная значимость влияния **K618, CIT, UN, FAMINC**, т.е. гипотеза
+\(H_0:\beta_{K618}=\beta_{CIT}=\beta_{UN}=\beta_{\log(FAMINC)}=0\) по LR-тесту.
+
+Вычислите соотвествующую тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+ind.full <- 1; ind.restr <- 4
+LR.stat <- 2*(my.logL[ind.full]-my.logL[ind.restr])
+round(LR.stat, digits = my.digits)
+```
+
+Вычислите необходимое кртическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r,echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=df.residual(regr[[ind.restr]])-df.residual(regr[[ind.full]]) )
+round(chi2.cr, digits = my.digits)
+```
+
+Значимо ли влияние переменных? Ответ
+```{r,echo=FALSE, comment=''}
+if(LR.stat>chi2.cr) print('Значимо') else print('Незначимо')
+```
+
+## approve equation #1 (logit)
+
+Для датасета `loanapp`
+рассморим несколько probit-регрессй. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.01
+regr <- NULL
+regr[[1]] <- glm(formula=approve~appinc+I(appinc^2)+mortno+unem+dep+male+married+yjob+self, data=loanapp,
+                 family = binomial(link='probit') )
+regr[[2]] <- update(regr[[1]], formula. = ~.-appinc-I(appinc^2) )
+regr[[3]] <- update(regr[[1]], formula. = ~.-male-yjob-self )
+regr[[4]] <- update(regr[[1]], formula. = ~.-male-yjob-self-unem-married )
+stargazer(regr, type='text', digits=my.digits.output, digit.separator = '', 
+          dep.var.caption = 'Зависимая переменная', df=FALSE)
+my.logL.null <- round(-regr[[1]]$null.deviance/2, digits = my.digits.output)
+my.logL <- NULL
+for(i in 1:length(regr)) my.logL <- c(my.logL, round(-deviance(regr[[i]])/2, digits = my.digits.output) )
+```
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+### Гипотеза 1
+
+Для первой модели тестируется значимость влияния дохода, т.е. гипотеза
+\(H_0:\beta_{appinc}=\beta_{appinc^2}=0\) по LR-тесту.
+
+Вычислите соотвествующую тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+ind.full <- 1; ind.restr <- 2
+LR.stat <- 2*(my.logL[ind.full]-my.logL[ind.restr])
+round(LR.stat, digits = my.digits)
+```
+
+Вычислите необходимое кртическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r,echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=df.residual(regr[[ind.restr]])-df.residual(regr[[ind.full]]) )
+round(chi2.cr, digits = my.digits)
+```
+
+Значимо ли влияние возраста? Ответ
+```{r,echo=FALSE, comment=''}
+if(LR.stat>chi2.cr) print('Значимо') else print('Незначимо')
+```
+
+### Гипотеза 2
+
+Для первой модели тестируется совместная значимость влияния **male, yjob, self**, т.е. гипотеза
+\(H_0:\beta_{male}=\beta_{yjob}=\beta_{self}=0\) по LR-тесту.
+
+Вычислите соотвествующую тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+ind.full <- 1; ind.restr <- 3
+LR.stat <- 2*(my.logL[ind.full]-my.logL[ind.restr])
+round(LR.stat, digits = my.digits)
+```
+
+Вычислите необходимое кртическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r,echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=df.residual(regr[[ind.restr]])-df.residual(regr[[ind.full]]) )
+round(chi2.cr, digits = my.digits)
+```
+
+Значимо ли влияние переменных? Ответ
+```{r,echo=FALSE, comment=''}
+if(LR.stat>chi2.cr) print('Значимо') else print('Незначимо')
+```
+
+### Гипотеза 3
+
+Для первой модели тестируется совместная значимость влияния **male, yjob, self, unem, married**, т.е. гипотеза
+\(H_0:\beta_{male}=\beta_{yjob}=\beta_{self}=\beta_{unem}=\beta_{married}=0\) по LR-тесту
+
+Вычислите соотвествующую тестовую статистику. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+ind.full <- 1; ind.restr <- 4
+LR.stat <- 2*(my.logL[ind.full]-my.logL[ind.restr])
+round(LR.stat, digits = my.digits)
+```
+
+Вычислите необходимое кртическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r,echo=FALSE, comment=''}
+chi2.cr <- qchisq(p=1-sign.level, df=df.residual(regr[[ind.restr]])-df.residual(regr[[ind.full]]) )
+round(chi2.cr, digits = my.digits)
+```
+
+Значимо ли влияние переменных? Ответ
+```{r,echo=FALSE, comment=''}
+if(LR.stat>chi2.cr) print('Значимо') else print('Незначимо')
+```
+
+# W-тест: совместная значимость
+
+## swiss labour force equation #1
+
+Для датасета `SwissLabour`
+рассморим logit-регрессию **participation на income, income^2, age, age^2, youngkids, oldkids, foreign**
+
+Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits <- 3
+my.digits.output <- 4
+sign.level <- 0.05
+regr <- glm(formula=as.numeric(participation)-1~income+I(income^2)+age+I(age^2)+youngkids+oldkids+foreign, 
+            data=SwissLabor, 
+            family = binomial(link='logit') )
+summ(regr, digits = my.digits.output, vifs=TRUE)
+```
+<span style="color: blue">Уровень значимости `r 100*sign.level`%</span>.
+
+### Гипотеза 1
+
+Тестируется значимость влияния дохода, т.е. гипотеза \(H_0:\beta_{income}=\beta_{income^2}=0\).
+Результаты W-теста
+
+```{r,echo=FALSE, comment=''}
+regr.rest <- update(regr, formula. = ~.-income-I(income^2) )
+w.test <- waldtest(regr.rest, regr, test='Chisq')
+stargazer(w.test[2,3:4], type = 'text', summary = FALSE, rownames = FALSE)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+ch2.cr <- qchisq(p=1-sign.level, df=w.test[2,2])
+round(ch2.cr, digits = my.digits)
+```
+
+Значимо ли влияние дохода? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(w.test[2,4]<sign.level) print('Значимо') else print('Незначимо')
+```
+
+### Гипотеза 2
+
+Тестируется значимость влияния числа детей, т.е. гипотеза \(H_0:\beta_{youngkids}=\beta_{oldkids}=0\).
+Результаты W-теста
+
+```{r,echo=FALSE, comment=''}
+regr.rest <- update(regr, formula. = ~.-youngkids-oldkids )
+w.test <- waldtest(regr.rest, regr, test='Chisq')
+stargazer(w.test[2,3:4], type = 'text', summary = FALSE, rownames = FALSE)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+ch2.cr <- qchisq(p=1-sign.level, df=w.test[2,2])
+round(ch2.cr, digits = my.digits)
+```
+
+Значимо ли влияние числе детей? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(w.test[2,4]<sign.level) print('Значимо') else print('Незначимо')
+```
+
+### Гипотеза 3
+
+Тестируется значимость влияния возраста, т.е. гипотеза \(H_0:\beta_{age}=\beta_{age^2}=0\).
+Результаты W-теста
+
+```{r,echo=FALSE, comment=''}
+regr.rest <- update(regr, formula. = ~.-age-I(age^2) )
+w.test <- waldtest(regr.rest, regr, test='Chisq')
+stargazer(w.test[2,3:4], type = 'text', summary = FALSE, rownames = FALSE)
+```
+
+Вычислите критическое значение. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+```{r, echo=FALSE, comment=''}
+ch2.cr <- qchisq(p=1-sign.level, df=w.test[2,2])
+round(ch2.cr, digits = my.digits)
+```
+
+Значимо ли влияние возраста? Ответ
+
+```{r, echo=FALSE, comment=''}
+if(w.test[2,4]<sign.level) print('Значимо') else print('Незначимо')
+```
