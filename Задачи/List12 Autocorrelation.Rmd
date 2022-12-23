@@ -16,6 +16,7 @@ library(sandwich)
 library(Ecdat)
 library(jtools)
 library(quantmod)
+library(zoo)
 data(Icecream)
 data("Consumption")
 
@@ -118,8 +119,10 @@ if(my.dw.test$p.value<sign.level) print('Гипотеза отвергается
 Построим графики ставок и первых разностей
 
 ```{r, echo=FALSE, comment=''}
-plot(Rates, col=rainbow(ncol(Rates)) )
-plot(d.Rates, col=rainbow(ncol(d.Rates)) )
+autoplot.zoo(Rates, col=Series )+facet_free(scales='free')
+autoplot.zoo(d.Rates, col=Series)+facet_free(scales='free')
+# plot(Rates, col=rainbow(ncol(Rates)) )
+# plot(d.Rates, col=rainbow(ncol(d.Rates)) )
 ```
 
 Рассмотрим регрессию $\Delta rate.10y_t=\beta_0+\beta_1\Delta rate.3m_t+\beta_2\Delta\log M2_t+u_t$
