@@ -23,6 +23,6 @@
 - [Листок 26](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List26-ROC.html): ROC-кривая
 - [Листок 27](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List27-Panels.html): Панельные регрессии
 
-# Статистчиские таблицы
+# Статистические таблицы
 
-Таблицы критических значений [PDF](https://github.com/artamonoff/Econometrica/blob/master/Stat%20Tables/CriticalValues.pdf)
+Таблицы критических значений ([PDF](https://github.com/artamonoff/Econometrica/blob/master/Stat%20Tables/CriticalValues.pdf))
