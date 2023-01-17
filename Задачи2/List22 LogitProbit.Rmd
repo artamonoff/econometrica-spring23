@@ -682,8 +682,9 @@ if(LR.stat>chi2.cr) print('Значимо') else print('Незначимо')
 my.digits <- 3
 my.digits.output <- 4
 sign.level <- 0.01
+loanapp.na.rm <- na.omit(loanapp[, c('approve', 'appinc', 'mortno', 'unem', 'dep','male', 'married', 'yjob', 'self')])
 regr <- NULL
-regr[[1]] <- glm(formula=approve~appinc+I(appinc^2)+mortno+unem+dep+male+married+yjob+self, data=loanapp,
+regr[[1]] <- glm(formula=approve~appinc+I(appinc^2)+mortno+unem+dep+male+married+yjob+self, data=loanapp.na.rm,
                  family = binomial(link='probit') )
 regr[[2]] <- update(regr[[1]], formula. = ~.-appinc-I(appinc^2) )
 regr[[3]] <- update(regr[[1]], formula. = ~.-male-yjob-self )
