@@ -78,7 +78,7 @@ my.digits <- 2
 **Важно**
 
 * <span style="color: red"> Во всех задачах логарифм натуральный!</span>
-* <span style="color: red"> Во всех численные ответы округлите до `r my.digits`-х десятичных знаков</span>
+* <span style="color: red"> Во всех задачах численные ответы округлите до `r my.digits`-х десятичных знаков</span>
 * <span style="color: blue"> Описание датасетов см. в задачнике</span>
 * <span style="color: blue"> По умолчанию константа включается</span>
 
