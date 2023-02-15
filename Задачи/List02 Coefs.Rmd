@@ -20,7 +20,7 @@ output:
 
 1. Запишите спецификацию модели
 
-2. Результаты подгонки
+2. Результаты подгонки (*получите самостоятельно в Python!*)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 my.digits <- 2
@@ -39,7 +39,7 @@ round(coef(regr), digits = my.digits)
 
 1. Запишите спецификацию модели
 
-2. Результаты подгонки
+2. Результаты подгонки (*получите самостоятельно в Python!*)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 my.digits <- 2
@@ -58,7 +58,7 @@ round(coef(regr), digits = my.digits)
 
 1. Запишите спецификацию модели
 
-2. Результаты подгонки
+2. Результаты подгонки (*получите самостоятельно в Python!*)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 my.digits <- 2
@@ -82,7 +82,7 @@ round(coef(regr), digits = my.digits)
 
 1. Запишите спецификацию модели
 
-2. Результаты подгонки
+2. Результаты подгонки (*получите самостоятельно в Python!*)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 my.digits <- 3
@@ -101,7 +101,7 @@ round(coef(regr), digits = my.digits)
 
 1. Запишите спецификацию модели
 
-2. Результаты подгонки
+2. Результаты подгонки (*получите самостоятельно в Python!*)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 my.digits <- 3
@@ -122,7 +122,7 @@ round(coef(regr), digits = my.digits)
 
 1. Запишите спецификацию модели
 
-2. Результаты подгонки
+2. Результаты подгонки (*получите самостоятельно в Python!*)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 my.digits <- 3
@@ -141,7 +141,7 @@ round(coef(regr), digits = my.digits)
 
 1. Запишите спецификацию модели
 
-2. Результаты подгонки
+2. Результаты подгонки (*получите самостоятельно в Python!*)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 my.digits <- 3
@@ -162,7 +162,7 @@ round(coef(regr), digits = my.digits)
 
 1. Запишите спецификацию модели
 
-2. Результаты подгонки
+2. Результаты подгонки (получите самостоятельно в Python!)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 my.digits <- 3
@@ -181,7 +181,7 @@ round(coef(regr), digits = my.digits)
 
 1. Запишите спецификацию модели
 
-2. Результаты подгонки
+2. Результаты подгонки (*получите самостоятельно в Python!*)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 my.digits <- 3
