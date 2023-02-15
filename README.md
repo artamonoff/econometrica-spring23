@@ -27,6 +27,6 @@
 
 Таблицы критических значений ([PDF](https://github.com/artamonoff/Econometrica/blob/master/Stat%20Tables/CriticalValues.pdf))
 
-# Описание учебных даннах
+# Описание учебных данных
 
 Описание датасетов ([PDF](https://github.com/artamonoff/Econometrica/blob/master/data-description/Datasets.pdf))
