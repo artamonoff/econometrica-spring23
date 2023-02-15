@@ -1,0 +1,556 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8x]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[english, russian]{babel}
+
+\usepackage{amsmath, amsfonts, amsthm, amssymb, amsopn, amscd}
+\usepackage{enumerate}
+\usepackage[mathscr]{eucal}
+
+\usepackage{hyperref}
+\hypersetup{unicode=true,final=true,colorlinks=true}
+
+\theoremstyle{remark}
+%\newtheorem{problem}{Упражнение}
+% \newtheorem{problem}{}[section]
+% \renewcommand{\theproblem}{\textbf{\#\arabic{problem}}}
+
+% \input{EconometricsDefs.tex}
+
+\title{Описание данных}
+
+\author{Н.В. Артамонов}
+
+\begin{document}
+
+\maketitle
+
+% \tableofcontents
+
+\section{Описание наборов данных}
+
+В этом разделе приведены описания основных наборов данных, используемых для решения задач.
+
+Для работы с нужным датасетом необходимо загрузить его командой
+\begin{verbatim}
+data(dataset, package)
+\end{verbatim}
+
+%\section{Кросс-секционные данные}
+
+\begin{table}
+	\caption{Набор данных \texttt{Labour}
+	из пакета \texttt{Ecdat}  (569  наблюдений) с данными 
+	о бельгийских 	фирмах за 1996 г.} 
+%	Источник данных \cite{SwissLabor}}
+	\label{BelgiumLabour}
+	\begin{tabular}{l|l}\hline
+	capital & капитал (в млн евро) \\
+	labour & число сотрудников  \\
+	output &выпуск (в млн евро) \\
+	wage  & зарплата на одного сотрудника (в тыс евро)  \\
+	\hline
+	\end{tabular}
+\end{table}
+
+\begin{table}
+	\caption{Набор данных \texttt{Electricity}
+	из пакета \texttt{Ecdat}  (158  наблюдений) с данными 
+	о производителях электроэнергии в US за 1970 г.} 
+%	Источник данных \cite{SwissLabor}}
+	\label{ElectricityEcdat}
+	\begin{tabular}{l|l}\hline
+	cost &  общие издержки за год \\
+	q & общий выпуск электроэнергии \\
+	pl & уровень зарплата (wage rate) \\
+	pk & цена привлечения капитала (capital price index) \\
+	pf & цена на топливо (fuel price) \\
+	\hline
+	\end{tabular}
+\end{table}
+
+
+%\paragraph{sleep75}\label{sleep75}
+
+%Набор данных \verb@sleep75@ из пакета \verb@wooldridge@ содержит 706 наблюдений
+%по следующим переменным
+%\begin{center}
+%	\begin{tabular}{l|l}\hline
+%	age & возраст (в годах)  \\
+%	educ & уровень образования (в года) \\
+%	inlf & бинарная, 1 если участник рынка труда \\
+%	smsa  & бинарная, 1 если живёт в мегаполисе \\
+%	male & гендерный фактор (бинарная, 1 если мужчина) \\
+%	marr & семейный статус (бинарная, 1 если женат/заужем) \\
+%	prot & бинарная, 1 если протестант \\
+%	selfe & бинарная, 1 если самозанятый \\
+%	sleep & продолжительность сна (мин/нед) \\
+%	south & георафический фактор (бинарная, 1 если живёт на юге) \\
+%	spsepay & доход супруга/супруги \\
+%	spwrk75 & бинарная, 1 если супруг(а) работает \\
+%	totwrk & занятость (мин/нед) \\
+%	union & бинарная, 1 если член профсоюза \\
+%	yngkid & бинарная, 1 если сеть дети младше 3 лет \\
+%	yrsmarr & сколько лет женат/замужем \\
+%	hrwage & почасовая оплата \\
+%	\hline
+%	\end{tabular}
+%\end{center}
+\begin{table}
+	\caption{Набор данных \texttt{sleep75} из пакета \texttt{wooldridge} (706  наблюдений). 
+	Основные переменные. Источник данных \cite{sleep75}}
+	\label{sleep75}
+	\begin{tabular}{l|l}\hline
+	age & возраст (в годах)  \\
+	educ & уровень образования (в года) \\
+	inlf & бинарная, 1 если участник рынка труда \\
+	leis1 & нерабочее время, sleep-totwrk \\
+	smsa  & бинарная, 1 если живёт в мегаполисе \\
+	male & гендерный фактор (бинарная, 1 если мужчина) \\
+	marr & семейный статус (бинарная, 1 если женат/замужем) \\
+	prot & бинарная, 1 если протестант \\
+	selfe & бинарная, 1 если самозанятый \\
+	sleep & продолжительность сна (мин/нед) \\
+	south & географический фактор (бинарная, 1 если живёт на юге) \\
+	spsepay & доход супруга/супруги \\
+	spwrk75 & бинарная, 1 если супруг(а) работает \\
+	totwrk & занятость (мин/нед) \\
+	union & бинарная, 1 если член профсоюза \\
+	yngkid & бинарная, 1 если сеть дети младше 3 лет \\
+	yrsmarr & сколько лет женат/замужем \\
+	hrwage & почасовая оплата \\
+	\hline
+	\end{tabular}
+\end{table}
+
+%Данные взят из статьи \cite{sleep75}
+
+
+
+%\paragraph{wage2}
+%
+%Набор даных \verb@wage2@ из пакета \verb@wooldridge@ содежит 935
+%наблюдений по следующим переменным
+\begin{table}
+	\caption{Набор данных \texttt{wage2} из пакета \texttt{wooldridge} (935  наблюдений).
+	Основные переменные. Источник данных \cite{wage2}}
+	\label{wage2}
+	\begin{tabular}{l|l}\hline
+	wage & месячная зарплата \\
+	hours & недельная занятость в часах \\
+	IQ & результаты теста IQ \\
+	KWW & результаты теста knowledge of world work \\
+	educ & уровень образования (в годах) \\
+	exper & опыт работы в годах \\
+	tenure & стаж работы на текущем месте \\
+	age & возраст (в годах)  \\
+	married & семейный статус (бинарная, 1 если женат/замужем) \\
+	south & географический фактор (бинарная, 1 если живёт на юге) \\
+	urban & место жительства (1 если живет в городе) \\
+	sibs & число братьев/сестёр \\
+	brthord & какой по счёту ребёнок в семье \\
+	meduc & уровень образования матери (в годах) \\
+	feduc & уровень образования отца (в годах) \\
+	\hline
+	\end{tabular}
+\end{table}
+%Данные взят из статьи \cite{wage2}
+
+\begin{table}
+	\caption{Набор данных \texttt{wage1} из пакета \texttt{wooldridge} (526  наблюдений).
+	Основные переменные.} %Источник данных \cite{wage1}}
+	\label{wage1}
+	\begin{tabular}{l|l}\hline
+	wage & средняя почасовая оплата \\
+	educ & уровень образования (в годах) \\
+	female & гендерный фактор \\
+	exper & опят работы \\
+	tenure & стаж на текущем месте работы \\
+	married & семейный статус \\
+	smsa & живёт ли в мегаполисе (бинарная) \\
+	south & географический фактор (бинарная) \\
+	west & географический фактор (бинарная) \\
+	northcen & географический фактор (бинарная) \\
+	\end{tabular}
+\end{table}
+
+\begin{table}
+	\caption{Набор данных \texttt{loanapp} из пакета \texttt{wooldridge} (1989  наблюдений). 
+	Основные переменные. Источник данных \cite{loanapp}}
+	\label{loanapp}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	approve & бинарная, 1 если кредитная заявка одобрена \\
+	appinc & доход заявителя  (в \$1000) \\
+	mortno & бинарная, 1 если нет ипотечной кредитной истории \\
+	unem  & уровень безработицы в отрасли в \% \\
+	dep & количество иждивенцев \\
+	male & гендерный фактор \\
+	married & семейный статус \\
+	yjob & стаж на текущей работе \\
+	self & бинарная, 1 если самозанятый \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{Набор данных \texttt{SwissLabor} о рынке труда Швейцарии
+	из пакета \texttt{AER} (872  наблюдений). 
+	Источник данных \cite{SwissLabor}}
+	\label{SwissLabor}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	participation & Является ли участником рынка труда? \\
+	& (фактор, \texttt{''yes''/''no''}) \\
+	income & логарифм дополнительного дохода (nonlabor income) \\
+	age & возраст (в десятилетиях) \\
+	education  & уровень образования \\
+	youngkids & число маленьких детей (младше 7 лет)\\
+	oldkids & число старшийх детей (страше 7 лет) \\
+	foreign & является ли иностранцем?  (фактор, \texttt{''yes''/''no''}) \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{Набор данных \texttt{Consumption}
+	из пакета \texttt{Ecdat} об индивидуальных доходах и расходах  в Канаде
+	(квартальные  данные  с 1947Q1 по 1996Q4). }
+%	Источник данных \cite{Consumption}}
+	\label{Consumption}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	yd & индивидуальный располагаемый доход в ценах 1986 \\
+	ce & индивидуальные расходы на потребление в ценах 1986 \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+
+\begin{table}
+	\caption{Набор данных из файла \texttt{Mroz}
+	из пакета \texttt{Ecdat} содержит 
+	данные о рынке труда замужних женщин.
+	Основные переменные. Источник данных \cite{Mroz}} 
+%	Источник данных \cite{SwissLabor}}
+	\label{MrozGreen}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	LFP & бинарная, 1 женщина работает \\
+	WHRS & уровень занятости (в часах) \\
+	KL6 & число детей моложе 6 лет в семье \\
+	K618  & число детей от 6 до 18 лет в семье\\
+	WA & возраст \\
+	WE & уровень образования (в годах) \\
+	WW &  средняя почасовая оплата\\
+	HHRS & занятость мужа \\
+	HA & возраст мужа \\
+	HE & уровень образования мужа (а годах) \\
+	HW & зарплата мужа \\
+	FAMINC & доход домашнего хозяйства \\
+	WMED & уровень образования матери \\
+	WFED & уровень образования отца \\
+	UN & уровень безработицы в стране проживания \\
+	CIT & бинарная, 1 если живет в мегаполисе \\
+	AX & предыдущий опыт работы (в годах) \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{Набор данных \texttt{diamonds}
+	из пакета \texttt{ggplot2} с данными о  бриллиантах
+	(53940  наблюдений). Основные переменные.} 
+%	Источник данных \cite{SwissLabor}}
+	\label{diamonds}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	price & цена бриллианта \\
+	carat & вес бриллианта (в каратах) \\
+	cut & качество огранки (упорядоченный фактор с уровнями \\
+	& Fair<Good< Very Good<Premium<Ideal) \\
+	color  &  цвет  (упорядоченный фактор с уровнями \\
+	& J<I<H<G<F<E<D\\
+	clarity & прозрачность (упорядоченный фактор с уровнями \\
+	& I1<SI2<SI1<VS2<VS1<VVS2<VVS1<IF\\
+	x & длина (в мм) \\
+	y &  ширина (в мм) \\
+	z & глубина (в мм) \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{Набор данных \texttt{Diamond}
+	из пакета \texttt{Ecdat} с данными о  бриллиантах
+	(308  наблюдений). Основные переменные.
+	Источник данных \cite{Diamonds}}
+	\label{Diamond}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	carat & вес бриллианта (в каратах) \\
+	colour  &  цвет (фактор с уровнями D,E,F,G,H,I) \\
+	clarity & прозрачность (фактор с уровнями \\
+	& IF,VVS1,VVS2,VS1,VS2) \\
+	certification & орган по сертификации (фактор с уровнями \\
+	& GIA,IGI,HRD) \\
+	price & цена в Сингапуре \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{Набор данных \texttt{Icecream}
+	из пакета \texttt{Ecdat} о потреблении мороженого в США
+	(недельные данные  с 1951–03–18 по 1953–07–11, всего 30  наблюдений). 
+	Источник данных \cite{Icecream}}
+	\label{Icecream}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	cons & потребление мороженого (в пинтах) \\
+	income  &  средний недельный доход семьи (в \$) \\
+	price & цена мороженого (за пинту) \\
+	temp & средняя температура (по Фаренгейту) \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{Набор данных \texttt{nlsw88}
+	из пакета \texttt{Counterfactual} о занятости женщин в США
+	(2246  наблюдений). Основные переменные.
+	Источник данных: сайт Stata \url{http://www.stata-press.com/data/r10/g.html} }
+	\label{nlsw88}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	hours & недельная занятость (в часах) \\
+	married & семейный статус \\
+%	never\_married & бинарная \\
+	ttl\_exp & общий стаж работы \\
+	smsa  & бинарная, 1 если живёт в мегаполисе \\
+	south & географический фактор (бинарная, 1 если живёт на юге) \\
+	wage & почасовая оплата  (в \$) \\
+	age & возраст (в годах)  \\
+	grade & уровень образования (в годах) \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+
+\begin{table}
+	\caption{Набор данных из файла \texttt{default.csv}
+	с сайта \url{http://meit.mgimo.ru/node/237} о 
+	банкротствах по студенческим займам (6778 наблюдений)} 
+%	Источник данных \cite{SwissLabor}}
+	\label{defaultDataset}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	default & бинарная переменная, равная 1 если индивид признал \\
+	& себя банкротом по студенческому займу \\
+	age & возраст \\
+	adepcnt & количество иждивенцев у индивида плюс 1 \\
+	acadmos & количество месяцев, которые индивид прожил \\ 
+	& по текущему адресу \\
+	majordrg & количество зарегистрированных серьёзных \\
+	& правонарушений у этого индивида \\
+	minordrg &   количество зарегистрированных мелких \\ 
+	& правонарушений у этого индивида \\
+	ownrent &1, если индивид живёт в собственном дома, и  \\
+	& 0, если снимает\\
+	income & месячный доход в \$ \\
+	spending & среднемесячный расход по кредитной карте \\
+	inc\_rep & income, делённая на количество иждивенцев \\
+	exp\_inc & доля месячных расходов по кредитной карте \\
+	&  в годовой заработной плате \\
+	selfempl & 1, если индивид самозанятый, и 0 иначе \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{Набор данных \texttt{stockton3}
+	из пакета \texttt{PoEdata}
+	 с данными о стоимости домов (2610  наблюдений).  Основные переменные.
+	Источник данных \url{https://github.com/ccolonescu/PoEdata} }
+	\label{stockton3}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	sprice & цена продажи дома  (в \$) \\
+	livarea & жилая площадь  (кв.футы) \\
+	pool & наличие бассейна (бинарная) \\
+	lgelot & размер участка  (бинарный фактор, 1 если участок \\
+	& больше 5 акров) \\
+	age & возраст (в годах)  \\
+	beds & число спален \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{Набор данных из файла \texttt{applications.csv}
+	о поступивших на магистерские и PhD-программы (400 наблюдений)} 
+%	Источник данных \cite{SwissLabor}}
+	\label{applicationsDataset}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	admit & бинарный фактор, 1 если заявка одобрена \\
+	GPA &средняя оценка за время обучения \\
+	GRE & балл за экзамен graduate record exam \\
+	rank & категориальная переменная, обозначающая престиж \\
+	& университета (1 -- высший престиж, 4 -- низший престиж) \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+
+%\section{Панельные данные}
+
+\begin{table}
+	\caption{Панель \texttt{Guns}
+	из пакета \texttt{AER} с данными по 51 штату США с 1977 по 1999 гг.
+	(всего 1173 наблюдения).  Основные переменные.
+	Источник данных \cite{Guns}}
+	\label{Guns}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	state &  factor indicating state \\
+	year  &  factor indicating year \\
+	violent & violent crime rate (incidents per 100,000 members of \\
+	& the population) \\
+	murder & murder rate (incidents per 100,000). \\
+	robbery&  robbery rate (incidents per 100,000) \\
+	prisoners & incarceration rate in the state in the previous year \\
+	&  (sentenced prisoners per 100,000 residents;\\
+	& value for the previous year) \\
+	afam & percent of state population that is African-American, \\
+	& ages 10 to 64 \\
+	cauc  & percent of state population that is Caucasian, ages 10 to 64 \\
+	male & percent of state population that is male, ages 10 to 29 \\
+	population & state population, in millions of people. \\
+	income & real per capita personal income in the state (US dollars) \\
+	density & population per square mile of land area, divided by 1,000 \\
+	law & factor. Does the state have a shall carry law in \\
+	& effect in that year?\\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{Панель \texttt{LaborSupply}
+	из пакета \texttt{plm, Ecdat} с данными по 532 индивидуумам  с 1979 по 1988 гг.
+	(всего 5320 наблюдений).  Основные переменные.
+	Источник данных \cite{LaborSupply}}
+	\label{LaborSupply}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	lnhr & логарифм годовой занятости в часах \\
+	lnwg & логарифм почасовой оплаты \\
+	kids &число детей \\
+	age & возраст \\
+	disab & бинарная, 1 если плохое здоровье \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+
+\begin{table}
+	\caption{Панель \texttt{Cigar}
+	из пакета \texttt{plm} с данными по 46 штатам США с 1963 по 1992 гг.
+	(всего 1380 наблюдений).  Основные переменные.
+	Источник данных \cite{Cigar}}
+	\label{Cigar}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	state & state abbreviation \\
+	year & the year \\
+	price & price per pack of cigarettes \\
+	pop & population \\
+	pop16 & population above the age of 16 \\
+	cpi & consumer price index (1983=100) \\
+	ndi & per capita disposable income \\
+	sales & cigarette sales in packs per capita \\
+	pimin & minimum price in adjoining states per pack of cigarettes \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{Панель \texttt{Gasoline}
+	из пакета \texttt{plm, Ecdat} с данными о потреблении бензина по
+	18 странам OECD с 1960 по 1978 гг.
+	(всего 342 наблюдений).  Основные переменные.
+	Источник данных \cite{Gasoline}}
+	\label{Gasoline}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	lgaspcar & логарифм потребления бензина \\
+	lincomep & логарифм реального дохода на душу населения \\
+	lrpmg & логарифм реальной цены на бензин \\
+	lcarpcap & логарифм объёма рынка машин\\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\newpage
+
+\begin{thebibliography}{99}
+
+\bibitem{Guns} Ayres, I., and Donohue, J.J. (2003). Shooting Down the ‘More Guns Less Crime’ Hypothesis. 
+Stanford Law Review, 55, 1193–1312
+	
+\bibitem{Cigar} Baltagi B, Levin D (1992). Cigarette taxation: Raising revenues and reducing consumption. 
+Structural Change and Economic Dynamics, 3(2), 321-335
+	
+\bibitem{Gasoline}
+Baltagi, B.H. and Y.J. Griggin (1983) “Gasoline demand in the OECD: an application of pooling and 
+testing procedures”, European Economic Review, 22.
+	
+\bibitem{Diamonds}
+Chu, Singfat (2001) “Pricing the C’s of Diamond Stones”, Journal of Statistics Education, 9(2).
+	
+\bibitem{sleep75}
+J.E. Biddle and D.S. Hamermesh (1990), “Sleep and the Allocation of Time,” 
+Journal of Political Economy 98, 922-943.
+	
+\bibitem{wage2}
+M. Blackburn and D. Neumark (1992), “Unobserved Ability, Efficiency Wages, and Interindustry Wage Differentials”, 
+Quarterly Journal of Economics 107, 1421-1436.
+	
+\bibitem{SwissLabor}
+Gerfin, M. (1996). Parametric and Semi-Parametric Estimation of the Binary Response Model of Labour Market Participation. 
+Journal of Applied Econometrics, 11, 321–339.
+	
+\bibitem{Icecream}
+Hildreth, C. and J. Lu (1960) Demand relations with autocorrelated disturbances, Technical Bul- letin No 2765, Michigan State University.
+	
+\bibitem{loanapp}
+W.C. Hunter and M.B. Walker (1996), “The Cultural Affinity Hypothesis and Mortgage Lending Decisions”, 
+Journal of Real Estate Finance and Economics 13, 57-70
+
+\bibitem{Mroz}
+Mroz, T. (1987) “The sensitivity of an empirical model of married women's hours of work to economic and statistical assumptions”, 
+Econometrica, 55, 765-799.
+
+\bibitem{LaborSupply}
+Ziliak, Jim (1997) “Efficient Estimation With Panel Data when Instruments are Predetermined: An Empirical Comparison of Moment\-Condition Estimators”, 
+Journal of Business and Economic Statistics, 419-431
+	
+\end{thebibliography}
+
+\end{document}
