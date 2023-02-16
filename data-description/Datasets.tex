@@ -26,9 +26,9 @@
 
 \maketitle
 
-% \tableofcontents
+\tableofcontents
 
-\section{Описание наборов данных}
+% \section{Описание наборов данных}
 
 В этом разделе приведены описания основных наборов данных, используемых для решения задач.
 
@@ -37,7 +37,7 @@
 data(dataset, package)
 \end{verbatim}
 
-%\section{Кросс-секционные данные}
+\section{Кросс-секционные данные}
 
 \begin{table}
 	\caption{Набор данных \texttt{Labour}
@@ -216,22 +216,6 @@ data(dataset, package)
 \end{table}
 
 \begin{table}
-	\caption{Набор данных \texttt{Consumption}
-	из пакета \texttt{Ecdat} об индивидуальных доходах и расходах  в Канаде
-	(квартальные  данные  с 1947Q1 по 1996Q4). }
-%	Источник данных \cite{Consumption}}
-	\label{Consumption}
-%\begin{center}
-	\begin{tabular}{l|l}\hline
-	yd & индивидуальный располагаемый доход в ценах 1986 \\
-	ce & индивидуальные расходы на потребление в ценах 1986 \\
-	\hline
-	\end{tabular}
-%\end{center}
-\end{table}
-
-
-\begin{table}
 	\caption{Набор данных из файла \texttt{Mroz}
 	из пакета \texttt{Ecdat} содержит 
 	данные о рынке труда замужних женщин.
@@ -301,23 +285,6 @@ data(dataset, package)
 	certification & орган по сертификации (фактор с уровнями \\
 	& GIA,IGI,HRD) \\
 	price & цена в Сингапуре \\
-	\hline
-	\end{tabular}
-%\end{center}
-\end{table}
-
-\begin{table}
-	\caption{Набор данных \texttt{Icecream}
-	из пакета \texttt{Ecdat} о потреблении мороженого в США
-	(недельные данные  с 1951–03–18 по 1953–07–11, всего 30  наблюдений). 
-	Источник данных \cite{Icecream}}
-	\label{Icecream}
-%\begin{center}
-	\begin{tabular}{l|l}\hline
-	cons & потребление мороженого (в пинтах) \\
-	income  &  средний недельный доход семьи (в \$) \\
-	price & цена мороженого (за пинту) \\
-	temp & средняя температура (по Фаренгейту) \\
 	\hline
 	\end{tabular}
 %\end{center}
@@ -414,8 +381,45 @@ data(dataset, package)
 %\end{center}
 \end{table}
 
+\newpage
 
-%\section{Панельные данные}
+\section{Временные ряды}
+
+\begin{table}
+	\caption{Набор данных \texttt{Consumption}
+	из пакета \texttt{Ecdat} об индивидуальных доходах и расходах  в Канаде
+	(квартальные  данные  с 1947Q1 по 1996Q4). }
+%	Источник данных \cite{Consumption}}
+	\label{Consumption}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	yd & индивидуальный располагаемый доход в ценах 1986 \\
+	ce & индивидуальные расходы на потребление в ценах 1986 \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{Набор данных \texttt{Icecream}
+	из пакета \texttt{Ecdat} о потреблении мороженого в США
+	(недельные данные  с 1951–03–18 по 1953–07–11, всего 30  наблюдений). 
+	Источник данных \cite{Icecream}}
+	\label{Icecream}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	cons & потребление мороженого (в пинтах) \\
+	income  &  средний недельный доход семьи (в \$) \\
+	price & цена мороженого (за пинту) \\
+	temp & средняя температура (по Фаренгейту) \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\newpage
+
+\section{Панельные данные}
 
 \begin{table}
 	\caption{Панель \texttt{Guns}
