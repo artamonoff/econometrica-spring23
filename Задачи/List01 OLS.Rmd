@@ -100,7 +100,7 @@ regr <- lm(formula = my.spec, data = df)
 round(coef(regr), digits = my.digits)
 ```
 
-* найти параметры оптимальной прямой **sleep на totwrk* без константы
+* найти параметры оптимальной прямой **sleep на totwrk** без константы
 
 **Ответ**:
 
@@ -125,7 +125,7 @@ regr <- lm(formula = my.spec, data = df)
 round(coef(regr), digits = my.digits)
 ```
 
-* найти параметры оптимальной прямой **sleep на age* без константы
+* найти параметры оптимальной прямой **sleep на age** без константы
 
 **Ответ**:
 
@@ -196,7 +196,7 @@ regr <- lm(formula = my.spec, data = df)
 round(coef(regr), digits = my.digits)
 ```
 
-* найти параметры оптимальной прямой **output на capital* без константы
+* найти параметры оптимальной прямой **output на capital** без константы
 
 **Ответ**:
 
@@ -244,7 +244,7 @@ regr <- lm(formula = my.spec, data = df)
 round(coef(regr), digits = my.digits)
 ```
 
-* найти параметры оптимальной прямой **output на labour* без константы
+* найти параметры оптимальной прямой **output на labour** без константы
 
 **Ответ**:
 
