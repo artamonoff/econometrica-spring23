@@ -1,0 +1,156 @@
+---
+title: "Задачи Анализу панельных данных: Подгонка моделей Pool/RE/FE"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(lmtest)
+library(stargazer)
+library(plm)
+panels.df <- c('Wages', 'Cigar', 'Crime', 'EmplUK', 'Gasoline', 'Grunfeld', 'Hedonic', 'LaborSupply', 'Males', 'Parity', 'Produc', 'RiceFarms') 
+data(list=panels.df, package = "plm")
+data('Guns', package='AER')
+my.digits.output <- 3
+my.digits <- 2
+```
+
+# Спецификация
+
+Три базовых модели:
+
+- пула \(y_{it}=\alpha +x'_{it}\beta+u_{it}\)
+- RE \(y_{it}=\alpha +x'_{it}\beta+\mu_i+u_{it}\) (\(\mu_i\) - ненаблюдаемые индивидуальные эффекты)
+- FE \(y_{it}=\alpha_i +x'_{it}\beta+u_{it}\) (\(\alpha_i\) - наблюдаемые индивидуальные эффекты)
+
+# Return to education
+
+## Модель 1. Результаты оценивания
+
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame(Wages, index=595)
+panel.spec <- formula(lwage ~ ed+exp+I(exp**2)+wks)
+my.effects <- "individual"
+```
+
+Рассморим панель `Wages` и регрессию **lwage на ed, exp, exp^2, wks**
+с индивидуальными эффектами
+
+$lwage_{i,t}=\beta_0+\beta_1ed_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Результаты оценивания (стандарные ошибки по умолчанию)
+
+- модель пула
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.pl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+coef(regr.pl)
+```
+
+- модель RE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.re <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+coef(regr.re)
+```
+
+- модель FE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.fe <- plm(panel.spec, panel.df, model="within", effect=my.effects)
+coef(regr.fe)
+```
+
+## Модель 2. Результаты оценивания
+
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame(Wages, index=595)
+panel.spec <- formula(lwage ~ ed+exp+I(exp**2)+wks+south+smsa)
+my.effects <- "individual"
+```
+
+Рассморим панель `Wages` и регрессию **lwage на ed, exp, exp^2, wks, south, smsa**
+с индивидуальными эффектами
+
+$lwage_{i,t}=\beta_0+\beta_1ed_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Результаты оценивания (стандарные ошибки по умолчанию)
+
+- модель пула
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.pl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+coef(regr.pl)
+```
+
+- модель RE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.re <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+coef(regr.re)
+```
+
+- модель FE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.fe <- plm(panel.spec, panel.df, model="within", effect=my.effects)
+coef(regr.fe)
+```
+
+
+## Модель 3. Результаты оценивания
+
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame(Wages, index=595)
+panel.spec <- formula(lwage ~ ed+exp+I(exp**2)+wks+south+smsa+married+union+bluecol)
+my.effects <- "individual"
+```
+
+Рассморим панель `Wages` и регрессию **lwage на ed, exp, exp^2, wks, south, smsa, married, union, bluecol**
+с индивидуальными эффектами
+
+$lwage_{i,t}=\beta_0+\beta_1ed_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Результаты оценивания (стандарные ошибки по умолчанию)
+
+- модель пула
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.pl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+coef(regr.pl)
+```
+
+- модель RE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.re <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+coef(regr.re)
+```
+
+- модель FE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.fe <- plm(panel.spec, panel.df, model="within", effect=my.effects)
+coef(regr.fe)
+```
