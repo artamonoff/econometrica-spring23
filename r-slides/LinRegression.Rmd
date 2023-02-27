@@ -1,0 +1,165 @@
+---
+title: "Эмпирические выводы"
+author: "Н.В. Артамонов"
+output: 
+  ioslides_presentation:
+    widescreen: true
+    incremental: true
+    toc: true
+    smaller: true
+---
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+library(ggplot2)
+library(lmtest)
+library(car)
+library(stargazer)
+data(sleep75,wage1, wage2, Labour, Electricity, package = c('wooldridge', 'Ecdat') )
+```
+
+# Example #1: Sleep equation
+
+## Sleep equation (Visualization, numerical regressor)
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+ggplot(data = sleep75, aes(x=totwrk, y=sleep))+geom_point()+geom_smooth(method = lm, formula = y~x, se=FALSE)
+```
+
+## Sleep equation (Visualization, numerical regressor)
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+ggplot(data = sleep75, aes(x=age, y=sleep))+geom_point()+geom_smooth(method = lm, formula = y~x, se=FALSE)
+```
+
+## Sleep equation (Visualization, dummy regressor)
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+ggplot(data = sleep75, aes(x=male, y=sleep))+geom_point()+geom_smooth(method = lm, formula = y~x, se=FALSE)
+```
+
+## Sleep equation (Full vs Short report)
+
+For dataset `sleep75` consider a regression **sleep на totwrk, age, smsa, male, south**.
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=sleep~totwrk+age+smsa+male+south, data=sleep75)
+print(summary(regr), digits = my.digits.output)
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+stargazer(regr, type = 'text', keep.stat = c('n', 'rsq', 'adj.rsq'))
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+ggplot(data=data.frame(sleep=model.frame(regr)[,1], fitted.sleep=fitted(regr)), aes(y=sleep, x=fitted.sleep))+geom_point()+
+  geom_smooth(method = lm, formula = y~x, se=FALSE)
+```
+
+# Example #2: Cost equation
+
+## Cost equation (Visualization, Histograms)
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+ggplot(data = Electricity, aes(x=cost) )+geom_histogram()
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+ggplot(data = Electricity, aes(x=log(cost)) )+geom_histogram()
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+ggplot(data = Electricity, aes(x=q) )+geom_histogram()
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+ggplot(data = Electricity, aes(x=log(q)) )+geom_histogram()
+```
+
+## Cost equation (Visualization, Scatter plots)
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+ggplot(data = Electricity, aes(x=q, y=cost) )+geom_point()+geom_smooth(method = lm, formula = y~x, se=FALSE)+
+  geom_smooth(method = lm, formula = y~x+I(x^2), se=FALSE, col='red')
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+ggplot(data = Electricity, aes(x=log(q), y=log(cost)) )+geom_point()+geom_smooth(method = lm, formula = y~x, se=FALSE)+
+  geom_smooth(method = lm, formula = y~x+I(x^2), se=FALSE, col='red')
+```
+
+## Cost equation (Full vs Short report)
+
+For dataset `Electricity` consider a regression **cost на q, q^2, pl, pk, pf**.
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=cost~q+I(q^2)+pl+pk+pf, data=Electricity)
+print(summary(regr), digits = my.digits.output)
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+stargazer(regr, type = 'text', keep.stat = c('n', 'rsq', 'adj.rsq'))
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE, warning=FALSE}
+ggplot(data=data.frame(cost=model.frame(regr)[,1], fitted.cost=fitted(regr)), aes(y=cost, x=fitted.cost))+geom_point()+
+  geom_smooth(method = lm, formula = y~x, se=FALSE)
+```
+
+# Example #3: Cost equation
+
+## Cost equation (Visualization, numerical regressor)
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+ggplot(data = Electricity, aes(x=log(q), y=log(cost)) )+geom_point()+geom_smooth(method = lm, formula = y~x, se=FALSE)
+```
+
+## Cost equation (Visualization, numerical regressor)
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+ggplot(data = Electricity, aes(x=log(q), y=log(cost)) )+geom_point()+geom_smooth(method = lm, formula = y~x, se=FALSE)+
+  geom_smooth(method = lm, formula = y~x+I(x^2), se=FALSE, col='red')
+```
+
+## Cost equation (Full vs Short report)
+
+For dataset `Electricity` consider a regression **log(cost) on log(q), log^2^(q), log(pl), log(pk), log(pf)**.
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+my.digits.output <- 3
+my.digits <- 2
+regr <- lm(formula=log(cost)~log(q)+I(log(q)^2)+log(pl)+log(pk)+log(pf), data=Electricity)
+print(summary(regr), digits = my.digits.output)
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE}
+stargazer(regr, type = 'text', keep.stat = c('n', 'rsq', 'adj.rsq'))
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, comment='', warning=FALSE, warning=FALSE}
+ggplot(data=data.frame(log.cost=model.frame(regr)[,1], fitted.log.cost=fitted(regr)), aes(y=log.cost, x=fitted.log.cost))+geom_point()+
+  geom_smooth(method = lm, formula = y~x, se=FALSE)
+```
