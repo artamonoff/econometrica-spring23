@@ -301,7 +301,7 @@ round(coef(regr), digits = my.digits)
 
 ```{r, message=FALSE, echo=FALSE, comment=''}
 df <- Labour
-my.spec <- formula(log(output)~log(capital)+I(log(labour)^2))
+my.spec <- formula(log(output)~log(labour)+I(log(labour)^2))
 regr <- lm(formula = my.spec, data = df) 
 round(coef(regr), digits = my.digits)
 ```
