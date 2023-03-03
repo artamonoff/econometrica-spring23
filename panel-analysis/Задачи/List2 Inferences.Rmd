@@ -1,0 +1,211 @@
+---
+title: "Задачи по Анализу панельных данных: Тестирование гипотез"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(lmtest)
+library(stargazer)
+library(plm)
+panels.df <- c('Wages', 'Cigar', 'Crime', 'EmplUK', 'Gasoline', 'Grunfeld', 'Hedonic', 'LaborSupply', 'Males', 'Parity', 'Produc', 'RiceFarms') 
+data(list=panels.df, package = "plm")
+data('Guns', package='AER')
+my.digits.output <- 4
+my.digits <- 2
+```
+
+# Спецификация
+
+Три базовых модели:
+
+- пула \(y_{it}=\alpha +x'_{it}\beta+u_{it}\)
+- RE \(y_{it}=\alpha +x'_{it}\beta+\mu_i+u_{it}\) (\(\mu_i\) - ненаблюдаемые индивидуальные эффекты)
+- FE \(y_{it}=\alpha_i +x'_{it}\beta+u_{it}\) (\(\alpha_i\) - наблюдаемые индивидуальные эффекты)
+
+Для каждой модели для t-тест можно использовасть разные s.e. коэффициентов:
+
+* по умолчанию (OLS)
+* с корректировакой на серийнуюю корреляцию и гетероскедастичность (Arellano-Bond)
+* с корректировакой на кросс-корелляциии и гетероскедастичноть (Arellano-Bond)
+* с корретировкой на на серийнуююб кросс-корреляцию и гетероскедастичность (Driscoll-Kraay или с двойной кластеризацией)
+
+# Return to education
+
+## Модель 1. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame(Wages, index=595)
+panel.spec <- formula(lwage ~ ed+exp+I(exp**2)+wks)
+my.effects <- "individual"
+```
+
+Рассморим панель `Wages` и регрессию **lwage на ed, exp, exp^2, wks**
+с индивидуальными эффектами
+
+$lwage_{i,t}=\beta_0+\beta_1ed_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Рассмотри каждую модель с тремя видами стандарных ошибко коэффициентов. Какие можно сделать выводы?
+
+### Модель 1 (Пул)
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+mdl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+robust.s.e <- list( sqrt( diag(vcov(mdl))), sqrt( diag(vcovHC(mdl)) ), sqrt( diag(vcovSCC(mdl)) ) )
+stargazer(mdl, mdl, mdl, type='text', df=FALSE, digit.separator = '', digits = my.digits.output,
+          se=robust.s.e, column.labels=c('Default s.e', 'Robust AB s.e.', 'Robust DK s.e.'))
+```
+
+### Модель 2 (RE)
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+mdl <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+robust.s.e <- list( sqrt( diag(vcov(mdl))), sqrt( diag(vcovHC(mdl)) ), sqrt( diag(vcovSCC(mdl)) ) )
+stargazer(mdl, mdl, mdl, type='text', df=FALSE, digit.separator = '', digits = my.digits.output,
+          se=robust.s.e, column.labels=c('Default s.e', 'Robust AB s.e.', 'Robust DK s.e.'))
+```
+
+# Модель 2. Результаты оценивания
+
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame(Wages, index=595)
+panel.spec <- formula(lwage ~ ed+exp+I(exp**2)+wks+south+smsa)
+my.effects <- "individual"
+```
+
+Рассморим панель `Wages` и регрессию **lwage на ed, exp, exp^2, wks, south, smsa**
+с индивидуальными эффектами
+
+$lwage_{i,t}=\beta_0+\beta_1ed_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Рассмотри каждую модель с тремя видами стандарных ошибко коэффициентов. Какие можно сделать выводы?
+
+### Модель 1 (Пул)
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+mdl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+robust.s.e <- list( sqrt( diag(vcov(mdl))), sqrt( diag(vcovHC(mdl)) ), sqrt( diag(vcovSCC(mdl)) ) )
+stargazer(mdl, mdl, mdl, type='text', df=FALSE, digit.separator = '', digits = my.digits.output,
+          se=robust.s.e, column.labels=c('Default s.e', 'Robust AB s.e.', 'Robust DK s.e.'))
+```
+
+### Модель 2 (RE)
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+mdl <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+robust.s.e <- list( sqrt( diag(vcov(mdl))), sqrt( diag(vcovHC(mdl)) ), sqrt( diag(vcovSCC(mdl)) ) )
+stargazer(mdl, mdl, mdl, type='text', df=FALSE, digit.separator = '', digits = my.digits.output,
+          se=robust.s.e, column.labels=c('Default s.e', 'Robust AB s.e.', 'Robust DK s.e.'))
+```
+
+# More Guns, Less Crime?
+
+## Модель. Результаты оценивания
+
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame(Guns, index=c("state", "year"))
+panel.spec <- formula(log(violent) ~ law+prisoners+density+I(income/1000)+population+afam+cauc+male)
+my.effects <- "individual"
+```
+
+Рассморим панель `Guns` и регрессию **log(violent) на law + другие регрессоры**
+с индивидуальными эффектами
+
+$\log(violent)_{i,t}=\beta_0+\beta_1law_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Рассмотри каждую модель с тремя видами стандарных ошибко коэффициентов. Какие можно сделать выводы?
+
+### Модель 1 (Пул)
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+mdl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+robust.s.e <- list( sqrt( diag(vcov(mdl))), sqrt( diag(vcovHC(mdl)) ), sqrt( diag(vcovSCC(mdl)) ) )
+stargazer(mdl, mdl, mdl, type='text', df=FALSE, digit.separator = '', digits = my.digits.output,
+          se=robust.s.e, column.labels=c('Default s.e', 'Robust AB s.e.', 'Robust DK s.e.'))
+```
+
+### Модель 2 (RE)
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+mdl <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+robust.s.e <- list( sqrt( diag(vcov(mdl))), sqrt( diag(vcovHC(mdl)) ), sqrt( diag(vcovSCC(mdl)) ) )
+stargazer(mdl, mdl, mdl, type='text', df=FALSE, digit.separator = '', digits = my.digits.output,
+          se=robust.s.e, column.labels=c('Default s.e', 'Robust AB s.e.', 'Robust DK s.e.'))
+```
+
+### Модель 3 (FE)
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+mdl <- plm(panel.spec, panel.df, model="within", effect=my.effects)
+robust.s.e <- list( sqrt( diag(vcov(mdl))), sqrt( diag(vcovHC(mdl)) ), sqrt( diag(vcovSCC(mdl)) ) )
+stargazer(mdl, mdl, mdl, type='text', df=FALSE, digit.separator = '', digits = my.digits.output,
+          se=robust.s.e, column.labels=c('Default s.e', 'Robust AB s.e.', 'Robust DK s.e.'))
+```
+
+# Cigarette Consumption
+
+## Модель. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame( Cigar, index=c("state", "year") )
+panel.spec <- formula( sales ~ price+pop+pop16+cpi+ndi+pimin )
+my.effects <- "individual"
+```
+
+Рассморим панель `Guns` и регрессию **sales на price, pop, pop16, cpi, ndi, pimin**
+с индивидуальными эффектами
+
+$sales_{i,t}=\beta_0+\beta_1price_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Рассмотри каждую модель с тремя видами стандарных ошибко коэффициентов. Какие можно сделать выводы?
+
+### Модель 1 (Пул)
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+mdl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+robust.s.e <- list( sqrt( diag(vcov(mdl))), sqrt( diag(vcovHC(mdl)) ), sqrt( diag(vcovSCC(mdl)) ) )
+stargazer(mdl, mdl, mdl, type='text', df=FALSE, digit.separator = '', digits = my.digits.output,
+          se=robust.s.e, column.labels=c('Default s.e', 'Robust AB s.e.', 'Robust DK s.e.'))
+```
+
+### Модель 2 (RE)
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+mdl <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+robust.s.e <- list( sqrt( diag(vcov(mdl))), sqrt( diag(vcovHC(mdl)) ), sqrt( diag(vcovSCC(mdl)) ) )
+stargazer(mdl, mdl, mdl, type='text', df=FALSE, digit.separator = '', digits = my.digits.output,
+          se=robust.s.e, column.labels=c('Default s.e', 'Robust AB s.e.', 'Robust DK s.e.'))
+```
+
+### Модель 3 (FE)
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+mdl <- plm(panel.spec, panel.df, model="within", effect=my.effects)
+robust.s.e <- list( sqrt( diag(vcov(mdl))), sqrt( diag(vcovHC(mdl)) ), sqrt( diag(vcovSCC(mdl)) ) )
+stargazer(mdl, mdl, mdl, type='text', df=FALSE, digit.separator = '', digits = my.digits.output,
+          se=robust.s.e, column.labels=c('Default s.e', 'Robust AB s.e.', 'Robust DK s.e.'))
+```
