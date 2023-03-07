@@ -2,7 +2,7 @@
 
 - [Листок 01](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List01-OLS.html): OLS ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List01))
 - [Листок 02](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List02-Coefs.html): Интерпретация коэффициентов ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List02))
-- [Листок 03](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List03-Goodness-of-Fit.html): Степень подгонки 
+- [Листок 03](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List03-Goodness-of-Fit.html): Степень подгонки ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List03))
 - [Листок 04](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List04-t-test.html): t-тест
 - [Листок 05](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List05-F-test.html): F-тест
 - [Листок 06](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List06-ConfIntervals.html): Доверительные интервалы
