@@ -1,22 +1,25 @@
 ---
-title: 'Задачи по Эконометрике: Качество подгонки'
+title: 'Задачи по Эконометрике: Степень подгонки'
 author: "Н.В. Артамонов (МГИМО МИД России)"
 output:
-  word_document:
-    toc: yes
   html_document:
     toc: yes
     toc_float:
       collapsed: no
     number_sections: yes
     df_print: paged
+  word_document:
+    toc: yes
   pdf_document:
     toc: yes
 ---
 
 ```{r, message=FALSE, echo=FALSE}
 library(stargazer)
-data(sleep75, wage1,wage2, Labour, package = c('wooldridge', 'Ecdat') )
+library(ggplot2)
+my.datasets <- c('sleep75', 'wage1', 'wage2', 'Labour', 'Electricity')
+source.packages <- c('wooldridge', 'Ecdat')
+data( list = my.datasets, package = source.packages)
 ```
 
 # Суммы квадратов, остатки, предсказанные значения, \(R^2\)
@@ -342,7 +345,7 @@ stargazer(wage1.eq, type='text', dep.var.caption = 'Зависимая пере�
 Ответ
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
-my.digitas <- 3
+my.digits <- 3
 r.sq <- round(summary(wage1.eq)$r.squared, digits = my.digits)
 r.sq.adj <- 1-(1-r.sq)*(nobs(wage1.eq)-1)/df.residual(wage1.eq)
 round(r.sq.adj, digits = my.digits)
@@ -366,7 +369,7 @@ stargazer(wage2.eq, type='text', dep.var.caption = 'Зависимая пере�
 Ответ
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
-my.digitas <- 3
+my.digits <- 3
 r.sq <- round(summary(wage2.eq)$r.squared, digits = my.digits)
 r.sq.adj <- 1-(1-r.sq)*(nobs(wage2.eq)-1)/df.residual(wage2.eq)
 round(r.sq.adj, digits = my.digits)
@@ -436,4 +439,398 @@ ESS <- sum( (y.hat-y.mean)^2 )
 my.digits <- 2; n <- 10; k <- 2
 print( paste0('R^2=', round( ESS/TSS, digits = my.digits) ) )
 print( paste0('R^2_adj=', round( 1-(RSS*(n-1))/(TSS*(n-k-1)), digits = my.digits) ) )
+```
+
+# Суммы квадратов, остатки, предсказанные значения, \(R^2\) (Python)
+
+## Sleep equation
+
+Для датасета `sleep75` рассмотрим регрессию **sleep на totwrk, age, male, smsa**
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+my.digits <- 2
+ind <- c(1, 4, 6, 10, 508, 700)
+spec <- formula(sleep~totwrk+age+male+smsa)
+df <- sleep75
+mod <- lm(formula = spec, data=df)
+```
+
+Найтиде коэффициенты подогнанной модели. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+round( coef(mod), digits = my.digits)
+```
+
+Для наблюдений с номерами `r ind`  найдите фактическое значение зависимой переменной, предсказанное значение и остатки.
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+answer <- data.frame( i=ind, Факт = model.frame(mod)[ind, 1], Fitted=fitted(mod)[ind], Остаток=resid(mod)[ind] )
+stargazer(answer, type='text', summary = FALSE, rownames = FALSE, digit.separator = '')
+```
+
+Вычислите TSS, ESS, RSS
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+y.mean <- mean(model.frame(mod)[, 1])
+print(paste0('TSS=', sum( (model.frame(mod)[, 1]-y.mean) ^2 )))
+print(paste0('ESS=', sum( (fitted(mod)-y.mean) ^2 )))
+print(paste0('RSS=', deviance(mod)))
+```
+
+Вычислите \(R^2\) и \(adj.R^2\)
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$r.squared
+summary(mod)$adj.r.squared
+```
+
+Вычислите стандартрую ошибку регрессии
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$sigma
+```
+
+## Sleep equation (smsa only)
+
+Для датасета `sleep75` рассмотрим регрессию **sleep на totwrk, age, male, south** *только для жителей мегаполиса (smsa=1)*
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+my.digits <- 2
+ind <- c(1, 9, 56, 76, 100)
+spec <- formula(sleep~totwrk+age+male+south)
+df <- subset(sleep75, subset = (smsa==0) )
+mod <- lm(formula = spec, data=df)
+```
+
+Найтиде коэффициенты подогнанной модели. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+round( coef(mod), digits = my.digits)
+```
+
+Для наблюдений с номерами `r ind`  найдите фактическое значение зависимой переменной, предсказанное значение и остатки.
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+answer <- data.frame( i=ind, Факт = model.frame(mod)[ind, 1], Fitted=fitted(mod)[ind], Остаток=resid(mod)[ind] )
+stargazer(answer, type='text', summary = FALSE, rownames = FALSE, digit.separator = '')
+```
+
+Вычислите TSS, ESS, RSS
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+y.mean <- mean(model.frame(mod)[, 1])
+print(paste0('TSS=', sum( (model.frame(mod)[, 1]-y.mean) ^2 )))
+print(paste0('ESS=', sum( (fitted(mod)-y.mean) ^2 )))
+print(paste0('RSS=', deviance(mod)))
+```
+
+Вычислите \(R^2\) и \(adj.R^2\)
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$r.squared
+summary(mod)$adj.r.squared
+```
+
+Вычислите стандартрую ошибку регрессии
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$sigma
+```
+
+## Sleep equation (men only)
+
+Для датасета `sleep75` рассмотрим регрессию **sleep на totwrk, age, smsa, south** *только для мужчин (male=1)*
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+my.digits <- 2
+ind <- c(1, 9, 45, 187, 280)
+spec <- formula(sleep~totwrk+age+smsa+south)
+df <- subset(sleep75, subset = (male==1) )
+mod <- lm(formula = spec, data=df)
+```
+
+Найтиде коэффициенты подогнанной модели. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+round( coef(mod), digits = my.digits)
+```
+
+Для наблюдений с номерами `r ind`  найдите фактическое значение зависимой переменной, предсказанное значение и остатки.
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+answer <- data.frame( i=ind, Факт = model.frame(mod)[ind, 1], Fitted=fitted(mod)[ind], Остаток=resid(mod)[ind] )
+stargazer(answer, type='text', summary = FALSE, rownames = FALSE, digit.separator = '')
+```
+
+Вычислите TSS, ESS, RSS
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+y.mean <- mean(model.frame(mod)[, 1])
+print(paste0('TSS=', sum( (model.frame(mod)[, 1]-y.mean) ^2 )))
+print(paste0('ESS=', sum( (fitted(mod)-y.mean) ^2 )))
+print(paste0('RSS=', deviance(mod)))
+```
+
+Вычислите \(R^2\) и \(adj.R^2\)
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$r.squared
+summary(mod)$adj.r.squared
+```
+
+Вычислите стандартрую ошибку регрессии
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$sigma
+```
+
+## Sleep equation (women only)
+
+Для датасета `sleep75` рассмотрим регрессию **sleep на totwrk, age, smsa, south** *только для женщин (male=0)*
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+my.digits <- 2
+ind <- c(1, 9, 45, 187, 280)
+spec <- formula(sleep~totwrk+age+smsa+south)
+df <- subset(sleep75, subset = (male==0) )
+mod <- lm(formula = spec, data=df)
+```
+
+Найтиде коэффициенты подогнанной модели. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+round( coef(mod), digits = my.digits)
+```
+
+Для наблюдений с номерами `r ind`  найдите фактическое значение зависимой переменной, предсказанное значение и остатки.
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+answer <- data.frame( i=ind, Факт = model.frame(mod)[ind, 1], Fitted=fitted(mod)[ind], Остаток=resid(mod)[ind] )
+stargazer(answer, type='text', summary = FALSE, rownames = FALSE, digit.separator = '')
+```
+
+Вычислите TSS, ESS, RSS
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+y.mean <- mean(model.frame(mod)[, 1])
+print(paste0('TSS=', sum( (model.frame(mod)[, 1]-y.mean) ^2 )))
+print(paste0('ESS=', sum( (fitted(mod)-y.mean) ^2 )))
+print(paste0('RSS=', deviance(mod)))
+```
+
+Вычислите \(R^2\) и \(adj.R^2\)
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$r.squared
+summary(mod)$adj.r.squared
+```
+
+Вычислите стандартрую ошибку регрессии
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$sigma
+```
+
+## Labour equation (in levels)
+
+Для датасета `Labour` рассмотрим регрессию **output на capital, labour, wage**
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+my.digits <- 2
+ind <- c(2, 11, 24, 101, 349, 501)
+spec <- formula(output~capital+labour+wage)
+df <- Labour
+mod <- lm(formula = spec, data=df)
+```
+
+Найтиде коэффициенты подогнанной модели. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+round( coef(mod), digits = my.digits)
+```
+
+Для наблюдений с номерами `r ind`  найдите фактическое значение зависимой переменной, предсказанное значение и остатки.
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+answer <- data.frame( i=ind, Факт = model.frame(mod)[ind, 1], Fitted=fitted(mod)[ind], Остаток=resid(mod)[ind] )
+stargazer(answer, type='text', summary = FALSE, rownames = FALSE, digit.separator = '')
+```
+
+Вычислите TSS, ESS, RSS
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+y.mean <- mean(model.frame(mod)[, 1])
+print(paste0('TSS=', sum( (model.frame(mod)[, 1]-y.mean) ^2 )))
+print(paste0('ESS=', sum( (fitted(mod)-y.mean) ^2 )))
+print(paste0('RSS=', deviance(mod)))
+```
+
+Вычислите \(R^2\) и \(adj.R^2\)
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$r.squared
+summary(mod)$adj.r.squared
+```
+
+Вычислите стандартрую ошибку регрессии
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$sigma
+```
+
+## Labour equation (in log)
+
+Для датасета `Labour` рассмотрим регрессию **log(output) на log(capital), log(labour), log(wage)**
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+my.digits <- 2
+ind <- c(2, 11, 24, 101, 349, 501)
+spec <- formula(log(output)~log(capital)+log(labour)+log(wage))
+df <- Labour
+mod <- lm(formula = spec, data=df)
+```
+
+Найтиде коэффициенты подогнанной модели. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+round( coef(mod), digits = my.digits)
+```
+
+Для наблюдений с номерами `r ind`  найдите фактическое значение зависимой переменной, предсказанное значение и остатки.
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+answer <- data.frame( i=ind, Факт = model.frame(mod)[ind, 1], Fitted=fitted(mod)[ind], Остаток=resid(mod)[ind] )
+stargazer(answer, type='text', summary = FALSE, rownames = FALSE, digit.separator = '')
+```
+
+Вычислите TSS, ESS, RSS
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+y.mean <- mean(model.frame(mod)[, 1])
+print(paste0('TSS=', sum( (model.frame(mod)[, 1]-y.mean) ^2 )))
+print(paste0('ESS=', sum( (fitted(mod)-y.mean) ^2 )))
+print(paste0('RSS=', deviance(mod)))
+```
+
+Вычислите \(R^2\) и \(adj.R^2\)
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$r.squared
+summary(mod)$adj.r.squared
+```
+
+Вычислите стандартрую ошибку регрессии
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$sigma
+```
+
+## Cost equation (in levels)
+
+Для датасета `Electricity` рассмотрим регрессию **cost на q, q^2^, pk, pf, pl**
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+my.digits <- 2
+ind <- c(2, 17, 29, 48, 58, 94)
+spec <- formula(cost~q+I(q^2)+pk+pf+pl)
+df <- Electricity
+mod <- lm(formula = spec, data=df)
+```
+
+Найтиде коэффициенты подогнанной модели. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+round( coef(mod), digits = my.digits)
+```
+
+Для наблюдений с номерами `r ind`  найдите фактическое значение зависимой переменной, предсказанное значение и остатки.
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+answer <- data.frame( i=ind, Факт = model.frame(mod)[ind, 1], Fitted=fitted(mod)[ind], Остаток=resid(mod)[ind] )
+stargazer(answer, type='text', summary = FALSE, rownames = FALSE, digit.separator = '')
+```
+
+Вычислите TSS, ESS, RSS
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+y.mean <- mean(model.frame(mod)[, 1])
+print(paste0('TSS=', sum( (model.frame(mod)[, 1]-y.mean) ^2 )))
+print(paste0('ESS=', sum( (fitted(mod)-y.mean) ^2 )))
+print(paste0('RSS=', deviance(mod)))
+```
+
+Вычислите \(R^2\) и \(adj.R^2\)
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$r.squared
+summary(mod)$adj.r.squared
+```
+
+Вычислите стандартрую ошибку регрессии
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$sigma
+```
+
+## Cost equation (in logs)
+
+Для датасета `Electricity` рассмотрим регрессию **log(cost) на log(q), log^2^(q), log(pk), log(pf), log(pl)**
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+my.digits <- 2
+ind <- c(2, 17, 29, 48, 58, 94)
+spec <- formula(log(cost)~log(q)+I(log(q)^2)+log(pk)+log(pf)+log(pl))
+df <- Electricity
+mod <- lm(formula = spec, data=df)
+```
+
+Найтиде коэффициенты подогнанной модели. **Ответ округлите до `r my.digits`-х десятичных знаков.**
+
+Ответ:
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+round( coef(mod), digits = my.digits)
+```
+
+Для наблюдений с номерами `r ind`  найдите фактическое значение зависимой переменной, предсказанное значение и остатки.
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+answer <- data.frame( i=ind, Факт = model.frame(mod)[ind, 1], Fitted=fitted(mod)[ind], Остаток=resid(mod)[ind] )
+stargazer(answer, type='text', summary = FALSE, rownames = FALSE, digit.separator = '')
+```
+
+Вычислите TSS, ESS, RSS
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+y.mean <- mean(model.frame(mod)[, 1])
+print(paste0('TSS=', sum( (model.frame(mod)[, 1]-y.mean) ^2 )))
+print(paste0('ESS=', sum( (fitted(mod)-y.mean) ^2 )))
+print(paste0('RSS=', deviance(mod)))
+```
+
+Вычислите \(R^2\) и \(adj.R^2\)
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$r.squared
+summary(mod)$adj.r.squared
+```
+
+Вычислите стандартрую ошибку регрессии
+
+```{r, echo=FALSE, comment='', message=FALSE, warning=FALSE}
+summary(mod)$sigma
 ```
