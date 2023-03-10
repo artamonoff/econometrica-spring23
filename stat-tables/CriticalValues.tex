@@ -46,15 +46,15 @@
 	$\mathcal{N}(0,1)$ &  НОРМСТОБР($1-\alpha/2$) & НОРМ.СТ.ОБР($1-\alpha/2$) &
 	NORMSINV($1-\alpha/2$)  \\
 	(гауссово) & & & NORM.S.INV($1-\alpha/2$) \\ \hline
-	$\chi^2_{df}$ & ХИ2ОБР($\alpha;df$) & ХИ2.ОБР.ПХ($\alpha;df$) & 
-	CHIINV($\alpha;df$) \\ 
-	(хи-квадрат) & & & CHISQ.INV.RT($\alpha;df$) \\ \hline
-	$t_{df}$   & СТЬЮДРАСПОБР($\alpha;df$)  &  СТЬЮДЕНТ.ОБР.2Х($\alpha;df$) & 
-	TINV($\alpha;df$) \\  
-	(Стьюдента) & & & T.INV.RT($\alpha;df$)  \\ \hline
-	$F_{df1,df2}$ & FРАСПОБР($\alpha;df1;df2$) & F.ОБР.ПХ($\alpha;df1;df2$) & 
-	FINV ($\alpha;df1;df2$) \\ 
-	(Фишера) & & & F.INV.RT($\alpha;df1;df2$) \\  \hline
+	$\chi^2_{df}$ & ХИ2ОБР($\alpha$; df) & ХИ2.ОБР.ПХ($\alpha$; df) & 
+	CHIINV($\alpha$; df) \\ 
+	(хи-квадрат) & & & CHISQ.INV.RT($\alpha$; df) \\ \hline
+	$t_{df}$   & СТЬЮДРАСПОБР($\alpha$; df)  &  СТЬЮДЕНТ.ОБР.2Х($\alpha$; df) & 
+	TINV($\alpha$; df) \\  
+	(Стьюдента) & & & T.INV.RT($\alpha$; df)  \\ \hline
+	$F_{df1,df2}$ & FРАСПОБР($\alpha$; df1; df2) & F.ОБР.ПХ($\alpha$; df1; df2) & 
+	FINV ($\alpha$; df1; df2) \\ 
+	(Фишера) & & & F.INV.RT($\alpha$; df1; df2) \\  \hline
 \end{tabular}
 }
 \end{center}
@@ -69,10 +69,10 @@
 	Распределение & R & Python \\
 	& & (\texttt{scipy.stats}) \\
 	\hline\hline
-	\(\mathcal{N}(0,1)\) (гауссово) & \texttt{qnorm}($p=1-\alpha/2$) & \texttt{.norm.ppf}($p=1-\alpha/2$)\\ \hline
-	\(\chi^2_{df}\) (хи-квадрат) & \texttt{qchisq}($p=1-\alpha, df$) & \texttt{.chi2.ppf}($p=1-\alpha,df$) \\ \hline
-	\(t_{df}\) (Стьюдента) & \texttt{qt}($p=1-\alpha/2,df$) & \texttt{.t.ppf}($p=1-\alpha/2,df$) \\ \hline
-	\(F_{df1,df2}\) (Фишера) & \texttt{qf}($p=1-\alpha;df1,df2$) & \texttt{.f.ppf}($p=1-\alpha,dfd,dfn$) \\
+	\(\mathcal{N}(0,1)\) (гауссово) & \texttt{qnorm}($p=1-\alpha/2$) & \texttt{.norm.ppf}($q=1-\alpha/2$)\\ \hline
+	\(\chi^2_{df}\) (хи-квадрат) & \texttt{qchisq}($p=1-\alpha$, df) & \texttt{.chi2.ppf}($q=1-\alpha$, df) \\ \hline
+	\(t_{df}\) (Стьюдента) & \texttt{qt}($p=1-\alpha/2$, df) & \texttt{.t.ppf}($q=1-\alpha/2$, df) \\ \hline
+	\(F_{df1,df2}\) (Фишера) & \texttt{qf}($p=1-\alpha$, df1, df2) & \texttt{.f.ppf}($q=1-\alpha$, dfn, dfd) \\
 	\hline
 \end{tabular}
 \end{center}
