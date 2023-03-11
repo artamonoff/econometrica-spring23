@@ -531,10 +531,186 @@ Loan Amount Term & Loan Amount Term \\
 Credit History & credit history meets guidelines \\
 Property Area & Urban/ Semi-Urban/ Rural \\
 Loan Status &	Loan approved \\
+\end{tabular}
+\end{table}
+\begin{table}
+	\caption{ \texttt{1Custumers.csv}
+	Shop Customer Data is a detailed analysis of a imaginative shop's ideal customers. It helps a business to better understand its customers. The owner of a shop gets information about Customers through membership cards. Dataset consists of 2000 records and 8 columns.}
+	\label{Gasoline}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	Customer ID & --- \\
+	Gender & ---\\ 
+	Age & --- \\
+	Annual Income & --- \\
+	Spending Score & Score assigned by the shop,\\
+	 & based on customer behaviour and spending nature\\
+	Profession & --- \\
+	Work Experience & in years\\
+	Family Size & --- \\
 	\hline
 	\end{tabular}
 %\end{center}
 \end{table}
+\begin{table}
+	\caption{ \texttt{2laptops.csv}
+This is a dataset about laptops scrap from Flipkart which contains information on various aspects of laptops such as their price, discount, specifications, and warranty. The dataset contains a total of 920 entries, each representing a single laptop. It is important to note that there are some missing values in the dataset for some of the columns, including "discount", "In build sw", and "warranty". This should be taken into consideration when analyzing the data. Additionally, all the columns have a data type of "object", which may require further processing to convert the data into a usable format.}
+	\label{Gasoline}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+	title & provides a brief description of the laptop \\
+	price &   includes the cost of the laptop \\ 
+	discount &  mentions any applicable discounts on the laptop's price\\
+	Processor&  specifies the type of processor used in the laptop \\
+	RAM &  mentions the amount of RAM the laptop has \\
+	OS &  lists the operating system installed on the laptop \\
+	SSD &  indicates the size of the solid-state drive\\
+	Display &  mentions the screen size and display specifications of the laptop\\
+	In build sw &  lists any software pre-installed on the laptop \\
+	warranty &  provides information on the warranty offered for the laptop\\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{ \texttt{3insurance.csv}
+Machine Learning with R by Brett Lantz is a book that provides an introduction to machine learning using R. As far as I can tell, Packt Publishing does not make its datasets available online unless you buy the book and create a user account which can be a problem if you are checking the book out from the library or borrowing the book from a friend. All of these datasets are in the public domain but simply needed some cleaning up and recoding to match the format in the book.}
+	\label{Gasoline}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+age & age of primary beneficiary  \\
+sex & insurance contractor gender, female, male  \\
+bmi & Body mass index, providing an understanding of body, \\
+     & weights that are relatively  high or low relative to height  \\ & objective index of body weight $(kg / m ^ 2)$ \\ &  using   the ratio of height to weight, ideally 18.5 to 24.9 \\
+children & Number of children covered by health insurance\\
+&  Number of dependents \\
+smoker & Smoking \\
+region & the beneficiary's residential area in the US, \\
+&  northeast, southeast southwest, northwest.\\
+charges & Individual medical costs billed by health insurance \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+\begin{table}
+	\caption{ \texttt{4winequality-red.csv}
+The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. For more details, consult the reference [Cortez et al., 2009]. Due to privacy and logistic issues, only physicochemical (inputs) and sensory (the output) variables are available (e.g. there is no data about grape types, wine brand, wine selling price, etc.). These datasets can be viewed as classification or regression tasks. The classes are ordered and not balanced (e.g. there are much more normal wines than excellent or poor ones). This dataset is also available from the UCI machine learning repository,\href{ https://archive.ics.uci.edu/ml/datasets/wine+quality}{winequality} Content
+}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+&	 fixed acidity \\
+&	 volatile acidity \\ 
+&	 citric acid \\
+&	 residual sugar \\
+&	 chlorides \\
+&	 free sulfur dioxide \\
+&	 total sulfur dioxide \\
+&	 density \\
+&	 pH \\
+&	 sulphates \\
+&	 alcohol \\
+&	Output variable (based on sensory data) \\
+&	 quality (score between 0 and 10) \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+\begin{table}
+	\caption{ \texttt{5marketing-campaign.csv}
+	Customer Personality Analysis is a detailed analysis of a company’s ideal customers. It helps a business to better understand its customers and makes it easier for them to modify products according to the specific needs, behaviors and concerns of different types of customers.
+Customer personality analysis helps a business to modify its product based on its target customers from different types of customer segments. For example, instead of spending money to market a new product to every customer in the company’s database, a company can analyze which customer segment is most likely to buy the product and then market the product only on that particular segment. Content: } 
+%\begin{center}
+People\\
+	\begin{tabular}{l|l}\hline
+
+ID & Customer's unique identifier \\
+YearBirth & Customer's birth year \\
+Education & Customer's education level \\
+Marital Status & Customer's marital status \\
+Income & Customer's yearly household income \\
+Kidhome & Number of children in customer's household \\
+Teenhome & Number of teenagers in customer's household \\
+Dt Customer & Date of customer's enrollment with the company\\
+Recency & Number of days since customer's last purchase \\
+Complain & 1 if the customer complained in the last 2 years, 0 otherwise
+	\end{tabular}
+Products \\
+	\begin{tabular}{l|l}\hline
+
+MntWines & Amount spent on wine in last 2 years \\
+MntFruits & Amount spent on fruits in last 2 years \\
+MntMeatProducts & Amount spent on meat in last 2 years \\
+MntFishProducts & Amount spent on fish in last 2 years \\
+MntSweetProducts & Amount spent on sweets in last 2 years \\
+MntGoldProds & Amount spent on gold in last 2 years 
+	\end{tabular}
+	
+Promotion\\
+	\begin{tabular}{l|l}\hline
+NumDealsPurchases & Number of purchases made with a discount \\
+AcceptedCmp1 & 1 if customer accepted the offer in the 1st campaign, 0 otherwise \\
+AcceptedCmp2 & 1 if customer accepted the offer in the 2nd campaign, 0 otherwise \\
+AcceptedCmp3 & 1 if customer accepted the offer in the 3rd campaign, 0 otherwise \\
+AcceptedCmp4 & 1 if customer accepted the offer in the 4th campaign, 0 otherwise \\
+AcceptedCmp5 & 1 if customer accepted the offer in the 5th campaign, 0 otherwise \\
+Response & 1 if customer accepted the offer in the last campaign, 0 otherwise
+		\end{tabular}
+Place\\
+		\begin{tabular}{l|l}\hline
+NumWebPurchases &Number of purchases made through the company’s website \\
+NumCatalogPurchases & Number of purchases made using a catalogue \\
+NumStorePurchases & Number of purchases made directly in stores \\
+NumWebVisitsMonth & Number of visits to company’s website in the last month\\
+	\end{tabular}
+%\end{center}
+\end{table}
+
+
+\begin{table}
+	\caption{Панель \texttt{6PlacementDataFullClass.csv}
+	This data set consists of Placement data of students in a XYZ campus. It includes secondary and higher secondary school percentage and specialization. It also includes degree specialization, type and Work experience and salary offers to the placed students}
+\end{table}
+
+
+
+\begin{table}
+	\caption{ \texttt{9topcolleges2022.csv}
+The list contains the top American colleges of 2022 and details about them including financial aid, student population, college phone number, website etc.
+Most of the columns in the table are self explanatory.}
+\end{table}
+
+
+\begin{table}
+	\caption{ \texttt{10boston.csv}
+The Boston house price 
+data of Harrison, D. and Rubinfeld, D.L. 
+'Hedonic prices and the demand for clean air', 
+J. Environ. Economics \& Management,
+ vol.5, 81-102, 1978. Content }
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+CRIM & per capita crime rate by town \\
+ZN & proportion of residential land zoned for lots over 25,000 sq.ft. \\
+INDUS & proportion of non-retail business acres per town \\
+CHAS & Charles River dummy variable (1 if tract bounds river; 0 otherwise) \\
+NOX & nitric oxides concentration (parts per 10 million) [parts/10M] \\
+RM & average number of rooms per dwelling \\
+AGE & proportion of owner-occupied units built prior to 1940 \\
+DIS & weighted distances to five Boston employment centres \\
+RAD & index of accessibility to radial highways \\
+TAX & full-value property-tax rate per \$10,000 [\$/10k] \\
+PTRATIO & pupil-teacher ratio by town \\
+B & The result of the equation $B=1000(Bk - 0.63)^2$, \\
+& where Bk is the proportion of blacks by town \\
+LSTAT & \\ % lower status of the population \\
+MEDV & Median value of owner-occupied homes in $1000's [k]$ \\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
 \newpage
 
 \begin{thebibliography}{99}
