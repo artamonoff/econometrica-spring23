@@ -1,0 +1,106 @@
+---
+title: "Мультиколлинеарность"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  ioslides_presentation:
+    widescreen: true
+    incremental: true
+    toc: true
+    smaller: true
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(ggplot2)
+library(corrplot)
+library(ggcorrplot)
+data(sleep75,wage1, wage2, Labour, Electricity, package = c('wooldridge', 'Ecdat') )
+sleep75$gender <- factor(sleep75$male, labels = c('female', 'male') )
+wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
+```
+
+# Пример #1: sleep equation
+
+## Результат оценивания
+
+Для набора данных `sleep75` рассмотрим линейную регрессию **sleep на
+totwrk, totwrk^2^, age, age^2^, smsa, south**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.10
+regr <- lm(formula=sleep~totwrk+I(totwrk^2)+age+I(age^2)+smsa+south, data=sleep75)
+coeftest(regr)
+# regr.restr <- update(regr, formula. = ~.-I(totwrk^2)-I(age^2))
+# stargazer(regr, regr.restr, type='text', digits=my.digits.output, digit.separator = '', 
+#           dep.var.caption = 'Зависимая переменная', df=FALSE)
+```
+
+[Уровень значимости `r 100*sign.level`%]{style="color: blue"}. Какие
+коэффициенты значимы? 
+
+## Значимость возраста
+
+Тестируется значимость влияния возраста, т.е. гипотеза
+$H_0:\beta_{age}=\beta_{age^2}=0$.
+
+Результаты тестирования:
+
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('age=0', 'I(age^2)=0'))
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+## Значимость занятости
+
+Тестируется значимость влияния занятости, т.е. гипотеза
+$H_0:\beta_{totwrk}=\beta_{totwrk^2}=0$.
+
+Результаты тестирования:
+
+```{r,comment='', echo=FALSE}
+testing.result <- linearHypothesis(regr, c('totwrk=0', 'I(totwrk^2)=0'))
+# testing.result
+stargazer(testing.result[2,5:6], summary = FALSE, type = 'text', rownames=FALSE)
+```
+
+##  Тест на мультиколлинеарность: VIF
+
+Посмотрим на VIF для регрессоров
+
+```{r, echo=FALSE, comment=''}
+vif(regr)
+ggplot( data=data.frame(VIF=vif(regr), Var=names(vif(regr))) )+geom_col(aes(y=VIF, x=Var))
+```
+
+##  Тест на мультиколлинеарность: Корреляции
+
+```{r, echo=FALSE, comment=''}
+round(cor(model.frame(regr)[,-1]), digits = my.digits.output <- 3)
+```
+
+##  Тест на мультиколлинеарность: Визуализация корреляций
+
+```{r, echo=FALSE, comment=''}
+ggcorrplot(cor(model.frame(regr)[,-1]), method = "circle")
+```
+
+## Графики
+
+```{r, echo=FALSE, comment=''}
+ggplot(data=sleep75, x=age, y=age^2)+geom_point(aes(x=age, y=age^2))+
+  geom_smooth(aes(x=age, y=age^2), method = lm, formula = y~x, se=FALSE)
+```
+
+## Графики
+
+```{r, echo=FALSE, comment=''}
+ggplot(data=sleep75)+geom_point(aes(x=totwrk, y=totwrk^2))+
+  geom_smooth(aes(x=totwrk, y=totwrk^2),method = lm, formula = y~x, se=FALSE)
+```
