@@ -13,11 +13,9 @@ output:
 ```{r, message=FALSE, echo=FALSE}
 library(stargazer)
 library(lmtest)
-data(sleep75, package = 'wooldridge')
-data(wage1, package = 'wooldridge')
-data(wage2, package = 'wooldridge')
-data(Labour, package = 'Ecdat')
-data(Electricity, package='Ecdat')
+my.datasets <- c('sleep75', 'wage1', 'wage2', 'Labour', 'Electricity')
+source.packages <- c('wooldridge', 'Ecdat')
+data( list = my.datasets, package = source.packages)
 ```
 
 # t-тест: \(H_0:\beta=0\)
@@ -44,12 +42,12 @@ t.test[,1:2]
 round(t.test[,1]/t.test[,2], digits = my.digits)
 ```
 
-## Задача (sleep equation #2)
+## Задача (sleep equation #2, Python)
 
 Для набора данных `sleep75` рассмотрим линейную регрессию
 **sleep на totwrk, age, south, male, smsa, yngkid, marr, union, log(hrwage)**
 
-Результаты t-тест для коэффициентов
+Результаты t-тест для коэффициентов (вычислите самостоятельно в Python)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 # my.digits <- 3
@@ -101,12 +99,12 @@ t.test[,1:2]
 round(t.test[,1]/t.test[,2], digits = my.digits)
 ```
 
-## Задача (wage equation #1)
+## Задача (wage equation #1, Python)
 
 Для набора данных `wage2` рассмотрим линейную регрессию
 **log(wage) на age, IQ, married, south, urban**
 
-Результаты t-тест для коэффициентов
+Результаты t-тест для коэффициентов (вычислите самостоятельно в Python)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 # my.digits <- 3
@@ -158,12 +156,12 @@ t.test[,1:2]
 round(t.test[,1]/t.test[,2], digits = my.digits)
 ```
 
-## Задача (wage equation #2)
+## Задача (wage equation #2, Python)
 
 Для набора данных `wage1` рассмотрим линейную регрессию
 **log(wage) на exper, exper^2, female, married, smsa**
 
-Результаты t-тест для коэффициентов
+Результаты t-тест для коэффициентов (вычислите самостоятельно в Python)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 # my.digits <- 3
@@ -215,12 +213,12 @@ t.test[,1:2]
 round(t.test[,1]/t.test[,2], digits = my.digits)
 ```
 
-## Задача (cost equation #2)
+## Задача (cost equation #2, Python)
 
 Для набора данных `Electricity` рассмотрим линейную регрессию
 **log(cost) на log(q), log(pl), log(pk), log(pf)**
 
-Результаты t-тест для коэффициентов
+Результаты t-тест для коэффициентов (вычислите самостоятельно в Python)
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
 # my.digits <- 3
