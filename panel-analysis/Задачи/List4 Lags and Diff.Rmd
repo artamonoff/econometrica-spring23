@@ -1,0 +1,310 @@
+---
+title: "Задачи по Анализу панельных данных: Регрессия с лагами. Первая разность"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(lmtest)
+library(stargazer)
+library(plm)
+panels.df <- c('Wages', 'Cigar', 'Crime', 'EmplUK', 'Gasoline', 'Grunfeld', 'Hedonic', 'LaborSupply', 'Males', 'Parity', 'Produc', 'RiceFarms') 
+data(list=panels.df, package = "plm")
+data('Guns', package='AER')
+my.digits.output <- 4
+my.digits <- 2
+```
+
+# Return to education
+
+## Модель 1. Результаты оценивания
+
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame(Wages, index=595)
+panel.spec <- formula(diff(lwage) ~ ed+exp+I(exp**2)+wks)
+my.effects <- "individual"
+```
+
+Рассморим панель `Wages` и регрессию **diff(lwage) на ed, exp, exp^2, wks**
+с индивидуальными эффектами
+
+$\Delta(lwage)_{i,t}=\beta_0+\beta_1ed_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Результаты оценивания (стандарные ошибки по умолчанию)
+
+- модель пула
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.pl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+coef(regr.pl)
+```
+
+- модель RE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.re <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+coef(regr.re)
+```
+
+- модель FE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.fe <- plm(panel.spec, panel.df, model="within", effect=my.effects)
+coef(regr.fe)
+```
+
+## Модель 3. Результаты оценивания
+
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame(Wages, index=595)
+panel.spec <- formula(diff(lwage) ~ ed+exp+I(exp**2)+wks+south+smsa+married+union+bluecol)
+my.effects <- "individual"
+```
+
+Рассморим панель `Wages` и регрессию **diff(lwage) на ed, exp, exp^2, wks, south, smsa, married, union, bluecol**
+с индивидуальными эффектами
+
+$\Delta(lwage)_{i,t}=\beta_0+\beta_1ed_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Результаты оценивания (стандарные ошибки по умолчанию)
+
+- модель пула
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.pl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+coef(regr.pl)
+```
+
+- модель RE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.re <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+coef(regr.re)
+```
+
+- модель FE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.fe <- plm(panel.spec, panel.df, model="within", effect=my.effects)
+coef(regr.fe)
+```
+
+# Cigarette Consumption
+
+## Модель 1. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame( Cigar, index=c("state", "year") )
+panel.spec <- formula( diff(sales) ~ diff(price)+diff(pop)+diff(pop16)+diff(cpi)+diff(ndi)+diff(pimin) )
+my.effects <- "individual"
+```
+
+Рассморим панель `Guns` и регрессию **diff(sales) на diff(price), diff(pop), diff(pop16), diff(cpi), diff(ndi), diff(pimin)**
+с индивидуальными эффектами
+
+$\Delta sales_{i,t}=\beta_0+\beta_1\Delta price_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Результаты оценивания (стандарные ошибки по умолчанию)
+
+- модель пула
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.pl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+coef(regr.pl)
+```
+
+- модель RE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.re <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+coef(regr.re)
+```
+
+- модель FE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.fe <- plm(panel.spec, panel.df, model="within", effect=my.effects)
+coef(regr.fe)
+```
+
+## Модель 2. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame( Cigar, index=c("state", "year") )
+panel.spec <- formula( sales ~ price +lag(price)+pop+lag(pop)+pop16+cpi+lag(cpi)+ndi+pimin )
+my.effects <- "individual"
+```
+
+Рассморим панель `Guns` и регрессию **sales на price, lag(price) pop, lag(pop) pop16, cpi, lag(cpi), ndi, pimin**
+с индивидуальными эффектами
+
+$sales_{i,t}=\beta_0+\beta_1price_{i,t}+\beta_2 price_{i, t-1}\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Результаты оценивания (стандарные ошибки по умолчанию)
+
+- модель пула
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.pl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+coef(regr.pl)
+```
+
+- модель RE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.re <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+coef(regr.re)
+```
+
+- модель FE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.fe <- plm(panel.spec, panel.df, model="within", effect=my.effects)
+coef(regr.fe)
+```
+
+# UK Employment
+
+## Модель 1. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame( EmplUK, index=c("firm", "year") )
+panel.spec <- formula( log(emp) ~ log(wage)+log(capital)+log(output) )
+my.effects <- "individual"
+```
+
+Рассморим панель `Guns` и регрессию **log(emp) на log(wage), log(capital), log(output)**
+с индивидуальными эффектами
+
+$\log emp{i,t}=\beta_0+\beta_1\log wage_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Результаты оценивания (стандарные ошибки по умолчанию)
+
+- модель пула
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.pl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+coef(regr.pl)
+```
+
+- модель RE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.re <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+coef(regr.re)
+```
+
+- модель FE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.fe <- plm(panel.spec, panel.df, model="within", effect=my.effects)
+coef(regr.fe)
+```
+
+## Модель 2. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame( EmplUK, index=c("firm", "year") )
+panel.spec <- formula( diff(log(emp)) ~ diff(log(wage))+diff(log(capital))+diff(log(output)) )
+my.effects <- "individual"
+```
+
+Рассморим панель `Guns` и регрессию **diff(log(emp)) на diff(log(wage)), diff(log(capital)), diff(log(output))**
+с индивидуальными эффектами
+
+$\Delta\log emp{i,t}=\beta_0+\beta_1\Delta\log wage_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Результаты оценивания (стандарные ошибки по умолчанию)
+
+- модель пула
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.pl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+coef(regr.pl)
+```
+
+- модель RE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.re <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+coef(regr.re)
+```
+
+- модель FE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.fe <- plm(panel.spec, panel.df, model="within", effect=my.effects)
+coef(regr.fe)
+```
+
+## Модель 3. Результаты оценивания
+
+```{r, echo=FALSE, message=FALSE}
+panel.df <- pdata.frame( EmplUK, index=c("firm", "year") )
+panel.spec <- formula( log(emp) ~ log(wage)+lag(log(wage))+log(capital)+lag(log(capital))+log(output)+lag(log(output)) )
+my.effects <- "individual"
+```
+
+Рассморим панель `Guns` и регрессию **log(emp) на log(wage), lag(log(wage)), log(capital), lag(log(capital)), log(output), lag(log(output))**
+с индивидуальными эффектами
+
+$\log emp{i,t}=\beta_0+\beta_1\log wage_{i,t}+\cdots+\mu_i+u_{i,t}$
+
+- модель пула: $\mu_i=0$
+- модель RE
+- модель FE.
+
+Результаты оценивания (стандарные ошибки по умолчанию)
+
+- модель пула
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.pl <- plm(panel.spec, panel.df, model="pooling", effect=my.effects)
+coef(regr.pl)
+```
+
+- модель RE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.re <- plm(panel.spec, panel.df, model="random", effect=my.effects)
+coef(regr.re)
+```
+
+- модель FE
+
+```{r, warning=FALSE, echo=FALSE, comment=''}
+regr.fe <- plm(panel.spec, panel.df, model="within", effect=my.effects)
+coef(regr.fe)
+```
