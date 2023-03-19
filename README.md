@@ -6,8 +6,8 @@
 - [Листок 04](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List04-t-test.html): t-тест ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List04))([YouTube](https://youtu.be/7bmMAxXrOTk))
 - [Листок 05](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List05-F-test.html): F-тест ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List05)) 
 - [Листок 06](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List06-ConfIntervals.html): Доверительные интервалы ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List06))([YouTube](https://youtu.be/aJaY0mWsOSY))
-- [Листок 07](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List07-Prediction.html): Прогнозирование
-- [Листок 08](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List08-Multicollinearity.html): Мультиколлинеарность
+- [Листок 07](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List07-Prediction.html): Прогнозирование([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List07)) 
+- [Листок 08](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List08-Multicollinearity.html): Мультиколлинеарность([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List08)) 
 - [Листок 09](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List09-Dummies.html): Дамми-переменные
 - [Листок 10](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List10-Specification.html): Спецификация
 - [Листок 11](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List11-Heteroskedasticity.html): Гетероскедастичность
