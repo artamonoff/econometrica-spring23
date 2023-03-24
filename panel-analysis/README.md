@@ -6,3 +6,4 @@
 - [Лист2](https://nbviewer.org/github/artamonoff/Econometrica/blob/faf6a4cddd913909c5d0f028f5cef5980b95167f/panel-analysis/Задачи/List2-t-test.html): t-тест
 - [Лист3](https://nbviewer.org/github/artamonoff/Econometrica/blob/faf6a4cddd913909c5d0f028f5cef5980b95167f/panel-analysis/Задачи/List3-F-test.html): F-тест
 - [Лист4](https://nbviewer.org/github/artamonoff/Econometrica/blob/cb499aad172f0915b95f99bfb299d66e69cd8b7a/panel-analysis/Задачи/List4-Lags-and-Diff.html): Регрессия с лагами и с дифференцированием
+- [Лист5](https://nbviewer.org/github/artamonoff/Econometrica/blob/305bc85b6f671422a9fa288921c95c309f765172/panel-analysis/Задачи/List5-Dynamic.html): Динамическая панель
