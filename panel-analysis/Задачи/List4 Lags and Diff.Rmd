@@ -32,7 +32,7 @@ panel.spec <- formula(diff(lwage) ~ ed+exp+I(exp**2)+wks)
 my.effects <- "individual"
 ```
 
-Рассморим панель `Wages` и регрессию **diff(lwage) на ed, exp, exp^2, wks**
+Рассмотрим панель `Wages` и регрессию **diff(lwage) на ed, exp, exp^2, wks**
 с индивидуальными эффектами
 
 $\Delta(lwage)_{i,t}=\beta_0+\beta_1ed_{i,t}+\cdots+\mu_i+u_{i,t}$
@@ -73,7 +73,7 @@ panel.spec <- formula(diff(lwage) ~ ed+exp+I(exp**2)+wks+south+smsa+married+unio
 my.effects <- "individual"
 ```
 
-Рассморим панель `Wages` и регрессию **diff(lwage) на ed, exp, exp^2, wks, south, smsa, married, union, bluecol**
+Рассмотрим панель `Wages` и регрессию **diff(lwage) на ed, exp, exp^2, wks, south, smsa, married, union, bluecol**
 с индивидуальными эффектами
 
 $\Delta(lwage)_{i,t}=\beta_0+\beta_1ed_{i,t}+\cdots+\mu_i+u_{i,t}$
@@ -115,7 +115,7 @@ panel.spec <- formula( diff(sales) ~ diff(price)+diff(pop)+diff(pop16)+diff(cpi)
 my.effects <- "individual"
 ```
 
-Рассморим панель `Guns` и регрессию **diff(sales) на diff(price), diff(pop), diff(pop16), diff(cpi), diff(ndi), diff(pimin)**
+Рассмотрим панель `Cigar` и регрессию **diff(sales) на diff(price), diff(pop), diff(pop16), diff(cpi), diff(ndi), diff(pimin)**
 с индивидуальными эффектами
 
 $\Delta sales_{i,t}=\beta_0+\beta_1\Delta price_{i,t}+\cdots+\mu_i+u_{i,t}$
@@ -155,7 +155,7 @@ panel.spec <- formula( sales ~ price +lag(price)+pop+lag(pop)+pop16+cpi+lag(cpi)
 my.effects <- "individual"
 ```
 
-Рассморим панель `Guns` и регрессию **sales на price, lag(price) pop, lag(pop) pop16, cpi, lag(cpi), ndi, pimin**
+Рассмотрим панель `Guns` и регрессию **sales на price, lag(price) pop, lag(pop) pop16, cpi, lag(cpi), ndi, pimin**
 с индивидуальными эффектами
 
 $sales_{i,t}=\beta_0+\beta_1price_{i,t}+\beta_2 price_{i, t-1}\cdots+\mu_i+u_{i,t}$
@@ -197,7 +197,7 @@ panel.spec <- formula( log(emp) ~ log(wage)+log(capital)+log(output) )
 my.effects <- "individual"
 ```
 
-Рассморим панель `Guns` и регрессию **log(emp) на log(wage), log(capital), log(output)**
+Рассмотрим панель `Guns` и регрессию **log(emp) на log(wage), log(capital), log(output)**
 с индивидуальными эффектами
 
 $\log emp{i,t}=\beta_0+\beta_1\log wage_{i,t}+\cdots+\mu_i+u_{i,t}$
@@ -237,7 +237,7 @@ panel.spec <- formula( diff(log(emp)) ~ diff(log(wage))+diff(log(capital))+diff(
 my.effects <- "individual"
 ```
 
-Рассморим панель `Guns` и регрессию **diff(log(emp)) на diff(log(wage)), diff(log(capital)), diff(log(output))**
+Рассмотрим панель `Guns` и регрессию **diff(log(emp)) на diff(log(wage)), diff(log(capital)), diff(log(output))**
 с индивидуальными эффектами
 
 $\Delta\log emp{i,t}=\beta_0+\beta_1\Delta\log wage_{i,t}+\cdots+\mu_i+u_{i,t}$
@@ -277,7 +277,7 @@ panel.spec <- formula( log(emp) ~ log(wage)+lag(log(wage))+log(capital)+lag(log(
 my.effects <- "individual"
 ```
 
-Рассморим панель `Guns` и регрессию **log(emp) на log(wage), lag(log(wage)), log(capital), lag(log(capital)), log(output), lag(log(output))**
+Рассмотрим панель `Guns` и регрессию **log(emp) на log(wage), lag(log(wage)), log(capital), lag(log(capital)), log(output), lag(log(output))**
 с индивидуальными эффектами
 
 $\log emp{i,t}=\beta_0+\beta_1\log wage_{i,t}+\cdots+\mu_i+u_{i,t}$

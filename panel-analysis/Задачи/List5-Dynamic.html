@@ -12,7 +12,7 @@
 <meta name="author" content="Н.В. Артамонов (МГИМО МИД России)" />
 
 
-<title>Задачи по Анализу панельных данных: Регрессия с лагами. Первая разность</title>
+<title>Задачи по Анализу панельных данных: Динамическая модель</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -2762,253 +2762,55 @@ font-size: 0.95em;
 
 
 <h1 class="title toc-ignore">Задачи по Анализу панельных данных:
-Регрессия с лагами. Первая разность</h1>
+Динамическая модель</h1>
 <h4 class="author">Н.В. Артамонов (МГИМО МИД России)</h4>
 
 </div>
 
 
+<p>Спецификация модели: <span class="math inline">\(y_{it}=\alpha+\gamma
+y_{i, t-1}+x&#39;_{it}\beta+\mu_i+\varepsilon_{it}\)</span></p>
+<p>Метод оценивания Anderson-Hsiao: FD-опреобразование <span class="math inline">\(\Delta y_{it}=\gamma \Delta y_{i, t-1}+\Delta
+x&#39;_{it}\beta+\Delta\varepsilon_{it}\)</span> и применем GMM-оценку с
+инструментами <span class="math inline">\(y_{i, t-2}/\Delta y_{i,t-2},
+\Delta x_{it}\)</span></p>
 <div id="return-to-education" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Return to
 education</h1>
-<div id="модель-1.-результаты-оценивания" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> Модель 1. Результаты
-оценивания</h2>
-<p>Рассмотрим панель <code>Wages</code> и регрессию <strong>diff(lwage)
-на ed, exp, exp^2, wks</strong> с индивидуальными эффектами</p>
-<p><span class="math inline">\(\Delta(lwage)_{i,t}=\beta_0+\beta_1ed_{i,t}+\cdots+\mu_i+u_{i,t}\)</span></p>
-<ul>
-<li>модель пула: <span class="math inline">\(\mu_i=0\)</span></li>
-<li>модель RE</li>
-<li>модель FE.</li>
-</ul>
-<p>Результаты оценивания (стандарные ошибки по умолчанию)</p>
-<ul>
-<li>модель пула</li>
-</ul>
-<pre><code>  (Intercept)            ed           exp      I(exp^2)           wks 
- 0.0903527103  0.0020353308 -0.0025897839  0.0000365822  0.0002692798 </code></pre>
-<ul>
-<li>модель RE</li>
-</ul>
-<pre><code>  (Intercept)            ed           exp      I(exp^2)           wks 
- 0.0903527103  0.0020353308 -0.0025897839  0.0000365822  0.0002692798 </code></pre>
-<ul>
-<li>модель FE</li>
-</ul>
-<pre><code>          exp      I(exp^2)           wks 
--0.0101356624  0.0001169469 -0.0001748671 </code></pre>
+<p>Рассмотрим панель <code>Wages</code></p>
+<div id="модель-1." class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Модель 1.</h2>
+<p>Оцените динамическую модель <strong>lwage на ed, exp, exp^2,
+wks</strong>.</p>
 </div>
-<div id="модель-3.-результаты-оценивания" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> Модель 3. Результаты
-оценивания</h2>
-<p>Рассмотрим панель <code>Wages</code> и регрессию <strong>diff(lwage)
-на ed, exp, exp^2, wks, south, smsa, married, union, bluecol</strong> с
-индивидуальными эффектами</p>
-<p><span class="math inline">\(\Delta(lwage)_{i,t}=\beta_0+\beta_1ed_{i,t}+\cdots+\mu_i+u_{i,t}\)</span></p>
-<ul>
-<li>модель пула: <span class="math inline">\(\mu_i=0\)</span></li>
-<li>модель RE</li>
-<li>модель FE.</li>
-</ul>
-<p>Результаты оценивания (стандарные ошибки по умолчанию)</p>
-<ul>
-<li>модель пула</li>
-</ul>
-<pre><code>  (Intercept)            ed           exp      I(exp^2)           wks 
- 9.984157e-02  1.365815e-03 -2.688486e-03  3.815058e-05  2.797732e-04 
-     southyes       smsayes    marriedyes      unionyes    bluecolyes 
- 1.754405e-03 -1.055954e-03  3.616674e-03  1.988931e-03 -7.255307e-03 </code></pre>
-<ul>
-<li>модель RE</li>
-</ul>
-<pre><code>  (Intercept)            ed           exp      I(exp^2)           wks 
- 9.984157e-02  1.365815e-03 -2.688486e-03  3.815058e-05  2.797732e-04 
-     southyes       smsayes    marriedyes      unionyes    bluecolyes 
- 1.754405e-03 -1.055954e-03  3.616674e-03  1.988931e-03 -7.255307e-03 </code></pre>
-<ul>
-<li>модель FE</li>
-</ul>
-<pre><code>          exp      I(exp^2)           wks      southyes       smsayes 
--1.056606e-02  1.217829e-04 -8.316269e-05  7.037472e-02  2.030182e-03 
-   marriedyes      unionyes    bluecolyes 
--2.789630e-02  1.699142e-02 -4.648713e-02 </code></pre>
+<div id="модель-2." class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Модель 2.</h2>
+<p>Оцените динамическую модель. <strong>lwage на ed, exp, exp^2, wks,
+south, smsa, married, union, bluecol</strong>.</p>
 </div>
 </div>
 <div id="cigarette-consumption" class="section level1" number="2">
 <h1><span class="header-section-number">2</span> Cigarette
 Consumption</h1>
-<div id="модель-1.-результаты-оценивания-1" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Модель 1. Результаты
-оценивания</h2>
-<p>Рассмотрим панель <code>Cigar</code> и регрессию <strong>diff(sales)
-на diff(price), diff(pop), diff(pop16), diff(cpi), diff(ndi),
-diff(pimin)</strong> с индивидуальными эффектами</p>
-<p><span class="math inline">\(\Delta sales_{i,t}=\beta_0+\beta_1\Delta
-price_{i,t}+\cdots+\mu_i+u_{i,t}\)</span></p>
-<ul>
-<li>модель пула: <span class="math inline">\(\mu_i=0\)</span></li>
-<li>модель RE</li>
-<li>модель FE.</li>
-</ul>
-<p>Результаты оценивания (стандарные ошибки по умолчанию)</p>
-<ul>
-<li>модель пула</li>
-</ul>
-<pre><code>  (Intercept)   diff(price)     diff(pop)   diff(pop16)     diff(cpi) 
- 0.4837486698 -0.3354385079  0.0003054030  0.0002436725 -0.0799034986 
-    diff(ndi)   diff(pimin) 
- 0.0013868084 -0.0383988386 </code></pre>
-<ul>
-<li>модель RE</li>
-</ul>
-<pre><code>  (Intercept)   diff(price)     diff(pop)   diff(pop16)     diff(cpi) 
- 0.4837486698 -0.3354385079  0.0003054030  0.0002436725 -0.0799034986 
-    diff(ndi)   diff(pimin) 
- 0.0013868084 -0.0383988386 </code></pre>
-<ul>
-<li>модель FE</li>
-</ul>
-<pre><code>  diff(price)     diff(pop)   diff(pop16)     diff(cpi)     diff(ndi) 
--0.3295181154  0.0046783461  0.0001986788 -0.1608076802  0.0023910541 
-  diff(pimin) 
--0.0692036683 </code></pre>
+<p>Рассмотрим панель <code>Cigar</code></p>
+<div id="модель-1.-1" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Модель 1.</h2>
+<p>Оцените динамическую модель <strong>sales на price, pop, pop16, cpi,
+ndi, pimin</strong></p>
 </div>
-<div id="модель-2.-результаты-оценивания" class="section level2" number="2.2">
-<h2><span class="header-section-number">2.2</span> Модель 2. Результаты
-оценивания</h2>
-<p>Рассмотрим панель <code>Guns</code> и регрессию <strong>sales на
-price, lag(price) pop, lag(pop) pop16, cpi, lag(cpi), ndi,
-pimin</strong> с индивидуальными эффектами</p>
-<p><span class="math inline">\(sales_{i,t}=\beta_0+\beta_1price_{i,t}+\beta_2
-price_{i, t-1}\cdots+\mu_i+u_{i,t}\)</span></p>
-<ul>
-<li>модель пула: <span class="math inline">\(\mu_i=0\)</span></li>
-<li>модель RE</li>
-<li>модель FE.</li>
-</ul>
-<p>Результаты оценивания (стандарные ошибки по умолчанию)</p>
-<ul>
-<li>модель пула</li>
-</ul>
-<pre><code>  (Intercept)         price    lag(price)           pop      lag(pop) 
-140.193688544  -0.910970286  -0.745107250  -0.001768174  -0.001384222 
-        pop16           cpi      lag(cpi)           ndi         pimin 
-  0.003241115   0.005998696   0.168646540   0.005966071   0.636742433 </code></pre>
-<ul>
-<li>модель RE</li>
-</ul>
-<pre><code>  (Intercept)         price    lag(price)           pop      lag(pop) 
-128.014067153  -0.386239307  -0.299664518   0.008656251  -0.015129078 
-        pop16           cpi      lag(cpi)           ndi         pimin 
-  0.008191125   1.500292833  -0.700055621  -0.004848538   0.282129460 </code></pre>
-<ul>
-<li>модель FE</li>
-</ul>
-<pre><code>       price   lag(price)          pop     lag(pop)        pop16          cpi 
--0.373306274 -0.290085790  0.009296925 -0.016040775  0.008474066  1.544180128 
-    lag(cpi)          ndi        pimin 
--0.718883961 -0.005219006  0.278171843 </code></pre>
+<div id="модель-2.-1" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Модель 2.</h2>
+<p>Оцените динамическую модель <strong>log(sales) на log(price),
+log(pop), log(pop16), log(cpi), log(ndi), log(pimin)</strong></p>
 </div>
 </div>
-<div id="uk-employment" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> UK Employment</h1>
-<div id="модель-1.-результаты-оценивания-2" class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> Модель 1. Результаты
-оценивания</h2>
-<p>Рассмотрим панель <code>Guns</code> и регрессию <strong>log(emp) на
-log(wage), log(capital), log(output)</strong> с индивидуальными
-эффектами</p>
-<p><span class="math inline">\(\log emp{i,t}=\beta_0+\beta_1\log
-wage_{i,t}+\cdots+\mu_i+u_{i,t}\)</span></p>
-<ul>
-<li>модель пула: <span class="math inline">\(\mu_i=0\)</span></li>
-<li>модель RE</li>
-<li>модель FE.</li>
-</ul>
-<p>Результаты оценивания (стандарные ошибки по умолчанию)</p>
-<ul>
-<li>модель пула</li>
-</ul>
-<pre><code> (Intercept)    log(wage) log(capital)  log(output) 
-   0.3444243   -0.3669498    0.8090177    0.4791146 </code></pre>
-<ul>
-<li>модель RE</li>
-</ul>
-<pre><code> (Intercept)    log(wage) log(capital)  log(output) 
-   0.2167400   -0.2902668    0.6378021    0.4416057 </code></pre>
-<ul>
-<li>модель FE</li>
-</ul>
-<pre><code>   log(wage) log(capital)  log(output) 
-  -0.3106426    0.5489458    0.5370106 </code></pre>
-</div>
-<div id="модель-2.-результаты-оценивания-1" class="section level2" number="3.2">
-<h2><span class="header-section-number">3.2</span> Модель 2. Результаты
-оценивания</h2>
-<p>Рассмотрим панель <code>Guns</code> и регрессию
-<strong>diff(log(emp)) на diff(log(wage)), diff(log(capital)),
-diff(log(output))</strong> с индивидуальными эффектами</p>
-<p><span class="math inline">\(\Delta\log
-emp{i,t}=\beta_0+\beta_1\Delta\log
-wage_{i,t}+\cdots+\mu_i+u_{i,t}\)</span></p>
-<ul>
-<li>модель пула: <span class="math inline">\(\mu_i=0\)</span></li>
-<li>модель RE</li>
-<li>модель FE.</li>
-</ul>
-<p>Результаты оценивания (стандарные ошибки по умолчанию)</p>
-<ul>
-<li>модель пула</li>
-</ul>
-<pre><code>       (Intercept)    diff(log(wage)) diff(log(capital))  diff(log(output)) 
-       -0.01799744        -0.41597852         0.40831262         0.40904229 </code></pre>
-<ul>
-<li>модель RE</li>
-</ul>
-<pre><code>       (Intercept)    diff(log(wage)) diff(log(capital))  diff(log(output)) 
-       -0.01799744        -0.41597852         0.40831262         0.40904229 </code></pre>
-<ul>
-<li>модель FE</li>
-</ul>
-<pre><code>   diff(log(wage)) diff(log(capital))  diff(log(output)) 
-        -0.4745430          0.3523457          0.4509786 </code></pre>
-</div>
-<div id="модель-3.-результаты-оценивания-1" class="section level2" number="3.3">
-<h2><span class="header-section-number">3.3</span> Модель 3. Результаты
-оценивания</h2>
-<p>Рассмотрим панель <code>Guns</code> и регрессию <strong>log(emp) на
-log(wage), lag(log(wage)), log(capital), lag(log(capital)), log(output),
-lag(log(output))</strong> с индивидуальными эффектами</p>
-<p><span class="math inline">\(\log emp{i,t}=\beta_0+\beta_1\log
-wage_{i,t}+\cdots+\mu_i+u_{i,t}\)</span></p>
-<ul>
-<li>модель пула: <span class="math inline">\(\mu_i=0\)</span></li>
-<li>модель RE</li>
-<li>модель FE.</li>
-</ul>
-<p>Результаты оценивания (стандарные ошибки по умолчанию)</p>
-<ul>
-<li>модель пула</li>
-</ul>
-<pre><code>      (Intercept)         log(wage)    lag(log(wage))      log(capital) 
-      -0.54267428       -0.35608183       -0.07052377        0.32968944 
-lag(log(capital))       log(output)  lag(log(output)) 
-       0.48398621       -0.27970204        0.98117768 </code></pre>
-<ul>
-<li>модель RE</li>
-</ul>
-<pre><code>      (Intercept)         log(wage)    lag(log(wage))      log(capital) 
-       1.42003707       -0.54995534        0.09195543        0.55650327 
-lag(log(capital))       log(output)  lag(log(output)) 
-       0.13878588        0.57194022       -0.27226193 </code></pre>
-<ul>
-<li>модель FE</li>
-</ul>
-<pre><code>        log(wage)    lag(log(wage))      log(capital) lag(log(capital)) 
-      -0.54936788        0.06317601        0.49563631        0.08565558 
-      log(output)  lag(log(output)) 
-       0.57506317       -0.14642021 </code></pre>
+<div id="more-guns-less-crime" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> More Guns, Less
+Crime?</h1>
+<div id="модель-1.-2" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Модель 1.</h2>
+<p>Оцените динамическую модель <strong>log(violent) на law + другие
+регрессоры</strong></p>
 </div>
 </div>
 

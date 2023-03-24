@@ -1,0 +1,59 @@
+---
+title: "Задачи по Анализу панельных данных: Динамическая модель"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(lmtest)
+library(stargazer)
+library(plm)
+panels.df <- c('Wages', 'Cigar', 'Crime', 'EmplUK', 'Gasoline', 'Grunfeld', 'Hedonic', 'LaborSupply', 'Males', 'Parity', 'Produc', 'RiceFarms') 
+data(list=panels.df, package = "plm")
+data('Guns', package='AER')
+my.digits.output <- 4
+my.digits <- 2
+```
+
+Спецификация модели: \(y_{it}=\alpha+\gamma y_{i, t-1}+x'_{it}\beta+\mu_i+\varepsilon_{it}\)
+
+Метод оценивания Anderson-Hsiao: FD-опреобразование 
+\(\Delta y_{it}=\gamma \Delta y_{i, t-1}+\Delta x'_{it}\beta+\Delta\varepsilon_{it}\)
+и применем GMM-оценку с инструментами \(y_{i, t-2}/\Delta y_{i,t-2}, \Delta x_{it}\)
+
+# Return to education
+
+Рассмотрим панель `Wages`
+
+## Модель 1.
+
+Оцените динамическую модель **lwage на ed, exp, exp^2, wks**.
+
+## Модель 2.
+
+Оцените динамическую модель. **lwage на ed, exp, exp^2, wks, south, smsa, married, union, bluecol**.
+
+# Cigarette Consumption
+
+Рассмотрим панель `Cigar`
+
+## Модель 1.
+
+Оцените динамическую модель **sales на price, pop, pop16, cpi, ndi, pimin**
+
+## Модель 2.
+
+Оцените динамическую модель **log(sales) на log(price), log(pop), log(pop16), log(cpi), log(ndi), log(pimin)**
+
+# More Guns, Less Crime?
+
+## Модель 1.
+
+Оцените динамическую модель **log(violent) на law + другие регрессоры**
+
