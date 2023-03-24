@@ -675,41 +675,31 @@ NumWebVisitsMonth & Number of visits to company’s website in the last month\\
 
 
 
+% californiay house
 \begin{table}
-	\caption{ \texttt{9topcolleges2022.csv}
-The list contains the top American colleges of 2022 and details about them including financial aid, student population, college phone number, website etc.
-Most of the columns in the table are self explanatory.}
-\end{table}
-
-
-\begin{table}
-	\caption{ \texttt{10boston.csv}
-The Boston house price 
-data of Harrison, D. and Rubinfeld, D.L. 
-'Hedonic prices and the demand for clean air', 
-J. Environ. Economics \& Management,
- vol.5, 81-102, 1978. Content }
+	\caption{ \texttt{californiaHousingPrices.csv}
+Context
+This is the dataset used in the second chapter of Aurélien Géron's recent book 'Hands-On Machine learning with Scikit-Learn and TensorFlow'. It serves as an excellent introduction to implementing machine learning algorithms because it requires rudimentary data cleaning, has an easily understandable list of variables and sits at an optimal size between being to toyish and too cumbersome.
+The data contains information from the 1990 California census. So although it may not help you with predicting current housing prices like the Zillow Zestimate dataset, it does provide an accessible introductory dataset for teaching people about the basics of machine learning.
+\href{ https://www.kaggle.com/datasets/camnugent/california-housing-prices?select=housing.csv}{california} Content
+}
 %\begin{center}
 	\begin{tabular}{l|l}\hline
-CRIM & per capita crime rate by town \\
-ZN & proportion of residential land zoned for lots over 25,000 sq.ft. \\
-INDUS & proportion of non-retail business acres per town \\
-CHAS & Charles River dummy variable (1 if tract bounds river; 0 otherwise) \\
-NOX & nitric oxides concentration (parts per 10 million) [parts/10M] \\
-RM & average number of rooms per dwelling \\
-AGE & proportion of owner-occupied units built prior to 1940 \\
-DIS & weighted distances to five Boston employment centres \\
-RAD & index of accessibility to radial highways \\
-TAX & full-value property-tax rate per \$10,000 [\$/10k] \\
-PTRATIO & pupil-teacher ratio by town \\
-B & The result of the equation $B=1000(Bk - 0.63)^2$, \\
-& where Bk is the proportion of blacks by town \\
-LSTAT & \\ % lower status of the population \\
-MEDV & Median value of owner-occupied homes in $1000's [k]$ \\
+1. longitude & A measure of how far west a house is; a higher value is farther west \\
+2. latitude & A measure of how far north a house is; a higher value is farther north\\
+3. housingMedianAge & Median age of a house within a block; a lower number is a newer building\\
+4. totalRooms& Total number of rooms within a block\\
+5. totalBedrooms & Total number of bedrooms within a block\\
+6. population &  Total number of people residing within a block\\
+7. households &  Total number of households, a group of people residing within a home unit, for a block \\
+8. medianIncome &  Median income for households within a block of houses (measured in tens of thousands of US Dollars)\\
+9. medianHouseValue &  Median house value for households within a block (measured in US Dollars)\\
+10. oceanProximity & Location of the house w.r.t ocean/sea\\
 	\hline
 	\end{tabular}
 %\end{center}
 \end{table}
+%
 
 \newpage
 
