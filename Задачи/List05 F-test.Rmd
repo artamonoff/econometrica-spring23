@@ -10,6 +10,8 @@ output:
     df_print: paged
 ---
 
+Для каждой задачи оцените соотвествующие регрессии и проведите F-тест в Python
+
 ```{r, message=FALSE, echo=FALSE}
 library(stargazer)
 library(lmtest)
