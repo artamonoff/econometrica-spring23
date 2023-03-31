@@ -1,0 +1,67 @@
+---
+title: "Задачи по Анализу панельных данных: Динамическая модель"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  html_document:
+    toc: true
+    toc_float: 
+        collapsed: false
+    number_sections: true
+    df_print: paged
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(lmtest)
+library(stargazer)
+library(plm)
+panels.df <- c('Wages', 'Cigar', 'Crime', 'EmplUK', 'Gasoline', 'Grunfeld', 'Hedonic', 'LaborSupply', 'Males', 'Parity', 'Produc', 'RiceFarms') 
+data(list=panels.df, package = "plm")
+data('Guns', package='AER')
+my.digits.output <- 4
+my.digits <- 2
+```
+
+Для следующих панелей оцените модели
+
+- Пула
+- RE
+- FE
+- Динамическую
+
+Какие можно сделать выводы? Проведите диагностичекские тесты
+
+# Wages
+
+**lwages на остальные переменные**
+
+# Grunfeld
+
+**inv on value & capital**
+
+# Gun Laws and the Effect on Crime (панель Guns)
+
+**log(violent) на law (+ другие)**
+
+# EmplUK
+
+**log(emp) на log(wage), log(capital), log(output) **
+
+# Production costs of Turkish banks (панель TurkishBanks)
+
+**log(cost) на log(output) (+ другие) **
+
+# Gasoline Consumption (панель Gasoline)
+
+**lgaspcar на другие**
+
+# Cigarette Consumption (панель Cigar)
+
+**sales на другие**
+
+# Wages and Hours Worked (панель LaborSupply)
+
+**lnwg на другие**
+
+# Employment and Wages in Spain (панель Snmesp)
+
+**w на другие**
