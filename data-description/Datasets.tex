@@ -699,9 +699,325 @@ The data contains information from the 1990 California census. So although it ma
 	\end{tabular}
 %\end{center}
 \end{table}
+
+% californiay house
+\begin{table}
+	\caption{ \texttt{exams.csv}
+Context
+Description: This dataset contains information on the performance of high school students in mathematics, including their grades and demographic information. The data was collected from three high schools in the United States.
+"This dataset was created for educational purposes and was generated, not collected from actual data sources."
+\href{ https://www.kaggle.com/datasets/rkiattisak/student-performance-in-mathematics}{exams} Content
+}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+• Gender & The gender of the student (male/female)\\
+• Race/ethnicity & The student's racial or ethnic background (Asian, African-American, Hispanic, etc.)\\
+• Parental level of education & The highest level of education attained by the student's parent(s) or guardian(s)\\
+• Lunch & Whether the student receives free or reduced-price lunch (yes/no)\\
+• Test preparation course & Whether the student completed a test preparation course (yes/no)\\
+• Math score & The student's score on a standardized mathematics test\\
+• Reading score & The student's score on a standardized reading test\\
+• Writing score & The student's score on a standardized writing test\\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
 %
 
+\begin{table}
+	\caption{ \texttt{SpotifyYoutube.csv}
+Context
+Dataset of songs of various artist in the world and for each song is present:
+Several statistics of the music version on spotify, including the number of streams;
+Number of views of the official music video of the song on youtube.
+\href{ https://www.kaggle.com/datasets/salvatorerastelli/spotify-and-youtube}{youtubespotify} Content
+}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+Track & name of the song, as visible on the Spotify platform.\\
+Artist & name of the artist.\\
+Urlspotify & the Url of the song.\\
+Album & the album in wich the song is contained on Spotify.\\
+Album type & indicates if the song is relesead on Spotify\\
+& as a single or contained in an album.\\
+Uri & spotify link used to find the song through the API.''\\
+Danceability & describes how suitable a track is for dancing based on a \\
+&  beat strength, andcombination of musical elements including tempo,  \\
+& rhythm stability, overall regularity. A value of 0.0 \\
+& is least danceable and 1.0 is most danceable. \\
+Energy & is a measure from 0.0 to 1.0 and represents a perceptual measure \\
+& of intensity and activity. Typically, energetic tracks feel fast, loud,\\
+& and noisy. For example, death metal has high energy, while a \\
+& Bach prelude scores low on the scale. Perceptual features contributing\\
+& to this attribute include dynamic range, perceived loudness, timbre, \\
+& onset rate, and general entropy.\\
+Key & the key the track is in. Integers map to pitches using standard \\
+& Pitch Class notation. E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on. \\
+& If no key was detected, the value is -1.\\
+Loudness & the overall loudness of a track in decibels (dB).\\
+& Loudness values are averaged across the entire track and are useful \\
+& for comparing relative loudness of tracks. Loudness is the quality \\
+& of a sound that is the primary psychological correlate of physical \\
+& strength (amplitude). Values typically range between -60 and 0 db.\\
+Speechiness & detects the presence of spoken words in a track.\\
+& The more exclusively speech-like the recording\\
+ &(e.g. talk show, audio book, poetry), \\
+ &the closer to 1.0 the attribute value. Values above 0.66\\
+ &  describe tracks that are probably made entirely of spoken words.\\
+ & Values between 0.33 and 0.66 describe tracks \\
+ & that may contain both music and speech, \\
+ & either in sections or layered, including such cases as rap music. \\
+ & Values below 0.33 most likely represent \\
+ & music and other non-speech-like tracks. \\
+Acousticness & a confidence measure from 0.0 to 1.0 of whether the track is acoustic.\\
+& 1.0 represents high confidence the track is acoustic.\\
+	\hline
+	\end{tabular}
+\end{table}
+\begin{table}
+
+		\begin{tabular}{l|l}\hline
+Instrumentalness & predicts whether a track contains no vocals. \\
+& "Ooh" and "aah" sounds are treated as instrumental in this context. \\
+& Rap or spoken word tracks are clearly "vocal". \\
+& The closer the instrumentalness value is to 1.0,\\
+& the greater likelihood the track \\
+& contains no vocal content. \\
+&  Values above 0.5 are intended to represent instrumental \\
+& tracks, but confidence is higher as the value approaches 1.0.\\
+Liveness & detects the presence of an audience in the recording. \\
+& Higher liveness values represent an increased probability that the \\
+& track was performed live.\\
+& A value above 0.8 provides strong likelihood that the track is live.\\
+Valence & a measure from 0.0 to 1.0 describing \\
+& the musical positiveness conveyed by a track.\\
+& Tracks with high valence sound more positive \\
+& (e.g. happy, cheerful, euphoric), while tracks with \\
+& low valence sound more negative (e.g. sad, depressed, angry).\\
+Tempo & the overall estimated tempo of a track in beats per minute (BPM).\\
+& In musical terminology, tempo is the speed or pace of \\
+& a given piece and derives directly from the average beat duration.\\
+Duration ms & the duration of the track in milliseconds.\\
+Stream & number of streams of the song on Spotify.\\
+Url youtube & url of the video linked to the song on Youtube, if it have any.\\
+Title & title of the videoclip on youtube.\\
+Channel & name of the channel that have published the video.\\
+Views & number of views.\\
+Likes & number of likes.\\
+Comments & number of comments.\\
+Description & description of the video on Youtube.\\
+Licensed & Indicates whether the video represents licensed content,\\
+& which means that the content was uploaded to a channel linked to \\
+& a YouTube content partner and then claimed by that partner.\\
+official video & boolean value that indicates \\
+& if the video found is the official video of the song.\\
+
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+
+\begin{table}
+	\caption{ \texttt{MedicalCostPersonalDatasets.csv}
+Context
+Machine Learning with R by Brett Lantz is a book that provides an introduction to machine learning using R. As far as I can tell, Packt Publishing does not make its datasets available online unless you buy the book and create a user account which can be a problem if you are checking the book out from the library or borrowing the book from a friend. All of these datasets are in the public domain but simply needed some cleaning up and recoding to match the format in the book.
+\href{https://www.kaggle.com/datasets/mirichoi0218/insurance}{MedCostPersData} Content
+}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+age & age of primary beneficiary\\
+
+sex & insurance contractor gender, female, male\\
+bmi & Body mass index, providing an understanding \\
+&  of body, weights that are relatively high or \\
+& low relative to height,\\
+& objective index of body weight $(kg / m ^ 2)$ \\
+& using the ratio of height to weight, ideally 18.5 to 24.9\\
+
+children & Number of children covered by health insurance/ \\
+& / Number of dependents\\
+
+smoker & Smoking\\
+
+region & the beneficiary's residential area \\
+& in the US, northeast, southeast, southwest, northwest.\\
+
+charges & Individual medical costs billed by health insurance\\
+
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+
+\begin{table}
+	\caption{ \texttt{Studentsgamificationgrades.csv}
+Context
+This dataset was created as a result of students who used a gamified learning application with interactive flashcards and badges to engage them in learning about statistics and multidimensional statistical analysis.
+The dataset includes data on various variables, including the practice exam grades before using the educational platform, the final exam grades after using the platform, whether or not the student is a user of the platform, the average grade for each of the six quizzes, and the number of times each quiz was submitted.
+\href{https://www.kaggle.com/datasets/gianinamariapetrascu/gamification-students-grades}{Gamification in education} Content
+}
+
+\end{table}
+
+
+
+
+\begin{table}
+	\caption{ \texttt{SocialNetworkAds.csv}
+Context
+The dataset is simple, you have information on gender, age and whether the user purchased the product shown to them or not. You have to determine if the user will buy. The user is identified by a unique identifier in the ID column. The unique identifier doesn't need to be used for the model, but you should keep it for testing purposes!
+\href{https://www.kaggle.com/datasets/micheldc55/social-network-ads}{Gamification in education} Content
+}
+
+\end{table}
+
+
+
+\begin{table}
+	\caption{ \texttt{madridHousesClean.csv}
+Context
+Clean dataset for machine learning.
+\href{https://www.kaggle.com/datasets/makofe/housesclean}{Madrid houses-clean} Content
+}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+id & identifier\\
+sq mt built  & size of the house in square meter built.\\
+n rooms & number of rooms.\\
+n bathrooms & number of bathrooms. \\
+sq mt allotment& for detached houses,\\
+& full size including house, pool, garden, etc.\\
+floor & height.\\
+is renewal needed &  boolean.\\
+has lift & boolean.\\
+is exterior & boolean.\\
+energy certificate & higher values mean mor efficient.\\
+has parking & boolean.\\
+neighborhood & Madrid's counties.\\
+district & Madrid's districts.\\
+house type & flat, house, study, duplex, top floor.\\
+buy rice & target.\\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+
+\begin{table}
+	\caption{ \texttt{SocialNetworkAds.csv}
+Context
+The dataset is simple, you have information on gender, age and whether the user purchased the product shown to them or not. You have to determine if the user will buy. The user is identified by a unique identifier in the ID column. The unique identifier doesn't need to be used for the model, but you should keep it for testing purposes!
+\href{https://www.kaggle.com/datasets/micheldc55/social-network-ads}{Gamification in education} Content
+}
+
+\end{table}
+
+
+
+\begin{table}
+	\caption{ \texttt{madridHousesClean.csv}
+Context
+Clean dataset for machine learning.
+\href{https://www.kaggle.com/datasets/makofe/housesclean}{Madrid houses-clean} Content
+}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+id & identifier\\
+sq mt built  & size of the house in square meter built.\\
+n rooms & number of rooms.\\
+n bathrooms & number of bathrooms. \\
+sq mt allotment& for detached houses,\\
+& full size including house, pool, garden, etc.\\
+floor & height.\\
+is renewal needed &  boolean.\\
+has lift & boolean.\\
+is exterior & boolean.\\
+energy certificate & higher values mean mor efficient.\\
+has parking & boolean.\\
+neighborhood & Madrid's counties.\\
+district & Madrid's districts.\\
+house type & flat, house, study, duplex, top floor.\\
+buy rice & target.\\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+
+
+
+\begin{table}
+	\caption{ \texttt{BankPersonalLoanModelling.csv}
+Data Description:
+The file Bank.xls contains data on 5000 customers. The data include customer demographic information (age, income, etc.), the customer's relationship with the bank (mortgage, securities account, etc.), and the customer response to the last personal loan campaign (Personal Loan). Among these 5000 customers, only 480 (= 9.6) accepted the personal loan that was offered to them in the earlier campaign.
+Domain:Banking
+Context:
+This case is about a bank (Thera Bank) whose management wants to explore ways of converting its liability customers to personal loan customers (while retaining them as depositors). A campaign that the bank ran last year for liability customers showed a healthy conversion rate of over 9 success. This has encouraged the retail marketing department to devise campaigns with better target marketing to increase the success ratio with minimal budget.
+\href{https://www.kaggle.com/datasets/krantiswalke/bank-personal-loan-modelling}{BankPersonalLoanModelling} Content
+}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+
+ID & Customer ID\\
+
+Age & Customer's age in completed years \\
+
+Experience & years of professional experience\\
+
+Income & Annual income of the customer (000)\\
+
+ZIP Code & Home Address ZIP code.\\
+
+Family & Family size of the customer\\
+
+CCAvg & Avg. spending on credit cards per month (000)\\
+
+Education & Education Level.\\
+& 1: Undergrad;\\
+& 2: Graduate;\\
+& 3: Advanced/Professional\\
+
+Mortgage & Value of house mortgage if any. (000)\\
+
+10.Personal Loan & Did this customer \\
+& accept the personal loan offered in the last campaign?\\
+
+11.Securities Account & Does the customer \\
+& have a securities account with the bank?\\
+
+12.CD Account & Does the customer have a certificate\\
+& of deposit (CD) account with the bank?\\
+
+13.Online & Does the customer use internet banking facilities?\\
+
+14.Credit card & Does the customer use a credit card issued by\\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+
+
+
+\begin{table}
+	\caption{ \texttt{udemycourses.csv}
+\href{https://www.kaggle.com/datasets/andrewmvd/udemy-courses?resource=download}{Udemy Courses} Content
+}
+\end{table}
+
+
+
+
+
+
+
+
 \newpage
+
+
+
 
 \begin{thebibliography}{99}
 
