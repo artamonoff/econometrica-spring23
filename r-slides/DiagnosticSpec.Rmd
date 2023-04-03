@@ -1,0 +1,104 @@
+---
+title: "Диагностические тесты на спецификацию"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  ioslides_presentation:
+    widescreen: true
+    incremental: true
+    toc: true
+    smaller: true
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(ggplot2)
+library(corrplot)
+library(ggcorrplot)
+data(sleep75,wage1, wage2, Labour, Electricity, package = c('wooldridge', 'Ecdat') )
+sleep75$gender <- factor(sleep75$male, labels = c('female', 'male') )
+wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
+```
+
+# Sleep equation
+
+## Результат оценивания
+
+Для набора данных `sleep75` рассмотрим линейную регрессию **sleep на
+totwrk, age, smsa, south, male**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.10
+spec <- formula(sleep~totwrk+age+smsa+south+male)
+mod <- lm(formula=spec, data=sleep75)
+coeftest(mod)
+```
+
+## RESET-тест
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+resettest(mod, power=2:4)
+```
+
+## Rainbow тест
+
+На завиcимость от totwrk
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+raintest(formula=spec, order.by = ~totwrk, data=sleep75)
+```
+
+На завиcимость от age
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+raintest(formula=spec, order.by = ~age, data=sleep75)
+```
+
+# Output equation
+
+## Результат оценивания
+
+Для набора данных `Labour` рассмотрим линейную регрессию **log(output) на
+log(capital), log(labour), log(wage)**.
+
+Результаты оценивания:
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+my.digits.output <- 3
+my.digits <- 2
+sign.level <- 0.10
+spec <- formula(log(output)~log(capital)+log(labour)+log(wage))
+mod <- lm(formula=spec, data=Labour)
+coeftest(mod)
+```
+
+## RESET-тест
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+resettest(mod, power=2:4)
+```
+
+## Rainbow тест
+
+На завиcимость от capital
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+raintest(formula=spec, order.by = ~capital, data=Labour)
+```
+
+На завиcимость от labour
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+raintest(formula=spec, order.by = ~labour, data=Labour)
+```
+
+На завиcимость от wage
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+raintest(formula=spec, order.by = ~wage, data=Labour)
+```

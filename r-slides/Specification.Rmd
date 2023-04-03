@@ -1,0 +1,27 @@
+---
+title: "Структурные сдвиги"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  ioslides_presentation:
+    widescreen: true
+    incremental: true
+    toc: true
+    smaller: true
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(ggplot2)
+library(corrplot)
+library(ggcorrplot)
+data(sleep75,wage1, wage2, Labour, Electricity, package = c('wooldridge', 'Ecdat') )
+sleep75$gender <- factor(sleep75$male, labels = c('female', 'male') )
+wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
+```
+
+# Production function
+
+Для датасета `Labour` ркассморим регрессию log(output) на log(capital), log(labour), log(wage)
+

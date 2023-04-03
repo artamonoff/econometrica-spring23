@@ -1,0 +1,92 @@
+---
+title: "Серийная корреляция"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  ioslides_presentation:
+    widescreen: true
+    incremental: true
+    toc: true
+    smaller: true
+---
+
+```{r, message=FALSE, echo=FALSE, warning=FALSE, error=FALSE}
+library(stargazer)
+library(lmtest)
+library(ggplot2)
+library(ggcorrplot)
+library(sandwich)
+library(quantmod)
+library(zoo)
+library(jtools)
+
+start.date <- '1995-1'
+end.date <- '2019-12'
+```
+
+# Ставки и M2
+
+## Данные и графики
+
+Рассморим данные по M2, краткосрочной и долгосрочной ставке (месячные данные с `r start.date` по `r end.date`)
+Загрузим данные из БД  [FRED](https://fred.stlouisfed.org) и построим графики ставок и М2
+
+```{r, echo=FALSE, comment=''}
+getSymbols(Symbols = c('TB3MS', 'GS10', 'M2SL'), src='FRED', return.class='zoo')
+TB3MS <- zooreg(TB3MS, start = c(1934,1), frequency = 12)
+GS10 <- zooreg(GS10, start = c(1953,4), frequency = 12)
+M2SL <- zooreg(M2SL, start = c(1959,1), frequency = 12)
+
+rate.3m <- window(TB3MS, start = as.yearmon(start.date), end = as.yearmon(end.date))
+rate.10y <- window(GS10, start = as.yearmon(start.date), end = as.yearmon(end.date))
+M2 <- window(M2SL, start = as.yearmon(start.date), end = as.yearmon(end.date))
+Rates <- cbind(rate.3m, rate.10y, M2)
+# первые разности
+d.rate.3m <- window(diff(TB3MS), start = as.yearmon(start.date), end = as.yearmon(end.date))
+d.rate.10y <- window(diff(GS10), start = as.yearmon(start.date), end = as.yearmon(end.date))
+dl.M2 <-  window(diff(log(M2SL)), start = as.yearmon(start.date), end = as.yearmon(end.date))
+d.Rates <- cbind(d.rate.3m, d.rate.10y, dl.M2)
+
+autoplot.zoo(Rates, col=Series )+facet_free(scales='free')
+# autoplot.zoo(d.Rates, col=Series)+facet_free(scales='free')
+```
+
+## Данные и графики
+
+Построим графики первых разностей ставок и М2
+
+```{r, echo=FALSE, comment=''}
+autoplot.zoo(d.Rates, col=Series)+facet_free(scales='free')
+```
+
+## Модель (OLS s.e.)
+
+Рассмотрим регрессию $\Delta rate.10y_t=\beta_0+\beta_1\Delta rate.3m_t+\beta_2\Delta\log M2_t+u_t$
+
+Результаты подгонки
+
+```{r, echo=FALSE, comment=''}
+sign.level <- 0.05
+regr <- lm(formula=d.rate.10y~d.rate.3m+dl.M2, data=d.Rates)
+summ(regr)
+```
+
+## LM/BG-тест
+
+Модель серийной корреляции второго порядка \(u_t=\rho u_{t-1}+\rho_2 u_{t-2}+\nu_t\)
+
+Тестируем $H_0:\rho_1=\rho_2=0$. Результаты теста:
+
+```{r, echo=FALSE, comment=''}
+serial.corr.order <- 1
+bgtest(regr, order=serial.corr.order)
+```
+
+## Модель (HAC s.e.)
+
+Результаты подгонки
+
+```{r, echo=FALSE, comment=''}
+sign.level <- 0.05
+regr <- lm(formula=d.rate.10y~d.rate.3m+dl.M2, data=d.Rates)
+summ(regr, vcov=vcovHAC)
+```

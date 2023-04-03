@@ -1,0 +1,56 @@
+---
+title: "Панельные данные: Wage equation"
+output:
+  ioslides_presentation:
+    widescreen: true
+    incremental: true
+    toc: true
+    smaller: true
+---
+
+# Данные
+
+## Описание данных
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+library(plm)
+library(lmtest)
+library(ggplot2)
+library(stargazer)
+library(Formula)
+data(Wages, package='Ecdat')
+pd <- pdata.frame(Wages, index=595)
+panel.spec <- formula(lwage~ed+exp+I(exp^2)+south+smsa+married)
+```
+
+Панель по $n=595$ индивидуумам с 1976 по 1982 ($N=4165$) по следующим переменными:
+
+- `lwage` [logarithm of wage]
+- `ed` [years of education]
+- `exp` [years of full-time work experience]
+- `south` [resides in the south?]
+- `smsa` [resides in a standard metropolitan statistical area]
+- `married` [dummy for 'married?']
+
+# Модели панельной регрессии
+
+## Спецификация
+
+Рассморим регрессию **lwage на ed, exp, exp^2, south, smsa, married** с индивидуальными эффектами трёх спецификаций:
+
+- pooling
+- RE
+
+**На интересует отдача от образования**.
+
+ Результаты подгонки (неробастные s.e.) на следующем слайде
+
+---
+
+
+```{r, echo=FALSE, message=FALSE, comment=''}
+# panel.spec <- formula(lwage~ed+exp+I(exp^2)+south+smsa+married+bluecol)
+regr.pl <- plm(formula = panel.spec, data=pd, effect = 'individual', model='pooling')
+regr.re <- plm(formula = panel.spec, data=pd, effect = 'individual', model='random')
+stargazer(regr.pl, regr.re, type='text', column.labels = c('PL', 'RE'), df=FALSE )
+```

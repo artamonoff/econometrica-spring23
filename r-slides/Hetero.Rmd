@@ -1,0 +1,123 @@
+---
+title: "Гетероскедастичность"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  ioslides_presentation:
+    widescreen: true
+    incremental: true
+    toc: true
+    smaller: true
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(ggplot2)
+library(corrplot)
+library(ggcorrplot)
+library(sandwich)
+data(sleep75,wage1, wage2, Labour, Electricity, package = c('wooldridge', 'Ecdat') )
+sleep75$gender <- factor(sleep75$male, labels = c('female', 'male') )
+wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
+```
+
+# Output equation
+
+## Модель 1: спецификация и подгонка
+
+Для датасета `Labour` рассморим регрессию **log(output) на log(capital), log(labour), log(wage)**
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+mod <- lm(formula = log(output)~log(capital)+log(labour)+log(wage), data=Labour)
+df <- data.frame(Labour, resid=resid(mod))
+coeftest(mod)
+```
+
+## Модель 1: график 1
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+ggplot(data=df, aes(x=log(capital), y=log(output)) )+geom_point()+geom_smooth(method=lm, formula = y~x, se=FALSE)
+```
+
+## Модель 1: график 2
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+ggplot(data=df, aes(x=log(labour), y=log(output)) )+geom_point()+geom_smooth(method=lm, formula = y~x, se=FALSE)
+```
+
+## Модель 1: график 3
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+ggplot(data=df, aes(x=log(wage), y=log(output)) )+geom_point()+geom_smooth(method=lm, formula = y~x, se=FALSE)
+```
+
+## Модель 1: BP-тест
+
+Результаты BP-тест. Какие можо сделать выводы?
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+bptest(mod)
+```
+
+## Модель 1: Диагностика
+
+Неробастный RESET-тест
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+resettest(mod, power = 2:4)
+```
+
+Робастный RESET-тест 
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+resettest(mod, power = 2:4, vcov=vcovHC)
+```
+
+## Модель 2: спецификация и подгонка
+
+Для датасета `Labour` рассморим регрессию **log(output) на log(capital), log(labour), log(wage), 
+log^2^(capital), log^2^(labour), log^2^(wage)**
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+mod2 <- update(mod, formula. = ~.+I(log(capital)^2)+I(log(labour)^2)+I(log(wage)^2) )
+df <- data.frame(df, resid2=resid(mod2))
+coeftest(mod2)
+```
+
+## Модель 2: BP-тест
+
+Результаты BP-тест. Какие можо сделать выводы?
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+bptest(mod2)
+```
+
+## Модель 2: Диагностика
+
+Неробастный RESET-тест
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+resettest(mod2, power = 2:4)
+```
+
+Робастный RESET-тест 
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+resettest(mod2, power = 2:4, vcov=vcovHC)
+```
+
+## Модель 2: t-тест
+
+Результаты робастного t-тест. Какие можо сделать выводы?
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+coeftest(mod2, vcov. = vcovHC)
+```
+
+## Графики
+
+```{r, echo=FALSE, comment='', warning=FALSE, message=FALSE}
+ggplot(data=df, aes(x=log(output)) )+geom_point(aes(y=resid), col='blue')+geom_point(aes(y=resid2), col='red')
+```
+

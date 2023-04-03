@@ -1,0 +1,60 @@
+---
+title: "Структурные сдвиги"
+author: "Н.В. Артамонов (МГИМО МИД России)"
+output:
+  ioslides_presentation:
+    widescreen: true
+    incremental: true
+    toc: true
+    smaller: true
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(stargazer)
+library(lmtest)
+library(car)
+library(ggplot2)
+library(corrplot)
+library(ggcorrplot)
+data(sleep75,wage1, wage2, Labour, Electricity, package = c('wooldridge', 'Ecdat') )
+sleep75$gender <- factor(sleep75$male, labels = c('female', 'male') )
+wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
+```
+
+# Пример #1: sleep equation
+
+## сдвиги относительно гендера
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+ggplot(data=sleep75, aes(x=totwrk, y=sleep))+geom_point()+geom_smooth(aes(col=gender), method=lm, formula=y~x, se=FALSE)
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+ggplot(data=sleep75, aes(x=age, y=sleep))+geom_point()+geom_smooth(aes(col=gender), method=lm, formula=y~x, se=FALSE)
+```
+
+## сдвиги относительно smsa
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+ggplot(data=sleep75, aes(x=totwrk, y=sleep))+geom_point()+geom_smooth(aes(col=as.factor(smsa)), method=lm, formula=y~x, se=FALSE)
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+ggplot(data=sleep75, aes(x=age, y=sleep))+geom_point()+geom_smooth(aes(col=as.factor(smsa)), method=lm, formula=y~x, se=FALSE)
+```
+
+## сдвиги относительно south
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+ggplot(data=sleep75, aes(x=totwrk, y=sleep))+geom_point()+geom_smooth(aes(col=as.factor(south)), method=lm, formula=y~x, se=FALSE)
+```
+
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+ggplot(data=sleep75, aes(x=age, y=sleep))+geom_point()+geom_smooth(aes(col=as.factor(south)), method=lm, formula=y~x, se=FALSE)
+```
