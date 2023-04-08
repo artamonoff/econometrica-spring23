@@ -31,4 +31,4 @@
 
 Описание датасетов ([PDF](https://github.com/artamonoff/Econometrica/blob/master/data-description/Datasets.pdf))
 
-БОльше датасетов можно найти [здесь](https://github.com/vincentarelbundock/Rdatasets)
+Больше датасетов можно найти [здесь](https://github.com/vincentarelbundock/Rdatasets)
