@@ -685,15 +685,17 @@ The data contains information from the 1990 California census. So although it ma
 }
 %\begin{center}
 	\begin{tabular}{l|l}\hline
-1. longitude & A measure of how far west a house is; a higher value is farther west \\
-2. latitude & A measure of how far north a house is; a higher value is farther north\\
-3. housingMedianAge & Median age of a house within a block; a lower number is a newer building\\
+1. longitude & A measure of how far west a house is;
+\\ &  a higher value is farther west \\
+2. latitude & A measure of how far north a house is;\\
+& a higher value is farther north\\
+3. housingMedianAge & Median age of a house within a block; \\& a lower number is a newer building\\
 4. totalRooms& Total number of rooms within a block\\
 5. totalBedrooms & Total number of bedrooms within a block\\
 6. population &  Total number of people residing within a block\\
-7. households &  Total number of households, a group of people residing within a home unit, for a block \\
-8. medianIncome &  Median income for households within a block of houses (measured in tens of thousands of US Dollars)\\
-9. medianHouseValue &  Median house value for households within a block (measured in US Dollars)\\
+7. households &  Total number of households, \\ & a group of people residing within a home unit, for a block \\
+8. medianIncome &  Median income for households within a block of houses \\ & (measured in tens of thousands of US Dollars)\\
+9. medianHouseValue &  Median house value for households \\ & within a block (measured in US Dollars)\\
 10. oceanProximity & Location of the house w.r.t ocean/sea\\
 	\hline
 	\end{tabular}
@@ -701,28 +703,7 @@ The data contains information from the 1990 California census. So although it ma
 \end{table}
 
 % californiay house
-\begin{table}
-	\caption{ \texttt{exams.csv}
-Context
-Description: This dataset contains information on the performance of high school students in mathematics, including their grades and demographic information. The data was collected from three high schools in the United States.
-"This dataset was created for educational purposes and was generated, not collected from actual data sources."
-\href{ https://www.kaggle.com/datasets/rkiattisak/student-performance-in-mathematics}{exams} Content
-}
-%\begin{center}
-	\begin{tabular}{l|l}\hline
-• Gender & The gender of the student (male/female)\\
-• Race/ethnicity & The student's racial or ethnic background (Asian, African-American, Hispanic, etc.)\\
-• Parental level of education & The highest level of education attained by the student's parent(s) or guardian(s)\\
-• Lunch & Whether the student receives free or reduced-price lunch (yes/no)\\
-• Test preparation course & Whether the student completed a test preparation course (yes/no)\\
-• Math score & The student's score on a standardized mathematics test\\
-• Reading score & The student's score on a standardized reading test\\
-• Writing score & The student's score on a standardized writing test\\
-	\hline
-	\end{tabular}
-%\end{center}
-\end{table}
-%
+
 
 \begin{table}
 	\caption{ \texttt{SpotifyYoutube.csv}
@@ -916,37 +897,6 @@ The dataset is simple, you have information on gender, age and whether the user 
 
 
 
-\begin{table}
-	\caption{ \texttt{madridHousesClean.csv}
-Context
-Clean dataset for machine learning.
-\href{https://www.kaggle.com/datasets/makofe/housesclean}{Madrid houses-clean} Content
-}
-%\begin{center}
-	\begin{tabular}{l|l}\hline
-id & identifier\\
-sq mt built  & size of the house in square meter built.\\
-n rooms & number of rooms.\\
-n bathrooms & number of bathrooms. \\
-sq mt allotment& for detached houses,\\
-& full size including house, pool, garden, etc.\\
-floor & height.\\
-is renewal needed &  boolean.\\
-has lift & boolean.\\
-is exterior & boolean.\\
-energy certificate & higher values mean mor efficient.\\
-has parking & boolean.\\
-neighborhood & Madrid's counties.\\
-district & Madrid's districts.\\
-house type & flat, house, study, duplex, top floor.\\
-buy rice & target.\\
-	\hline
-	\end{tabular}
-%\end{center}
-\end{table}
-
-
-
 
 \begin{table}
 	\caption{ \texttt{BankPersonalLoanModelling.csv}
@@ -1009,8 +959,104 @@ Mortgage & Value of house mortgage if any. (000)\\
 
 
 
+\begin{table}
+	\caption{ \texttt{exams.csv}
+Context
+Description: This dataset contains information on the performance of high school students in mathematics, including their grades and demographic information. The data was collected from three high schools in the United States.
+This dataset was created for educational purposes and was generated, not collected from actual data sources.
+\href{https://www.kaggle.com/datasets/rkiattisak/student-performance-in-mathematics}{exams} Content
+}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+Gender & The gender of the student (male/female)\\
+Race/ethnicity & The student's racial \\ & or ethnic background \\ & (Asian, African-American, Hispanic, etc.)\\
+Parental level of education & The highest level of education \\ & attained by the student's parent(s) or guardian(s)\\
+Lunch & Whether the student receives free or \\ & reduced-price lunch (yes/no)\\
+Test preparation course & Whether the student completed \\ & a test preparation course (yes/no)\\
+Math score & The student's score on a standardized mathematics test\\
+Reading score & The student's score on a standardized reading test\\
+Writing score & The student's score on a standardized writing test\\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+%
 
 
+\begin{table}
+	\caption{ \texttt{madridHousesClean.csv}
+Context
+Clean dataset for machine learning.
+\href{https://www.kaggle.com/datasets/makofe/housesclean}{Madrid houses-clean} Content
+}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+id & identifier\\
+sq mt built  & size of the house in square meter built.\\
+n rooms & number of rooms.\\
+n bathrooms & number of bathrooms. \\
+sq mt allotment& for detached houses,\\
+& full size including house, pool, garden, etc.\\
+floor & height.\\
+is renewal needed &  boolean.\\
+has lift & boolean.\\
+is exterior & boolean.\\
+energy certificate & higher values mean mor efficient.\\
+has parking & boolean.\\
+neighborhood & Madrid's counties.\\
+district & Madrid's districts.\\
+house type & flat, house, study, duplex, top floor.\\
+buy rice & target.\\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
+
+
+
+\begin{table}
+	\caption{ \texttt{CarPriceAssignment.csv}
+Context
+A Chinese automobile company Geely Auto aspires to enter the US market by setting up their manufacturing unit there and producing cars locally to give competition to their US and European counterparts.
+They have contracted an automobile consulting company to understand the factors on which the pricing of cars depends. Specifically, they want to understand the factors affecting the pricing of cars in the American market, since those may be very different from the Chinese market. The company wants to know:
+Which variables are significant in predicting the price of a car
+How well those variables describe the price of a car
+Based on various market surveys, the consulting firm has gathered a large data set of different types of cars across the America market.
+\href{https://www.kaggle.com/datasets/hellbuoy/car-price-prediction}{Car Price Prediction Multiple Linear Regression} Content
+}
+%\begin{center}
+	\begin{tabular}{l|l}\hline
+CarID		&	Unique id of each observation (Interger)		\\
+Symboling 	&		Its assigned insurance risk rating,\\ &
+ A value of +3 indicates that the auto is risky, \\& -3 that it is probably pretty safe.(Categorical) \\
+carCompany	&		Name of car company (Categorical)	\\	
+fueltype	&		Car fuel type i.e gas or diesel (Categorical)		\\
+aspiration	&		Aspiration used in a car (Categorical)		\\
+doornumber	&		Number of doors in a car (Categorical)		\\
+carbody		&	body of car (Categorical)		\\
+drivewheel	&		type of drive wheel (Categorical)		\\
+enginelocation	&		Location of car engine (Categorical)		\\
+wheelbase		&	Weelbase of car (Numeric)		\\
+carlength	&		Length of car (Numeric)		\\
+carwidth	&		Width of car (Numeric)		\\
+carheight	&		height of car (Numeric)		\\
+curbweight	&		The weight of a car without occupants or baggage.	\\
+enginetype	&		Type of engine. (Categorical)		\\
+cylindernumber	&		cylinder placed in the car (Categorical)		\\
+enginesize		&	Size of car (Numeric)		\\
+fuelsystem		&	Fuel system of car (Categorical)		\\
+boreratio		&	Boreratio of car (Numeric)		\\
+stroke	&		Stroke or volume inside the engine (Numeric)		\\
+compressionratio		&	compression ratio of car (Numeric)		\\
+horsepower	&		Horsepower (Numeric)		\\
+peakrpm		&	car peak rpm (Numeric)		\\
+citympg		&	Mileage in city (Numeric)		\\
+highwaympg	&		Mileage on highway (Numeric)		\\
+price	&	(Dependent variable)	Price of car (Numeric)		\\
+	\hline
+	\end{tabular}
+%\end{center}
+\end{table}
 
 
 
