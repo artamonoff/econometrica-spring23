@@ -9,9 +9,9 @@
 - [Листок 07](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List07-Prediction.html): Прогнозирование([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List07)) 
 - [Листок 08](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List08-Multicollinearity.html): Мультиколлинеарность([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List08)) 
 - [Листок 09](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List09-Dummies.html): Дамми-переменные([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List09)) 
-- [Листок 10](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List10-Specification.html): Спецификация
-- [Листок 11](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List11-Heteroskedasticity.html): Гетероскедастичность
-- [Листок 12](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List12-Autocorrelation.html): Серийная корреляция
+- [Листок 10](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List10-Specification.html): Спецификация ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List10)) 
+- [Листок 11](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List11-Heteroskedasticity.html): Гетероскедастичность ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List11)) 
+- [Листок 12](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List12-Autocorrelation.html): Серийная корреляция ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List12)) 
 
 # Задачи по Эконометрике-2
 
