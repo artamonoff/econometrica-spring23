@@ -27,14 +27,14 @@ wage1$gender <- factor(wage1$female, labels = c('male', 'female') )
 ## VIFs
 
 Для набора данных `sleep75` рассмотрим линейную регрессию
-**sleep на totwrk/100, totwrk^2^/10000, age, smsa, male, south**.
+**sleep на totwrk/100, totwrk^2^/10000, age, smsa, male**.
 
 Какие регрессии нужно рассматривать для вычисления показателей VIF для коэффициентов
 **totwrk, totwrk^2, male **? Ответ
 
-- **totwrk/100 на totwrk^2^/10000, age, smsa, male, south**
-- **totwrk^2^/10000 на totwrk/100, age, smsa, male, south **
-- **male на totwrk/100, totwrk^2^/10000, age, smsa, south **
+- **totwrk/100 на totwrk^2^/10000, age, smsa, male**
+- **totwrk^2^/10000 на totwrk/100, age, smsa, male **
+- **male на totwrk/100, totwrk^2^/10000, age, smsa **
 
 Результаты подгонки:
 
@@ -265,7 +265,7 @@ ggcorrplot(cor(model.frame(regr)[,-1]), lab=TRUE)
 **sleep на totwrk, south, totwrk\(\star\)south, age, male, smsa**.
 
 Какие регрессии нужно рассматривать для вычисления показателей VIF для коэффициентов
-**totwrk, south, male **? Ответ
+**totwrk, south, totwrk\(\star\)south **? Ответ
 
 - **totwrk на south, totwrk\(\star\)south, age, male, smsa**
 - **south на totwrk, totwrk\(\star\)south, age, male, smsa**
