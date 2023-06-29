@@ -1,4 +1,20 @@
-# Задачи по Эконометрике-1
+# Необходимые библиотеки Python
+
+|Пакет         |Использованием                                                             |
+|--------------|---------------------------------------------------------------------------|
+|`pandas`      |датафреймы                                                                 |
+|`numpy`       |многомерные массивы; преобразование данных                                 |
+|`statsmodels` |работа с моделю регрессии: подгонка; тестирование гипотез, прогнозирвоание |
+|`scipy.stats` |вероятностные распределения                                                |
+|`linearmodels`|Работа с моделями панельных данных. GMM                                    |
+|`seaborn`     |визуализация данных                                                        |
+|`matplotlib`  |визуализация данных                                                        |
+|`plotly`      |визуализация данных                                                        |
+
+
+# Задачи по Эконометрике
+
+## Эконометрика-1
 
 - [Листок 01](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List01-OLS.html): OLS ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List01))
 - [Листок 02](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List02-Coefs.html): Интерпретация коэффициентов ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List02))
@@ -13,7 +29,7 @@
 - [Листок 11](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List11-Heteroskedasticity.html): Гетероскедастичность ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List11)) 
 - [Листок 12](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи/List12-Autocorrelation.html): Серийная корреляция ([Jupyter Notebooks](https://github.com/artamonoff/Econometrica/tree/master/python-notebooks/List12)) 
 
-# Задачи по Эконометрике-2
+## Эконометрика-2
 
 - [Листок 21](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List21-LPM.html): LPM-модель
 - [Листок 22](https://nbviewer.org/github/artamonoff/Econometrica/blob/master/Задачи2/List22-LogitProbit.html): Logit/Probit-модель
